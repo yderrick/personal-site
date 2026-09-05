@@ -8,6 +8,12 @@ Describe what something *does*, from the outside. Architecture and conventions l
 
 ---
 
+## Deployment
+
+Live at **https://personal-site-phi-seven-43.vercel.app**, built from `main` at `yderrick/personal-site`. Every push to `main` rebuilds and redeploys; pull requests get their own preview URLs. The production URL is set as `site` in `astro.config.mjs` — RSS and canonical URLs read it, so pointing a custom domain here later means changing that one value.
+
+---
+
 ## Pages
 
 ### `/` — Home *(not built yet)*
@@ -95,4 +101,3 @@ Motion respects `prefers-reduced-motion` globally rather than per component.
 Things that are deliberately not built, or built partially, so they don't get rediscovered as bugs:
 
 - **`/projects` will render an empty grid until a public repo exists.** As of 2026-09-05 the `yderrick` account owns three repositories and all three are private. The showcase reads `/users/yderrick/repos`, which returns public repos only, so an empty result is the correct and expected output — not a broken fetch. The empty state needs to say something sensible rather than render a bare grid.
-- **The Vercel live URL is not yet set in `astro.config.mjs`.** `site` stays unset until the Vercel project is connected; RSS and canonical URLs depend on it, so it must be filled before Phase 6.

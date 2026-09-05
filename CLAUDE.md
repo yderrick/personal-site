@@ -10,7 +10,7 @@ Personal site + daily dev log — a static Astro site that does three jobs: a ho
 
 - GitHub username: `yderrick`
 - Repo: `yderrick/personal-site`
-- Live URL: `personal-site.vercel.app`
+- Live URL: `personal-site-phi-seven-43.vercel.app`
 
 ## Commands
 

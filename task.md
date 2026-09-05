@@ -4,18 +4,18 @@
 >
 > Phases run in order. Nothing is designed before something is live. Two Release Gates: after Phase 3 and after Phase 5 — at each, the full release steps in [CLAUDE.md](CLAUDE.md) run and the live URL is verified before the next phase starts.
 
-- [ ] **Phase 1: Scaffold & First Deploy** *(goal: a blank page live at a public URL)*
+- [x] **Phase 1: Scaffold & First Deploy** *(goal: a blank page live at a public URL)*
   - [x] **Module 1: Project skeleton**
     - [x] `npm create astro@latest` — minimal template, TypeScript strict, Astro 7.
     - [x] Confirm `src/content.config.ts` (not the legacy `src/content/config.ts` path) and the `glob()` loader API.
     - [x] Add `astro check` to the build script so type errors fail the build.
     - [x] `.gitignore` covering `dist/`, `.astro/`, `node_modules/`, `.env`, `.vercel`.
-  - [ ] **Module 2: Repo & hosting**
+  - [x] **Module 2: Repo & hosting**
     - [x] Initialise git, first commit, push to GitHub as `yderrick/personal-site`.
-    - [ ] Connect the repo to a Vercel project; accept the Astro build defaults.
-    - [ ] Confirm the placeholder page is live at `personal-site.vercel.app`.
-    - [ ] Push a trivial change and confirm auto-redeploy lands in under a minute.
-    - [ ] Set `site` in `astro.config.mjs` to the live URL (RSS and canonical URLs read it).
+    - [x] Connect the repo to a Vercel project; accept the Astro build defaults.
+    - [x] Confirm the placeholder page is live at `personal-site-phi-seven-43.vercel.app`.
+    - [x] Push a trivial change and confirm auto-redeploy lands in under a minute.
+    - [x] Set `site` in `astro.config.mjs` to the live URL (RSS and canonical URLs read it).
 
 - [ ] **Phase 2: Design System & Shell**
   - [ ] **Module 3: Tokens**
