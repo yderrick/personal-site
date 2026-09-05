@@ -1,8 +1,11 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import LogList from '../components/LogList.astro';
+import { getLogEntries, getRecentLogEntries } from '../lib/log';
 import { SITE } from '../consts';
 
-const repo = 'https://github.com/yderrick/personal-site';
+const recent = await getRecentLogEntries(3);
+const total = (await getLogEntries()).length;
 ---
 
 <BaseLayout>
@@ -17,14 +20,16 @@ const repo = 'https://github.com/yderrick/personal-site';
 	<section class="slot" aria-labelledby="log-heading">
 		<div class="slot-head">
 			<h2 id="log-heading">Recent</h2>
-			<span class="status">phase 3</span>
+			<a class="more" href="/log">All {total} entries</a>
 		</div>
-		<p class="slot-body">
-			The log isn't built yet. It's the next thing I'm making, and it'll land here as a
-			reverse-chronological list with tag filtering. Until then, <a href={`${repo}/commits/main`}
-				>the commit history</a
-			> is the honest version.
-		</p>
+
+		{
+			recent.length > 0 ? (
+				<LogList entries={recent} />
+			) : (
+				<p class="slot-body">No entries yet. The first one lands the day I next build something.</p>
+			)
+		}
 	</section>
 
 	<section class="slot" aria-labelledby="projects-heading">
@@ -70,6 +75,19 @@ const repo = 'https://github.com/yderrick/personal-site';
 
 	.slot-head h2 {
 		font-size: var(--text-lg);
+	}
+
+	.more {
+		margin-left: auto;
+		font-family: var(--font-mono);
+		font-size: var(--text-xs);
+		letter-spacing: var(--tracking-mono);
+		color: var(--color-fg-muted);
+		text-decoration: none;
+	}
+
+	.more:hover {
+		color: var(--color-accent);
 	}
 
 	/* Which phase builds this. The roadmap is public, so the placeholder may as

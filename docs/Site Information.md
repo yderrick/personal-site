@@ -21,11 +21,19 @@ Tagline and intro, then two slots: recent log entries and pinned projects. Both 
 placeholders that say which phase builds them and why they're empty — the log collection lands in
 Phase 3 and the projects fetch in Phase 4. The slot markup is replaced, not added to, when those land.
 
-### `/log` — Daily log *(not built yet)*
-Reverse-chronological list of all published entries. Filterable by tag. Drafts never appear.
+### `/log` — Daily log
+Reverse-chronological list of all published entries, each showing its date, title, opening line and
+tags. Above the list is a tag bar listing every tag in use with a count; the tags are derived from
+the entries, so there is no second list to maintain. Drafts never appear.
 
-### `/log/[slug]` — Entry *(not built yet)*
-One log entry: title, date, tags, body. Slug derives from the filename, so `2026-09-05.md` → `/log/2026-09-05`.
+### `/log/[slug]` — Entry
+One log entry: date, title, tags, rendered body, and links to the adjacent entries. The links are
+labelled **Older** and **Newer** rather than previous/next, because "previous" is ambiguous in a
+reverse-chronological list. Slug derives from the filename, so `2026-09-05.md` → `/log/2026-09-05`.
+
+### `/log/tags/[tag]` — Tag
+Entries carrying one tag, newest first, with a count and a link back to the full log. A page exists
+for every tag used by a published entry; a tag used only by drafts generates no page.
 
 ### `/projects` — Showcase *(not built yet)*
 Bento grid of public GitHub repos, sorted by last push, with hand-written blurbs merged in for pinned favourites.
@@ -53,6 +61,16 @@ One file per entry, named `YYYY-MM-DD.md`. A second entry on the same day is `YY
 
 **Draft behaviour in full.** A `draft: true` entry is absent from: the `/log` list, every tag page, `/log/[slug]` (no route is generated for it), the home page's recent-entries block, and the RSS feed. This is a privacy guarantee, not a convenience — any new surface reading log entries goes through `src/lib/log.ts`, which applies the filter in one place.
 
+*Verified 2026-09-05* by adding a `draft: true` entry with unique marker strings, then checking that
+those strings appear on the list, entry, tag and home surfaces under `npm run dev`, and appear
+nowhere in `dist/` after `npm run build` — with no entry route and no tag page generated for it.
+Re-run that check whenever a new surface starts reading the collection.
+
+**Ordering.** Entries sort by date, newest first, tie-broken by descending filename. Two entries
+share a date whenever a day has more than one, so without the tie-break their relative order would
+depend on whatever sequence the loader happened to return. The tie-break also puts `-2` above the
+plain file, which matches what the suffix means: the second entry written that day.
+
 ### Project blurbs — `src/content/projects/*.md`
 
 Optional hand-written descriptions for pinned repos, matched to API data by repo name. The API supplies the facts (stars, language, last push date); the blurb supplies the writing and an optional screenshot. A blurb with no matching repo is ignored rather than rendered.
@@ -78,6 +96,7 @@ An optional `GITHUB_TOKEN` (via `astro:env`, `access: 'secret'`) raises the rate
 | Component | Used on | What it does |
 |---|---|---|
 | `src/layouts/BaseLayout.astro` | Every page | Document head (title, description, canonical, Open Graph), self-hosted font imports, skip link, nav, footer. Takes optional `title` and `description` props; `title` is suffixed with the site name |
+| `src/components/LogList.astro` | `/`, `/log`, `/log/tags/[tag]` | Renders a list of log entries: date, title, opening line, tags. Takes `entries` and an optional `summaries` flag. Shows a "Draft" badge on draft entries, which is only ever reachable in dev |
 | `src/components/Nav.astro` | Every page, via `BaseLayout` | Site nav. Marks the current route with `aria-current="page"`. Routes flagged `ready: false` render as plain dotted-underlined text rather than links, so nothing 404s while the site is being built |
 
 ---
@@ -87,7 +106,7 @@ An optional `GITHUB_TOKEN` (via `astro:env`, `access: 'secret'`) raises the rate
 | Module | What it does |
 |---|---|
 | `src/consts.ts` | Site title, tagline, description, and the nav route list. The route list is defined here only — the nav reads it rather than hardcoding links |
-| `src/lib/log.ts` | Reads the log collection. The single place drafts are filtered — every page and feed calls this rather than `getCollection('log')` directly |
+| `src/lib/log.ts` | Reads the log collection. The single place drafts are filtered — every page and feed calls this rather than `getCollection('log')` directly. Also owns entry sorting, tag counting, adjacent-entry lookup, UTC date formatting and list excerpts |
 | `src/lib/github.ts` | Build-time repo fetch, filtering and fallback |
 
 ---

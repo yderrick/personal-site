@@ -1,0 +1,121 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import LogList from '../../components/LogList.astro';
+import { getLogEntries, getLogTags } from '../../lib/log';
+
+const entries = await getLogEntries();
+const tags = await getLogTags();
+---
+
+<BaseLayout
+	title="Log"
+	description="A dated log of what I build, break and figure out — one entry per working day."
+>
+	<header class="head">
+		<h1>Log</h1>
+		<p>
+			What I built, broke and worked out, dated. Written for me first; public because a record you
+			can't show anyone is just a diary.
+		</p>
+	</header>
+
+	{
+		tags.length > 0 && (
+			<nav class="tag-bar" aria-label="Filter by tag">
+				<span class="tag-bar-label">Tags</span>
+				<ul>
+					{tags.map(({ tag, count }) => (
+						<li>
+							<a href={`/log/tags/${tag}`}>
+								{tag}
+								<span class="count">{count}</span>
+							</a>
+						</li>
+					))}
+				</ul>
+			</nav>
+		)
+	}
+
+	{
+		entries.length > 0 ? (
+			<LogList entries={entries} />
+		) : (
+			<p class="empty">No entries yet. The first one lands the day I next build something.</p>
+		)
+	}
+</BaseLayout>
+
+<style>
+	.head {
+		padding-block: var(--space-8) var(--space-6);
+	}
+
+	.head h1 {
+		font-size: var(--text-3xl);
+		margin-bottom: var(--space-4);
+	}
+
+	.head p {
+		max-width: var(--measure);
+		color: var(--color-fg-muted);
+	}
+
+	.tag-bar {
+		display: flex;
+		align-items: baseline;
+		gap: var(--space-4);
+		flex-wrap: wrap;
+		padding-block: var(--space-4);
+		border-top: var(--border) solid var(--color-rule);
+	}
+
+	.tag-bar-label {
+		font-family: var(--font-mono);
+		font-size: var(--text-xs);
+		letter-spacing: var(--tracking-mono);
+		color: var(--color-fg-muted);
+	}
+
+	.tag-bar ul {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-2);
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.tag-bar a {
+		display: inline-flex;
+		align-items: baseline;
+		gap: var(--space-2);
+		font-family: var(--font-mono);
+		font-size: var(--text-xs);
+		letter-spacing: var(--tracking-mono);
+		color: var(--color-fg);
+		text-decoration: none;
+		border: var(--border) solid var(--color-rule);
+		border-radius: var(--radius-sm);
+		padding: var(--space-1) var(--space-3);
+		transition:
+			color var(--duration-fast) var(--ease),
+			border-color var(--duration-fast) var(--ease);
+	}
+
+	.tag-bar a:hover {
+		color: var(--color-accent);
+		border-color: var(--color-accent-quiet);
+	}
+
+	.count {
+		color: var(--color-fg-muted);
+		font-variant-numeric: tabular-nums;
+	}
+
+	.empty {
+		padding-block: var(--space-6);
+		color: var(--color-fg-muted);
+		border-top: var(--border) solid var(--color-rule);
+	}
+</style>

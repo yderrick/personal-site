@@ -1,0 +1,77 @@
+---
+import type { GetStaticPaths } from 'astro';
+
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import LogList from '../../../components/LogList.astro';
+import { getLogTags, getLogEntriesByTag, type LogEntry } from '../../../lib/log';
+
+/**
+ * Tags come from getLogTags(), which reads getLogEntries() — so a tag used
+ * only by draft entries generates no page in a production build.
+ */
+export const getStaticPaths = (async () => {
+	const tags = await getLogTags();
+
+	return Promise.all(
+		tags.map(async ({ tag }) => ({
+			params: { tag },
+			props: { tag, entries: await getLogEntriesByTag(tag) },
+		})),
+	);
+}) satisfies GetStaticPaths;
+
+interface Props {
+	tag: string;
+	entries: LogEntry[];
+}
+
+const { tag, entries } = Astro.props;
+const count = entries.length;
+---
+
+<BaseLayout
+	title={`Entries tagged ${tag}`}
+	description={`Log entries tagged ${tag} — ${count} ${count === 1 ? 'entry' : 'entries'}.`}
+>
+	<header class="head">
+		<p class="crumb"><a href="/log">Log</a></p>
+		<h1>{tag}</h1>
+		<p class="count">{count} {count === 1 ? 'entry' : 'entries'}</p>
+	</header>
+
+	<LogList entries={entries} />
+</BaseLayout>
+
+<style>
+	.head {
+		padding-block: var(--space-8) var(--space-5);
+	}
+
+	.crumb {
+		font-family: var(--font-mono);
+		font-size: var(--text-xs);
+		letter-spacing: var(--tracking-mono);
+		margin-bottom: var(--space-3);
+	}
+
+	.crumb a {
+		color: var(--color-fg-muted);
+		text-decoration: none;
+	}
+
+	.crumb a:hover {
+		color: var(--color-accent);
+	}
+
+	h1 {
+		font-size: var(--text-3xl);
+		margin-bottom: var(--space-2);
+	}
+
+	.count {
+		font-family: var(--font-mono);
+		font-size: var(--text-sm);
+		letter-spacing: var(--tracking-mono);
+		color: var(--color-fg-muted);
+	}
+</style>

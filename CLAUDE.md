@@ -79,7 +79,7 @@ Two entries on one day get `YYYY-MM-DD-2.md`. Tags are lowercase, single-word wh
 
 ### Routes
 
-`/` landing · `/log` full list, filterable by tag · `/log/[slug]` entry · `/projects` bento grid · `/about` · `/rss.xml`. Adding a route means adding it to the nav component and to `docs/Site Information.md` in the same commit.
+`/` landing · `/log` full list · `/log/tags/[tag]` entries for one tag · `/log/[slug]` entry · `/projects` bento grid · `/about` · `/rss.xml`. Adding a route means adding it to the nav component and to `docs/Site Information.md` in the same commit.
 
 ## Design system
 

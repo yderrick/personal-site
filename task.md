@@ -29,18 +29,18 @@
     - [x] Landing page: intro, tagline, placeholder slots for pinned projects and recent entries.
     - [x] Phone-viewport pass on the shell before committing.
 
-- [ ] **Phase 3: Daily Log** *(→ **Release Gate 1** after this phase)*
-  - [ ] **Module 5: Collection**
-    - [ ] Define the `log` collection in `src/content.config.ts`: `glob()` loader + zod schema (`title`, `date`, `tags`, `draft`).
-    - [ ] `src/lib/log.ts` — the single helper every surface uses to read entries; filters drafts in production, keeps them in dev.
-    - [ ] Seed three real entries so layout decisions are made against real text, not lorem ipsum.
-  - [ ] **Module 6: Pages**
-    - [ ] `/log` — reverse-chronological list, changelog/terminal styling, monospace dates.
-    - [ ] Tag filtering, with the tag set derived from entries rather than hand-maintained.
-    - [ ] `/log/[slug]` — entry page via `getStaticPaths()` + `render(entry)`; prev/next links.
-    - [ ] Home page shows the three most recent non-draft entries.
-    - [ ] **Verify the draft valve**: a `draft: true` entry appears in `npm run dev` and appears nowhere in `npm run build && npm run preview` — list, tag pages, entry route, home page.
-  - [ ] **Release Gate 1** — version bump, changelog, docs sync, tag, push; verify the log live on a phone and a desktop.
+- [x] **Phase 3: Daily Log** *(→ **Release Gate 1** after this phase)*
+  - [x] **Module 5: Collection**
+    - [x] Define the `log` collection in `src/content.config.ts`: `glob()` loader + zod schema (`title`, `date`, `tags`, `draft`).
+    - [x] `src/lib/log.ts` — the single helper every surface uses to read entries; filters drafts in production, keeps them in dev.
+    - [x] Seed three real entries so layout decisions are made against real text, not lorem ipsum.
+  - [x] **Module 6: Pages**
+    - [x] `/log` — reverse-chronological list, changelog/terminal styling, monospace dates.
+    - [x] Tag filtering, with the tag set derived from entries rather than hand-maintained.
+    - [x] `/log/[slug]` — entry page via `getStaticPaths()` + `render(entry)`; prev/next links.
+    - [x] Home page shows the three most recent non-draft entries.
+    - [x] **Verify the draft valve**: a `draft: true` entry appears in `npm run dev` and appears nowhere in `npm run build && npm run preview` — list, tag pages, entry route, home page.
+  - [x] **Release Gate 1** — version bump, changelog, docs sync, tag, push; verify the log live on a phone and a desktop. Shipped as `v0.1.0`.
 
 - [ ] **Phase 4: Projects Showcase**
   - [ ] **Module 7: GitHub fetch**

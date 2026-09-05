@@ -1,0 +1,252 @@
+---
+import { render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import {
+	excerpt,
+	formatLogDate,
+	getAdjacentEntries,
+	getLogEntries,
+	isoDate,
+	type LogEntry,
+} from '../../lib/log';
+
+/**
+ * Routes come from getLogEntries(), so a draft never gets a page generated in
+ * a production build — the URL 404s rather than existing unlinked.
+ */
+export const getStaticPaths = (async () => {
+	const entries = await getLogEntries();
+	return entries.map((entry) => ({
+		params: { slug: entry.id },
+		props: { entry },
+	}));
+}) satisfies GetStaticPaths;
+
+interface Props {
+	entry: LogEntry;
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const { newer, older } = await getAdjacentEntries(entry.id);
+---
+
+<BaseLayout title={entry.data.title} description={excerpt(entry, 155)}>
+	<article>
+		<header class="head">
+			<time class="date" datetime={isoDate(entry.data.date)}>
+				{formatLogDate(entry.data.date)}
+			</time>
+
+			<h1>{entry.data.title}</h1>
+
+			{entry.data.draft && <p class="draft-flag">Draft — visible in dev only</p>}
+
+			{
+				entry.data.tags.length > 0 && (
+					<ul class="tags">
+						{entry.data.tags.map((tag) => (
+							<li>
+								<a href={`/log/tags/${tag}`}>{tag}</a>
+							</li>
+						))}
+					</ul>
+				)
+			}
+		</header>
+
+		<div class="prose">
+			<Content />
+		</div>
+	</article>
+
+	<nav class="adjacent" aria-label="Other entries">
+		<div class="side">
+			{
+				older && (
+					<a href={`/log/${older.id}`}>
+						<span class="dir">Older</span>
+						<span class="what">{older.data.title}</span>
+					</a>
+				)
+			}
+		</div>
+		<div class="side end">
+			{
+				newer && (
+					<a href={`/log/${newer.id}`}>
+						<span class="dir">Newer</span>
+						<span class="what">{newer.data.title}</span>
+					</a>
+				)
+			}
+		</div>
+	</nav>
+</BaseLayout>
+
+<style>
+	.head {
+		padding-block: var(--space-8) var(--space-5);
+		border-bottom: var(--border) solid var(--color-rule);
+		margin-bottom: var(--space-6);
+	}
+
+	.date {
+		display: block;
+		font-family: var(--font-mono);
+		font-size: var(--text-sm);
+		letter-spacing: var(--tracking-mono);
+		color: var(--color-accent);
+		margin-bottom: var(--space-3);
+	}
+
+	h1 {
+		font-size: var(--text-3xl);
+		max-width: 20ch;
+	}
+
+	.draft-flag {
+		display: inline-block;
+		font-family: var(--font-mono);
+		font-size: var(--text-2xs);
+		color: var(--color-bg);
+		background: var(--color-accent);
+		border-radius: var(--radius-sm);
+		padding: var(--space-1) var(--space-2);
+		margin-top: var(--space-4);
+	}
+
+	.tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-2);
+		list-style: none;
+		margin: var(--space-4) 0 0;
+		padding: 0;
+	}
+
+	.tags a {
+		display: inline-block;
+		font-family: var(--font-mono);
+		font-size: var(--text-2xs);
+		letter-spacing: var(--tracking-mono);
+		color: var(--color-fg-muted);
+		text-decoration: none;
+		border: var(--border) solid var(--color-rule);
+		border-radius: var(--radius-sm);
+		padding: var(--space-1) var(--space-2);
+	}
+
+	.tags a:hover {
+		color: var(--color-accent);
+		border-color: var(--color-accent-quiet);
+	}
+
+	/* Entry body. The only place on the site where raw Markdown lands, so the
+	   element styles live here rather than in global.css. */
+	.prose {
+		max-width: var(--measure);
+	}
+
+	.prose :global(p),
+	.prose :global(ul),
+	.prose :global(ol),
+	.prose :global(blockquote),
+	.prose :global(pre) {
+		margin-block: 0 var(--space-5);
+	}
+
+	.prose :global(h2) {
+		font-size: var(--text-xl);
+		margin-block: var(--space-7) var(--space-4);
+	}
+
+	.prose :global(h3) {
+		font-size: var(--text-lg);
+		margin-block: var(--space-6) var(--space-3);
+	}
+
+	.prose :global(li) {
+		margin-bottom: var(--space-2);
+	}
+
+	.prose :global(ul),
+	.prose :global(ol) {
+		padding-left: var(--space-5);
+	}
+
+	.prose :global(blockquote) {
+		border-left: 2px solid var(--color-accent-quiet);
+		padding-left: var(--space-4);
+		color: var(--color-fg-muted);
+	}
+
+	.prose :global(pre) {
+		background: var(--color-surface);
+		border: var(--border) solid var(--color-rule);
+		border-radius: var(--radius);
+		padding: var(--space-4);
+		overflow-x: auto;
+	}
+
+	.prose :global(:not(pre) > code) {
+		background: var(--color-surface);
+		border: var(--border) solid var(--color-rule);
+		border-radius: var(--radius-sm);
+		padding: 0.1em 0.35em;
+	}
+
+	.prose :global(img) {
+		border-radius: var(--radius);
+		margin-block: var(--space-5);
+	}
+
+	.adjacent {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: var(--space-5);
+		margin-top: var(--space-8);
+		padding-top: var(--space-5);
+		border-top: var(--border) solid var(--color-rule);
+	}
+
+	.side.end {
+		text-align: right;
+	}
+
+	.adjacent a {
+		display: inline-flex;
+		flex-direction: column;
+		gap: var(--space-1);
+		text-decoration: none;
+	}
+
+	.dir {
+		font-family: var(--font-mono);
+		font-size: var(--text-xs);
+		letter-spacing: var(--tracking-mono);
+		color: var(--color-fg-muted);
+	}
+
+	.what {
+		color: var(--color-fg);
+		font-size: var(--text-base);
+		line-height: var(--leading-snug);
+	}
+
+	.adjacent a:hover .what {
+		color: var(--color-accent);
+	}
+
+	@media (max-width: 34rem) {
+		.adjacent {
+			grid-template-columns: 1fr;
+		}
+
+		.side.end {
+			text-align: left;
+		}
+	}
+</style>

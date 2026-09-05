@@ -1,0 +1,142 @@
+---
+import { excerpt, formatLogDate, isoDate, type LogEntry } from '../lib/log';
+
+interface Props {
+	entries: LogEntry[];
+	/** Show the opening line under each title. Off for tight lists. */
+	summaries?: boolean;
+}
+
+const { entries, summaries = true } = Astro.props;
+---
+
+<ol class="entries">
+	{
+		entries.map((entry) => (
+			<li class="entry">
+				<time class="date" datetime={isoDate(entry.data.date)}>
+					{formatLogDate(entry.data.date)}
+				</time>
+
+				<div class="detail">
+					<h3>
+						<a href={`/log/${entry.id}`}>{entry.data.title}</a>
+					</h3>
+
+					{entry.data.draft && <p class="draft-flag">Draft — visible in dev only</p>}
+
+					{summaries && <p class="summary">{excerpt(entry)}</p>}
+
+					{entry.data.tags.length > 0 && (
+						<ul class="tags">
+							{entry.data.tags.map((tag) => (
+								<li>
+									<a href={`/log/tags/${tag}`}>{tag}</a>
+								</li>
+							))}
+						</ul>
+					)}
+				</div>
+			</li>
+		))
+	}
+</ol>
+
+<style>
+	.entries {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.entry {
+		display: grid;
+		grid-template-columns: 7.5rem 1fr;
+		gap: var(--space-5);
+		align-items: baseline;
+		padding-block: var(--space-5);
+		border-bottom: var(--border) solid var(--color-rule);
+	}
+
+	/* On a phone the date sits above the title rather than beside it — a
+	   7.5rem gutter costs more than it's worth at 360px. */
+	@media (max-width: 34rem) {
+		.entry {
+			grid-template-columns: 1fr;
+			gap: var(--space-2);
+		}
+	}
+
+	.date {
+		font-family: var(--font-mono);
+		font-size: var(--text-sm);
+		letter-spacing: var(--tracking-mono);
+		color: var(--color-accent);
+		font-variant-numeric: tabular-nums;
+	}
+
+	h3 {
+		font-family: var(--font-body);
+		font-weight: var(--weight-semi);
+		font-size: var(--text-md);
+		letter-spacing: var(--tracking-normal);
+		line-height: var(--leading-snug);
+		margin-bottom: var(--space-2);
+	}
+
+	h3 a {
+		color: var(--color-fg);
+		text-decoration: none;
+	}
+
+	h3 a:hover {
+		color: var(--color-accent);
+	}
+
+	.summary {
+		max-width: var(--measure);
+		font-size: var(--text-base);
+		color: var(--color-fg-muted);
+		margin-bottom: var(--space-3);
+	}
+
+	.draft-flag {
+		display: inline-block;
+		font-family: var(--font-mono);
+		font-size: var(--text-2xs);
+		color: var(--color-bg);
+		background: var(--color-accent);
+		border-radius: var(--radius-sm);
+		padding: var(--space-1) var(--space-2);
+		margin-bottom: var(--space-3);
+	}
+
+	.tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-2);
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.tags a {
+		display: inline-block;
+		font-family: var(--font-mono);
+		font-size: var(--text-2xs);
+		letter-spacing: var(--tracking-mono);
+		color: var(--color-fg-muted);
+		text-decoration: none;
+		border: var(--border) solid var(--color-rule);
+		border-radius: var(--radius-sm);
+		padding: var(--space-1) var(--space-2);
+		transition:
+			color var(--duration-fast) var(--ease),
+			border-color var(--duration-fast) var(--ease);
+	}
+
+	.tags a:hover {
+		color: var(--color-accent);
+		border-color: var(--color-accent-quiet);
+	}
+</style>
