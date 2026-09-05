@@ -5,13 +5,13 @@
 > Phases run in order. Nothing is designed before something is live. Two Release Gates: after Phase 3 and after Phase 5 — at each, the full release steps in [CLAUDE.md](CLAUDE.md) run and the live URL is verified before the next phase starts.
 
 - [ ] **Phase 1: Scaffold & First Deploy** *(goal: a blank page live at a public URL)*
-  - [ ] **Module 1: Project skeleton**
-    - [ ] `npm create astro@latest` — minimal template, TypeScript strict, Astro 7.
-    - [ ] Confirm `src/content.config.ts` (not the legacy `src/content/config.ts` path) and the `glob()` loader API.
-    - [ ] Add `astro check` to the build script so type errors fail the build.
-    - [ ] `.gitignore` covering `dist/`, `.astro/`, `node_modules/`, `.env`, `.vercel`.
+  - [x] **Module 1: Project skeleton**
+    - [x] `npm create astro@latest` — minimal template, TypeScript strict, Astro 7.
+    - [x] Confirm `src/content.config.ts` (not the legacy `src/content/config.ts` path) and the `glob()` loader API.
+    - [x] Add `astro check` to the build script so type errors fail the build.
+    - [x] `.gitignore` covering `dist/`, `.astro/`, `node_modules/`, `.env`, `.vercel`.
   - [ ] **Module 2: Repo & hosting**
-    - [ ] Initialise git, first commit, push to GitHub as `yderrick/personal-site`.
+    - [x] Initialise git, first commit, push to GitHub as `yderrick/personal-site`.
     - [ ] Connect the repo to a Vercel project; accept the Astro build defaults.
     - [ ] Confirm the placeholder page is live at `personal-site.vercel.app`.
     - [ ] Push a trivial change and confirm auto-redeploy lands in under a minute.
