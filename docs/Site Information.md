@@ -16,8 +16,10 @@ Live at **https://personal-site-phi-seven-43.vercel.app**, built from `main` at 
 
 ## Pages
 
-### `/` — Home *(not built yet)*
-Intro and tagline, 2–3 pinned projects, the three most recent published log entries.
+### `/` — Home
+Tagline and intro, then two slots: recent log entries and pinned projects. Both slots are currently
+placeholders that say which phase builds them and why they're empty — the log collection lands in
+Phase 3 and the projects fetch in Phase 4. The slot markup is replaced, not added to, when those land.
 
 ### `/log` — Daily log *(not built yet)*
 Reverse-chronological list of all published entries. Filterable by tag. Drafts never appear.
@@ -75,7 +77,8 @@ An optional `GITHUB_TOKEN` (via `astro:env`, `access: 'secret'`) raises the rate
 
 | Component | Used on | What it does |
 |---|---|---|
-| | | |
+| `src/layouts/BaseLayout.astro` | Every page | Document head (title, description, canonical, Open Graph), self-hosted font imports, skip link, nav, footer. Takes optional `title` and `description` props; `title` is suffixed with the site name |
+| `src/components/Nav.astro` | Every page, via `BaseLayout` | Site nav. Marks the current route with `aria-current="page"`. Routes flagged `ready: false` render as plain dotted-underlined text rather than links, so nothing 404s while the site is being built |
 
 ---
 
@@ -83,6 +86,7 @@ An optional `GITHUB_TOKEN` (via `astro:env`, `access: 'secret'`) raises the rate
 
 | Module | What it does |
 |---|---|
+| `src/consts.ts` | Site title, tagline, description, and the nav route list. The route list is defined here only — the nav reads it rather than hardcoding links |
 | `src/lib/log.ts` | Reads the log collection. The single place drafts are filtered — every page and feed calls this rather than `getCollection('log')` directly |
 | `src/lib/github.ts` | Build-time repo fetch, filtering and fallback |
 
@@ -90,7 +94,13 @@ An optional `GITHUB_TOKEN` (via `astro:env`, `access: 'secret'`) raises the rate
 
 ## Styling
 
-`src/styles/tokens.css` holds every colour, font, spacing, radius and motion value as a CSS custom property. Components consume tokens; no component hardcodes a hex value or a font stack. A missing value means a new token, not a local exception.
+`src/styles/tokens.css` holds every colour, font, spacing, radius and motion value as a CSS custom property. Components consume tokens; no component hardcodes a hex value or a font stack. A missing value means a new token, not a local exception. `src/styles/global.css` imports the tokens and applies base element styles; it is imported once, by `BaseLayout`.
+
+**Direction — "amber phosphor".** Dark-mode-first on a warm-tinted ground (`#14110c`) with a single amber accent (`#ffb000`). Amber monochrome CRTs were the alternative to green phosphor and were chosen for long-session readability; the palette takes the changelog/terminal association the log needs without the green-on-black cliché. There is no second hue — the accent is also the focus-ring colour.
+
+**Type.** Bricolage Grotesque (display), Public Sans (body), JetBrains Mono (dates, tags and other data). All three are self-hosted variable fonts via `@fontsource-variable`, imported in `BaseLayout` — no font CDN, so no render-blocking third-party request. An English-language visitor downloads three woff2 subsets totalling about 106 KB; the other subsets are `unicode-range`-gated and never fetched.
+
+**Contrast.** Every foreground/background pair in the token set clears WCAG AA (4.5:1): body text 15.3:1, muted text 5.2:1 on the page ground and 4.9:1 on card surfaces, accent 10.3:1. Muted-on-surface is the tightest pair — check it before darkening any surface token.
 
 Motion respects `prefers-reduced-motion` globally rather than per component.
 

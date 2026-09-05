@@ -1,0 +1,96 @@
+/*
+ * Design tokens — the single source for every colour, size, font and duration.
+ *
+ * Components consume these as custom properties and never hardcode a value.
+ * If something you need isn't here, add a token; don't make a local exception.
+ *
+ * Direction: "amber phosphor". Amber monochrome CRTs were the alternative to
+ * green phosphor and were chosen because they were easier to read for long
+ * stretches. One accent, warm-tinted ground, no second hue.
+ */
+
+:root {
+	/* ---- Colour -------------------------------------------------------- */
+	/* Ground is warm-tinted rather than neutral black, so the amber sits in
+	   the same temperature family instead of floating on top of it. */
+	--color-bg: #14110c;
+	--color-surface: #1c1811;
+	--color-surface-hover: #241f16;
+	--color-rule: #322b20;
+	--color-rule-strong: #4a4030;
+
+	--color-fg: #efe7d9; /* 15.5:1 on --color-bg */
+	--color-fg-muted: #91856f; /*  5.2:1 on --color-bg, 5.1:1 on --color-surface */
+
+	--color-accent: #ffb000; /* 10.4:1 on --color-bg */
+	--color-accent-quiet: #4a3708; /* accent at low intensity, for fills */
+
+	/* Focus ring is the accent — one accent means one attention colour. */
+	--color-focus: var(--color-accent);
+
+	/* ---- Type ---------------------------------------------------------- */
+	--font-display: 'Bricolage Grotesque Variable', system-ui, sans-serif;
+	--font-body: 'Public Sans Variable', system-ui, sans-serif;
+	--font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+
+	/* Scale is roughly a major third (1.25), tightened at the small end where
+	   mono labels need finer steps than prose does. */
+	--text-2xs: 0.6875rem; /* 11px — mono tags */
+	--text-xs: 0.75rem; /* 12px — mono meta */
+	--text-sm: 0.8125rem; /* 13px — mono dates */
+	--text-base: 0.9375rem; /* 15px — secondary prose */
+	--text-md: 1.0625rem; /* 17px — body prose */
+	--text-lg: 1.25rem; /* 20px — section headings */
+	--text-xl: 1.5rem; /* 24px */
+	--text-2xl: 2rem; /* 32px */
+	--text-3xl: clamp(2rem, 4vw + 1rem, 2.75rem);
+	--text-4xl: clamp(2.5rem, 6vw + 1rem, 4.5rem); /* hero only */
+
+	--weight-normal: 400;
+	--weight-medium: 500;
+	--weight-semi: 600;
+	--weight-display: 800;
+
+	--leading-tight: 1.04; /* display */
+	--leading-snug: 1.3;
+	--leading-normal: 1.65; /* prose */
+
+	--tracking-display: -0.022em;
+	--tracking-normal: 0;
+	--tracking-mono: -0.01em;
+
+	/* Line length. Prose should not exceed this. */
+	--measure: 64ch;
+
+	/* ---- Space --------------------------------------------------------- */
+	/* 4px base. Named by step, not by use, so they stay reusable. */
+	--space-1: 0.25rem;
+	--space-2: 0.5rem;
+	--space-3: 0.75rem;
+	--space-4: 1rem;
+	--space-5: 1.5rem;
+	--space-6: 2rem;
+	--space-7: 2.5rem;
+	--space-8: 3.5rem;
+	--space-9: 5rem;
+	--space-10: 7rem;
+
+	--page-max: 68rem;
+	--page-gutter: clamp(1.25rem, 5vw, 2.5rem);
+
+	/* ---- Shape --------------------------------------------------------- */
+	/* Tight radii. Cards are panels, not pills. */
+	--radius-sm: 3px;
+	--radius: 4px;
+	--radius-lg: 8px;
+	--border: 1px;
+
+	/* ---- Motion -------------------------------------------------------- */
+	--duration-fast: 120ms;
+	--duration: 200ms;
+	--duration-slow: 420ms;
+	--ease: cubic-bezier(0.2, 0.6, 0.2, 1);
+
+	/* ---- Layers -------------------------------------------------------- */
+	--z-skip-link: 100;
+}

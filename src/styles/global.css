@@ -1,0 +1,107 @@
+/*
+ * Base element styles. Tokens live in tokens.css; this file spends them.
+ * Nothing here is component-specific.
+ */
+
+@import './tokens.css';
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+/* Reduced motion is handled once, here, rather than in every component. */
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}
+
+html {
+	background-color: var(--color-bg);
+	color-scheme: dark;
+	-webkit-text-size-adjust: 100%;
+}
+
+body {
+	margin: 0;
+	min-height: 100dvh;
+	display: flex;
+	flex-direction: column;
+	background-color: var(--color-bg);
+	color: var(--color-fg);
+	font-family: var(--font-body);
+	font-size: var(--text-md);
+	line-height: var(--leading-normal);
+	font-synthesis-weight: none;
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4 {
+	font-family: var(--font-display);
+	font-weight: var(--weight-display);
+	line-height: var(--leading-tight);
+	letter-spacing: var(--tracking-display);
+	margin: 0;
+	text-wrap: balance;
+}
+
+p {
+	margin: 0;
+	text-wrap: pretty;
+}
+
+a {
+	color: var(--color-accent);
+	text-decoration-thickness: 1px;
+	text-underline-offset: 0.2em;
+}
+
+a:hover {
+	text-decoration-thickness: 2px;
+}
+
+/* One visible focus treatment everywhere. Never remove it without a
+   replacement — keyboard users have no other way to see where they are. */
+:focus-visible {
+	outline: 2px solid var(--color-focus);
+	outline-offset: 3px;
+	border-radius: var(--radius-sm);
+}
+
+img,
+svg,
+video {
+	display: block;
+	max-width: 100%;
+	height: auto;
+}
+
+code,
+kbd,
+samp,
+pre {
+	font-family: var(--font-mono);
+	font-size: 0.9em;
+}
+
+hr {
+	border: 0;
+	border-top: var(--border) solid var(--color-rule);
+	margin: 0;
+}
+
+::selection {
+	background-color: var(--color-accent);
+	color: var(--color-bg);
+}

@@ -1,22 +1,94 @@
 ---
-// Phase 1 placeholder. Deliberately unstyled — the design system (tokens, layout
-// shell, typography) is Phase 2, and task.md requires something live before
-// anything is designed. See task.md and docs/Site Information.md.
-const title = 'yderrick';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../consts';
+
+const repo = 'https://github.com/yderrick/personal-site';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<meta name="generator" content={Astro.generator} />
-		<meta name="description" content="Personal site and daily dev log. Under construction." />
-		<title>{title}</title>
-	</head>
-	<body>
-		<h1>{title}</h1>
-		<p>Personal site and daily dev log. Being built in the open — this is the Phase 1 placeholder.</p>
-	</body>
-</html>
+<BaseLayout>
+	<section class="hero">
+		<h1>{SITE.tagline}</h1>
+		<p class="intro">
+			A developer working in the open. Everything I ship gets a dated entry — the fixes, the dead
+			ends, and the things I only understood on the second attempt.
+		</p>
+	</section>
+
+	<section class="slot" aria-labelledby="log-heading">
+		<div class="slot-head">
+			<h2 id="log-heading">Recent</h2>
+			<span class="status">phase 3</span>
+		</div>
+		<p class="slot-body">
+			The log isn't built yet. It's the next thing I'm making, and it'll land here as a
+			reverse-chronological list with tag filtering. Until then, <a href={`${repo}/commits/main`}
+				>the commit history</a
+			> is the honest version.
+		</p>
+	</section>
+
+	<section class="slot" aria-labelledby="projects-heading">
+		<div class="slot-head">
+			<h2 id="projects-heading">Projects</h2>
+			<span class="status">phase 4</span>
+		</div>
+		<p class="slot-body">
+			This will read my public repositories at build time and lay them out as cards. Right now that
+			list is genuinely empty — everything I have is still private, and I'd rather show nothing than
+			pad it out.
+		</p>
+	</section>
+</BaseLayout>
+
+<style>
+	.hero {
+		padding-block: var(--space-9) var(--space-8);
+	}
+
+	.hero h1 {
+		font-size: var(--text-4xl);
+		max-width: 14ch;
+		margin-bottom: var(--space-5);
+	}
+
+	.intro {
+		max-width: var(--measure);
+		color: var(--color-fg-muted);
+	}
+
+	.slot {
+		border-top: var(--border) solid var(--color-rule);
+		padding-block: var(--space-5) var(--space-7);
+	}
+
+	.slot-head {
+		display: flex;
+		align-items: baseline;
+		gap: var(--space-4);
+		margin-bottom: var(--space-4);
+	}
+
+	.slot-head h2 {
+		font-size: var(--text-lg);
+	}
+
+	/* Which phase builds this. The roadmap is public, so the placeholder may as
+	   well say where it sits in it. */
+	.status {
+		margin-left: auto;
+		font-family: var(--font-mono);
+		font-size: var(--text-xs);
+		letter-spacing: var(--tracking-mono);
+		color: var(--color-accent);
+		border: var(--border) solid var(--color-accent-quiet);
+		background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+		border-radius: var(--radius-sm);
+		padding: var(--space-1) var(--space-2);
+	}
+
+	.slot-body {
+		max-width: var(--measure);
+		font-size: var(--text-base);
+		color: var(--color-fg-muted);
+	}
+</style>

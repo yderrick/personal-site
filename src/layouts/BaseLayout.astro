@@ -1,0 +1,104 @@
+---
+import '@fontsource-variable/bricolage-grotesque/wght.css';
+import '@fontsource-variable/public-sans/wght.css';
+import '@fontsource-variable/jetbrains-mono/wght.css';
+import '../styles/global.css';
+
+import Nav from '../components/Nav.astro';
+import { SITE } from '../consts';
+
+interface Props {
+	title?: string;
+	description?: string;
+}
+
+const { title, description = SITE.description } = Astro.props;
+
+const pageTitle = title ? `${title} — ${SITE.title}` : SITE.title;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
+const year = new Date().getFullYear();
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="generator" content={Astro.generator} />
+
+		<title>{pageTitle}</title>
+		<meta name="description" content={description} />
+		<link rel="canonical" href={canonical.href} />
+
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content={pageTitle} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonical.href} />
+		<meta name="twitter:card" content="summary" />
+
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+	</head>
+
+	<body>
+		<a class="skip" href="#main">Skip to content</a>
+
+		<div class="shell">
+			<Nav />
+			<main id="main">
+				<slot />
+			</main>
+			<footer>
+				<p>© {year} {SITE.title}</p>
+				<p class="built">Built in the open. <a href="https://github.com/yderrick/personal-site">Source</a></p>
+			</footer>
+		</div>
+	</body>
+</html>
+
+<style>
+	.skip {
+		position: absolute;
+		left: var(--space-4);
+		top: var(--space-4);
+		z-index: var(--z-skip-link);
+		padding: var(--space-2) var(--space-4);
+		background: var(--color-accent);
+		color: var(--color-bg);
+		font-weight: var(--weight-semi);
+		border-radius: var(--radius);
+		text-decoration: none;
+		transform: translateY(-200%);
+	}
+
+	.skip:focus-visible {
+		transform: translateY(0);
+	}
+
+	.shell {
+		width: 100%;
+		max-width: var(--page-max);
+		margin-inline: auto;
+		padding-inline: var(--page-gutter);
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+	}
+
+	main {
+		flex: 1;
+	}
+
+	footer {
+		display: flex;
+		justify-content: space-between;
+		gap: var(--space-4);
+		flex-wrap: wrap;
+		margin-top: var(--space-9);
+		padding-block: var(--space-5);
+		border-top: var(--border) solid var(--color-rule);
+		font-family: var(--font-mono);
+		font-size: var(--text-xs);
+		letter-spacing: var(--tracking-mono);
+		color: var(--color-fg-muted);
+	}
+</style>

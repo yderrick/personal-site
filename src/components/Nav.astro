@@ -1,0 +1,85 @@
+---
+import { NAV, SITE } from '../consts';
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`);
+---
+
+<header class="bar">
+	<a class="mark" href="/" aria-current={path === '/' ? 'page' : undefined}>{SITE.title}</a>
+
+	<nav aria-label="Main">
+		<ul>
+			{
+				NAV.map((item) =>
+					item.ready ? (
+						<li>
+							<a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+								{item.label}
+							</a>
+						</li>
+					) : (
+						<li>
+							<span class="pending" title="Not built yet">{item.label}</span>
+						</li>
+					),
+				)
+			}
+		</ul>
+	</nav>
+</header>
+
+<style>
+	.bar {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: var(--space-4);
+		flex-wrap: wrap;
+		padding-block: var(--space-5) var(--space-4);
+		border-bottom: var(--border) solid var(--color-rule);
+	}
+
+	.mark {
+		font-family: var(--font-display);
+		font-weight: var(--weight-display);
+		font-size: var(--text-md);
+		letter-spacing: var(--tracking-display);
+		color: var(--color-fg);
+		text-decoration: none;
+	}
+
+	.mark:hover {
+		color: var(--color-accent);
+	}
+
+	ul {
+		display: flex;
+		gap: var(--space-5);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		font-size: var(--text-base);
+	}
+
+	nav a {
+		color: var(--color-fg-muted);
+		text-decoration: none;
+		transition: color var(--duration-fast) var(--ease);
+	}
+
+	nav a:hover,
+	nav a[aria-current='page'] {
+		color: var(--color-accent);
+	}
+
+	/* Routes that don't exist yet. A dotted underline is the annotation
+	   convention — it reads as "not a link" without the "deleted" meaning a
+	   strikethrough would carry. No opacity: these still have to clear the
+	   contrast floor, so the muted token does the dimming instead. */
+	.pending {
+		color: var(--color-fg-muted);
+		border-bottom: 1px dotted var(--color-rule-strong);
+		cursor: default;
+	}
+</style>

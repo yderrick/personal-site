@@ -17,17 +17,17 @@
     - [x] Push a trivial change and confirm auto-redeploy lands in under a minute.
     - [x] Set `site` in `astro.config.mjs` to the live URL (RSS and canonical URLs read it).
 
-- [ ] **Phase 2: Design System & Shell**
-  - [ ] **Module 3: Tokens**
-    - [ ] `src/styles/tokens.css` — colour, type scale, spacing, radius, motion duration as CSS custom properties.
-    - [ ] Pick the accent colour deliberately; not default purple/blue.
-    - [ ] Self-host the display + body faces (`@fontsource` or local `woff2`); no render-blocking CDN.
-    - [ ] `prefers-reduced-motion` handling at the token/global level, once, not per component.
-  - [ ] **Module 4: Layout shell**
-    - [ ] `BaseLayout.astro` — head, skip link, nav, footer, `<ClientRouter />` if view transitions are wanted.
-    - [ ] Nav component with the active-route state; single source for the route list.
-    - [ ] Landing page: intro, tagline, placeholder slots for pinned projects and recent entries.
-    - [ ] Phone-viewport pass on the shell before committing.
+- [x] **Phase 2: Design System & Shell**
+  - [x] **Module 3: Tokens**
+    - [x] `src/styles/tokens.css` — colour, type scale, spacing, radius, motion duration as CSS custom properties.
+    - [x] Pick the accent colour deliberately; not default purple/blue.
+    - [x] Self-host the display + body faces (`@fontsource` or local `woff2`); no render-blocking CDN.
+    - [x] `prefers-reduced-motion` handling at the token/global level, once, not per component.
+  - [x] **Module 4: Layout shell**
+    - [x] `BaseLayout.astro` — head, skip link, nav, footer. `<ClientRouter />` deliberately **not** added: it ships JS, and the zero-JS-by-default rule means it has to earn itself. Revisit if navigation ever feels janky.
+    - [x] Nav component with the active-route state; single source for the route list.
+    - [x] Landing page: intro, tagline, placeholder slots for pinned projects and recent entries.
+    - [x] Phone-viewport pass on the shell before committing.
 
 - [ ] **Phase 3: Daily Log** *(→ **Release Gate 1** after this phase)*
   - [ ] **Module 5: Collection**
