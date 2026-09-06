@@ -287,9 +287,8 @@ export const LOG_SOURCE_REPOS: readonly string[] = ['daylog'];
 
 then commit and push. That one string is the deliberate act that makes a repo's log public.
 
-**Not yet, though.** The fetch works, but the pages that render aggregated entries are not built, so
-allowlisting a repo today fetches its entries and displays none of them. Wait until this note is
-gone.
+Its entries then appear in the main `/log` timeline, tagged and dated alongside this repo's own, at
+`/log/<repo>/<date>` and with the repo's name shown beside the date.
 
 Before you allowlist a repo, re-read what is already in its `log/`. An allowlisted repo publishes
 **every** non-draft entry, past and future, in full — not a summary and not just the ones you were

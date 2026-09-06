@@ -64,7 +64,7 @@ draft: false
 ---
 ```
 
-**The draft valve is a privacy feature, not a convenience.** `draft: true` entries must be excluded from every production build path — the list page, the tag index, the RSS feed, `getStaticPaths()` for `/log/[slug]`, and the home page's recent-entries block. They stay visible in `npm run dev` so I can write freely. Any new surface that reads the log collection filters drafts in the same commit it's added; there is one shared helper for this (`src/lib/log.ts`), and new code routes through it rather than calling `getCollection('log')` raw.
+**The draft valve is a privacy feature, not a convenience.** `draft: true` entries must be excluded from every production build path — the list page, the tag index, the RSS feed, `getStaticPaths()` for `/log/[...slug]`, and the home page's recent-entries block. They stay visible in `npm run dev` so I can write freely. Any new surface that reads the log collection filters drafts in the same commit it's added; there is one shared helper for this (`src/lib/log.ts`), and new code routes through it rather than calling `getCollection('log')` raw.
 
 Every repo I work in keeps its daily log in a root-level `log/` folder in this same format —
 `docs/Log Format.md` is the frozen contract, and this site's `log/` is its reference
@@ -92,7 +92,7 @@ The site is static and Vercel only rebuilds when this repo is pushed. Work in an
 
 ### Routes
 
-`/` landing · `/log` full list · `/log/tags/[tag]` entries for one tag · `/log/[slug]` entry · `/projects` bento grid · `/about` · `/rss.xml`. Adding a route means adding it to the nav component and to `docs/Site Information.md` in the same commit.
+`/` landing · `/log` full list · `/log/tags/[tag]` entries for one tag · `/log/[...slug]` entry, where an entry from another repo is `/log/<repo>/<date>` · `/projects` bento grid · `/about` · `/rss.xml`. Adding a route means adding it to the nav component and to `docs/Site Information.md` in the same commit.
 
 ## Design system
 

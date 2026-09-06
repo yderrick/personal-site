@@ -26,6 +26,37 @@ const OWNER = 'yderrick';
  */
 export const LOG_SOURCE_REPOS: readonly string[] = [];
 
+/**
+ * Repo names that cannot be used, because a remote entry's URL is
+ * `/log/<repo>/<date>` and these would collide with an existing route.
+ *
+ * Checked eagerly below rather than left to produce a baffling duplicate-route
+ * error at build time.
+ */
+const RESERVED_REPO_NAMES: readonly string[] = ['tags'];
+
+const reserved = LOG_SOURCE_REPOS.filter((repo) => RESERVED_REPO_NAMES.includes(repo));
+if (reserved.length > 0) {
+	// Unlike a GitHub failure, this is a mistake in *this* repo's configuration,
+	// so it is fatal rather than degraded — the same reason a schema error in the
+	// local log folder fails the build while one in a fetched entry does not.
+	throw new Error(
+		`[log-sources] Cannot publish the log of ${reserved.join(', ')}: ` +
+			`/log/${reserved[0]}/... would collide with an existing route. ` +
+			'Rename the repo or special-case it here.',
+	);
+}
+
+/**
+ * Whether any repository is allowlisted at all.
+ *
+ * Callers use this to skip reading the `remoteLog` collection entirely when it
+ * is empty. Astro warns on every read of an empty collection, and an empty
+ * allowlist is the normal state — without this the build would emit a warning
+ * per page, which is exactly how a build log stops being worth reading.
+ */
+export const HAS_REMOTE_LOG_SOURCES = LOG_SOURCE_REPOS.length > 0;
+
 /* ------------------------------------------------------------------ */
 
 /** One `log/*.md` file, fetched and split but not yet validated. */

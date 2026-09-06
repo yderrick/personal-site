@@ -8,6 +8,8 @@ import {
 	formatLogDate,
 	getAdjacentEntries,
 	getLogEntries,
+	entryHref,
+	entryRepo,
 	isoDate,
 	type LogEntry,
 } from '../../lib/log';
@@ -15,6 +17,10 @@ import {
 /**
  * Routes come from getLogEntries(), so a draft never gets a page generated in
  * a production build — the URL 404s rather than existing unlinked.
+ *
+ * A rest parameter rather than `[slug]`, because an entry fetched from another
+ * repository has a namespaced id (`daylog/2026-09-06`) and therefore a
+ * two-segment path. Local entries are a single segment and are unaffected.
  */
 export const getStaticPaths = (async () => {
 	const entries = await getLogEntries();
@@ -31,6 +37,7 @@ interface Props {
 const { entry } = Astro.props;
 const { Content } = await render(entry);
 const { newer, older } = await getAdjacentEntries(entry.id);
+const repo = entryRepo(entry);
 ---
 
 <BaseLayout title={entry.data.title} description={excerpt(entry, 155)}>
@@ -41,6 +48,14 @@ const { newer, older } = await getAdjacentEntries(entry.id);
 			</time>
 
 			<h1>{entry.data.title}</h1>
+
+			{
+				repo && (
+					<p class="from">
+						from the log of <span class="repo">{repo}</span>
+					</p>
+				)
+			}
 
 			{entry.data.draft && <p class="draft-flag">Draft — visible in dev only</p>}
 
@@ -74,7 +89,7 @@ const { newer, older } = await getAdjacentEntries(entry.id);
 		<div class="side">
 			{
 				older && (
-					<a href={`/log/${older.id}`}>
+					<a href={entryHref(older)}>
 						<span class="dir">Older</span>
 						<span class="what">{older.data.title}</span>
 					</a>
@@ -84,7 +99,7 @@ const { newer, older } = await getAdjacentEntries(entry.id);
 		<div class="side end">
 			{
 				newer && (
-					<a href={`/log/${newer.id}`}>
+					<a href={entryHref(newer)}>
 						<span class="dir">Newer</span>
 						<span class="what">{newer.data.title}</span>
 					</a>
@@ -268,5 +283,19 @@ const { newer, older } = await getAdjacentEntries(entry.id);
 		.side.end {
 			text-align: left;
 		}
+	}
+
+	/* Provenance for an entry written in another repository. Quiet: it is
+	   context, not a headline — the entry still stands on its own. */
+	.from {
+		font-family: var(--font-mono);
+		font-size: var(--text-2xs);
+		letter-spacing: var(--tracking-mono);
+		color: var(--color-fg-muted);
+		margin-top: var(--space-2);
+	}
+
+	.from .repo {
+		color: var(--color-accent);
 	}
 </style>

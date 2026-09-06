@@ -8,6 +8,43 @@ Each released version has a matching annotated git tag (`vX.Y.Z`), so any prior 
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-09-06
+
+Cross-repo log aggregation, rendering. Entries fetched from other repositories now appear throughout
+the site. `LOG_SOURCE_REPOS` is still empty, so nothing is published until a repo is named in it.
+
+### Added
+- Log entries from allowlisted repositories are merged into the `/log` timeline, the tag pages, the
+  tag counts and the home page's recent block. They sort, filter and render exactly like local
+  entries because they share one schema and one helper module.
+- `entryRepo()` and `entryHref()` in `src/lib/log.ts` — provenance and URL for an entry from either
+  source.
+- `LogList` shows the source repository beside the date, and an entry page carries a "from the log of
+  *repo*" line under its title. Quiet styling: provenance is context, not a headline.
+- A guard rejecting a repo named `tags`, whose entries would sit at `/log/tags/<date>` and collide
+  with the tag route. Fatal rather than degraded — a misconfiguration here is this repo's mistake,
+  the same reason a schema error in the local log folder fails the build.
+
+### Changed
+- `/log/[slug]` is now `/log/[...slug]`. A remote entry's id is namespaced by repo, so its path has
+  two segments. Entries written here keep their existing single-segment URLs.
+- Remote drafts are excluded in dev as well as production. A draft here is something I am still
+  writing and want to preview; a draft in another repo is something that repo has marked as not for
+  publication, and there is nothing to preview.
+
+### Fixed
+- Reading the `remoteLog` collection while the allowlist was empty emitted an Astro "collection is
+  empty" warning on every call — once per page, in what is the normal production state. The read is
+  now skipped when nothing is allowlisted. A build log full of expected warnings is a build log
+  nobody reads.
+
+### Notes
+- Verified end-to-end with `LOG_SOURCE_REPOS = ['personal-site']`: 63 pages instead of 41, 22 entries
+  at `/log/personal-site/<date>`, local URLs untouched, provenance rendered on remote entry pages and
+  absent from local ones, tag pages mixing both sources.
+- The snapshot fallback was then exercised by a real GitHub rate-limit exhaustion rather than a
+  simulated failure: the build warned, fell back and succeeded.
+
 ## [0.3.0] - 2026-09-06
 
 The fetch half of cross-repo log aggregation. Nothing is published by it yet: `LOG_SOURCE_REPOS` is

@@ -32,10 +32,15 @@ heatmap are the same set. Entries dated before 6 September 2026 were written aft
 history and are labelled `reconstructed`; a note at the top of the page explains this. The date on an
 entry is when the work happened, and the label says whether the writing happened then too.
 
-### `/log/[slug]` — Entry
+### `/log/[...slug]` — Entry
 One log entry: date, title, tags, rendered body, and links to the adjacent entries. The links are
 labelled **Older** and **Newer** rather than previous/next, because "previous" is ambiguous in a
 reverse-chronological list. Slug derives from the filename, so `2026-09-05.md` → `/log/2026-09-05`.
+
+An entry fetched from another repository is namespaced by repo — `/log/daylog/2026-09-06` — and
+carries a quiet "from the log of *daylog*" line under its title. That is why the route is a rest
+parameter: a remote entry's path has two segments. Entries written here keep their existing
+single-segment URLs, which are already live and linked.
 
 ### `/log/tags/[tag]` — Tag
 Entries carrying one tag, newest first, with a count and a link back to the full log. A page exists
@@ -83,7 +88,7 @@ The folder sits at the repository root rather than under `src/` because every re
 | `draft` | boolean | no, defaults `false` | `true` hides the entry from every production surface while leaving it visible in `npm run dev` |
 | `backfilled` | boolean | no, defaults `false` | `true` marks an entry written after the fact from commit history rather than on the day. The list and entry pages show a badge saying so; entries written on the day simply omit the field |
 
-**Draft behaviour in full.** A `draft: true` entry is absent from: the `/log` list, every tag page, `/log/[slug]` (no route is generated for it), the home page's recent-entries block, and the RSS feed. This is a privacy guarantee, not a convenience — any new surface reading log entries goes through `src/lib/log.ts`, which applies the filter in one place.
+**Draft behaviour in full.** A `draft: true` entry is absent from: the `/log` list, every tag page, `/log/[...slug]` (no route is generated for it), the home page's recent-entries block, and the RSS feed. A draft in *another* repository is stricter still — it is excluded in dev too, because there is nothing to preview and that repo has already said it is not for publication. This is a privacy guarantee, not a convenience — any new surface reading log entries goes through `src/lib/log.ts`, which applies the filter in one place.
 
 *Verified 2026-09-05* by adding a `draft: true` entry with unique marker strings, then checking that
 those strings appear on the list, entry, tag and home surfaces under `npm run dev`, and appear
@@ -189,7 +194,7 @@ it stops being current. The "Showing a saved snapshot" line is the signal that i
 | `src/layouts/BaseLayout.astro` | Every page | Document head (title, description, canonical, Open Graph), self-hosted font imports, skip link, nav, footer. Takes optional `title` and `description` props; `title` is suffixed with the site name |
 | `src/components/Heatmap.astro` | `/projects` | Calendar heatmap of daily commit counts — one column per week, one row per weekday. Intensity is bucketed into four steps of the single accent colour. Scrolls horizontally inside its own container on narrow screens |
 | `src/components/ProjectCard.astro` | `/`, `/projects` | One repository: name, blurb, language, commit and release counts, last-active date. Links out only for public repos. Hides the commit count when it is zero, because GitHub's stats lag a newly created repo and "0 commits" beside "last active today" would be wrong |
-| `src/components/LogList.astro` | `/`, `/log`, `/log/tags/[tag]` | Renders a list of log entries: date, title, opening line, tags. Takes `entries` and an optional `summaries` flag. Shows a "Draft" badge on draft entries, which is only ever reachable in dev |
+| `src/components/LogList.astro` | `/`, `/log`, `/log/tags/[tag]` | Renders a list of log entries: date, title, opening line, tags. Takes `entries` and an optional `summaries` flag. Shows a "Draft" badge on draft entries, which is only ever reachable in dev, and the source repo's name in the date gutter for an entry fetched from another repository |
 | `src/components/Nav.astro` | Every page, via `BaseLayout` | Site nav. Marks the current route with `aria-current="page"`. Routes flagged `ready: false` render as plain dotted-underlined text rather than links, so nothing 404s while the site is being built |
 
 ---
@@ -240,6 +245,6 @@ Motion respects `prefers-reduced-motion` globally rather than per component.
 Things that are deliberately not built, or built partially, so they don't get rediscovered as bugs:
 
 - **`AIstudio` is deliberately not on the site.** It is private and not in `SHOWCASED_PRIVATE_REPOS`, so it is excluded by default. Its GitHub description would need rewriting before it were added.
-- **`src/data/log-fallback.json` is empty.** The remote-log snapshot has never been populated, so today a fetch failure means remote entries disappear rather than appearing as stale-but-present. Harmless while `LOG_SOURCE_REPOS` is empty; it needs filling before the first repo is allowlisted.
-- **Remote log entries are fetched but not yet routed.** The `remoteLog` collection is populated at build time; `src/lib/log.ts` and the `/log` routes still read only the local collection, so nothing from another repo is rendered yet.
+- **`src/data/log-fallback.json` is empty.** The remote-log snapshot has never been populated, so a fetch failure means remote entries disappear rather than appearing as stale-but-present. Harmless while `LOG_SOURCE_REPOS` is empty; it needs filling before the first repo is allowlisted. Because Vercel builds are ephemeral it has to be generated and committed from a working copy or by CI, not written during a build.
+- **No RSS feed exists.** `/rss.xml` is described in `CLAUDE.md` and referenced in the draft-valve notes, but there is no `src/pages/rss.xml.ts`. Nothing links to it, so it 404s rather than serving a stale feed.
 - **A newly created repository reports zero commits for a while.** GitHub's `/stats/participation` lags behind a repo's first pushes, so `personal-site` shows no commit count despite being active. The card hides a zero count rather than displaying it; this corrects itself once GitHub's statistics catch up.

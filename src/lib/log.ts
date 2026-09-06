@@ -1,6 +1,15 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
+import { HAS_REMOTE_LOG_SOURCES } from './log-sources';
 
-export type LogEntry = CollectionEntry<'log'>;
+/**
+ * A log entry, from either source.
+ *
+ * `log` is this repository's own `log/` folder, read from disk. `remoteLog` is
+ * the same folder in every allowlisted repository, fetched from GitHub at build
+ * time. They share one schema (see src/content.config.ts), so everything below
+ * treats them identically apart from provenance.
+ */
+export type LogEntry = CollectionEntry<'log'> | CollectionEntry<'remoteLog'>;
 
 /**
  * THE DRAFT VALVE.
@@ -18,6 +27,28 @@ export type LogEntry = CollectionEntry<'log'>;
  * freely, and disappear from `npm run build`.
  */
 const INCLUDE_DRAFTS = import.meta.env.DEV;
+
+/**
+ * Which repository an entry came from, or null for this one.
+ *
+ * Remote entry ids are namespaced (`daylog/2026-09-06`), and the namespace is
+ * assigned by the loader from the repo it fetched — never read from
+ * frontmatter, so it cannot disagree with reality.
+ */
+export function entryRepo(entry: LogEntry): string | null {
+	return entry.collection === 'remoteLog' ? entry.id.split('/')[0] : null;
+}
+
+/**
+ * The URL for an entry.
+ *
+ * Local entries keep their bare, already-published paths (`/log/2026-09-06`);
+ * remote ones are namespaced by repo (`/log/daylog/2026-09-06`). Because the id
+ * already carries the namespace, this is the same expression for both.
+ */
+export function entryHref(entry: LogEntry): string {
+	return `/log/${entry.id}`;
+}
 
 /**
  * Newest first, with a deterministic tie-break.
@@ -38,8 +69,24 @@ function byNewest(a: LogEntry, b: LogEntry): number {
  * Drafts included in dev, excluded everywhere else.
  */
 export async function getLogEntries(): Promise<LogEntry[]> {
-	const entries = await getCollection('log', ({ data }) => INCLUDE_DRAFTS || !data.draft);
-	return entries.sort(byNewest);
+	const [local, remote] = await Promise.all([
+		getCollection('log', ({ data }) => INCLUDE_DRAFTS || !data.draft),
+		/**
+		 * Remote drafts are excluded unconditionally — including in dev.
+		 *
+		 * A draft in this repo is something I am still writing and want to
+		 * preview, so dev shows it. A draft in *another* repo is something that
+		 * repo has marked as not for publication; there is nothing to preview and
+		 * no reason for it to be here. See docs/Log Format.md §4.
+		 */
+		// Skipped entirely when nothing is allowlisted: reading an empty
+		// collection warns once per call, and empty is the normal state.
+		HAS_REMOTE_LOG_SOURCES
+			? getCollection('remoteLog', ({ data }) => !data.draft)
+			: Promise.resolve([]),
+	]);
+
+	return [...local, ...remote].sort(byNewest);
 }
 
 /** The `limit` most recent entries. Used by the home page. */

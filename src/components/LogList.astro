@@ -1,5 +1,5 @@
 ---
-import { excerpt, formatLogDate, isoDate, type LogEntry } from '../lib/log';
+import { entryHref, entryRepo, excerpt, formatLogDate, isoDate, type LogEntry } from '../lib/log';
 
 interface Props {
 	entries: LogEntry[];
@@ -29,11 +29,16 @@ const Heading = `h${headingLevel}` as 'h2' | 'h3';
 						{formatLogDate(entry.data.date)}
 					</time>
 					{entry.data.backfilled && <span class="recon" title="Reconstructed from commit history">reconstructed</span>}
+					{entryRepo(entry) && (
+						<span class="repo" title={`Written in the ${entryRepo(entry)} repository`}>
+							{entryRepo(entry)}
+						</span>
+					)}
 				</div>
 
 				<div class="detail">
 					<Heading class="title">
-						<a href={`/log/${entry.id}`}>{entry.data.title}</a>
+						<a href={entryHref(entry)}>{entry.data.title}</a>
 					</Heading>
 
 					{entry.data.draft && <p class="draft-flag">Draft — visible in dev only</p>}
@@ -91,6 +96,17 @@ const Heading = `h${headingLevel}` as 'h2' | 'h3';
 		font-size: var(--text-2xs);
 		letter-spacing: var(--tracking-mono);
 		color: var(--color-fg-muted);
+	}
+
+	/* Which repo an entry came from. Sits in the date gutter with the date and
+	   the reconstructed marker, so provenance reads as metadata rather than
+	   competing with the title. */
+	.repo {
+		font-family: var(--font-mono);
+		font-size: var(--text-2xs);
+		letter-spacing: var(--tracking-mono);
+		color: var(--color-accent);
+		overflow-wrap: anywhere;
 	}
 
 	.date {
