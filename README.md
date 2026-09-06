@@ -6,7 +6,7 @@ Every push to `main` rebuilds and redeploys in under a minute. No CMS, no databa
 
 **[docs/Site Information.md](docs/Site%20Information.md) is the complete reference** — every page, component, content field and data source, and what each one does. Start there if you want to know what the site does.
 
-See [CLAUDE.md](CLAUDE.md) for architecture and working conventions, [task.md](task.md) for the build roadmap, and [CHANGELOG.md](CHANGELOG.md) for version history.
+See [RUNBOOK.md](RUNBOOK.md) for how to run the thing — triggering a rebuild, adding a project, renewing the GitHub token. [CLAUDE.md](CLAUDE.md) covers architecture and working conventions, [task.md](task.md) the build roadmap, and [CHANGELOG.md](CHANGELOG.md) version history.
 
 ## Getting started
 

@@ -118,6 +118,19 @@ Single `main` branch, pushed to `yderrick/personal-site`. Vercel deploys `main`;
 
 Keep `README.md`, `task.md` and `docs/Site Information.md` in sync when a change affects what they describe — don't let them drift from reality.
 
+### RUNBOOK.md — keep it current, and say so
+
+`RUNBOOK.md` is the operational guide for the things I do to this site that aren't writing code:
+triggering a rebuild, adding a project, renewing credentials, diagnosing a stale page.
+
+**Whenever something comes up that I need to remember — a new manual step, a gotcha, a credential
+with an expiry, a changed procedure — add it to `RUNBOOK.md` rather than only mentioning it in
+conversation, and tell me you've updated it.** A thing said once in a chat is lost; the runbook is
+where it survives. This applies even when the change is small, and even when I haven't asked.
+
+Write it for someone who has forgotten the context: exact URLs, exact button names, and what the
+screen should look like afterwards so a wrong turn is obvious.
+
 This covers routine commit/tag/push only. Still confirm before anything destructive (force-push, `git reset --hard`, rewriting published history, deleting tags/branches, changing Vercel project settings or domains).
 
 ## Phased build
