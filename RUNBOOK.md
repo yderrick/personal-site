@@ -253,6 +253,12 @@ publish when you're ready.
 **Content is not a release.** Log entries are a plain commit: no version bump, no changelog entry, no
 tag. Only code and design changes get those.
 
+**Writing about a past day.** If you're writing up a day after the fact rather than on the day, add
+`backfilled: true` to the frontmatter. The entry then shows "reconstructed" beside its date and a
+short note on its page. Everything before 6 September 2026 is marked this way, because it was
+reconstructed from commit history. Leave the field off for anything you write on the day — the log's
+value is that a reader can tell the difference.
+
 ---
 
 ## 5. Start a log folder in another repo

@@ -22,6 +22,12 @@ placeholders that say which phase builds them and why they're empty — the log 
 Phase 3 and the projects fetch in Phase 4. The slot markup is replaced, not added to, when those land.
 
 ### `/log` — Daily log
+
+**Coverage.** The log carries one entry for every day with commits, across all repositories, going
+back to the first commit on 22 June 2026 — so the days in the log and the days in the `/projects`
+heatmap are the same set. Entries dated before 6 September 2026 were written afterwards from commit
+history and are labelled `reconstructed`; a note at the top of the page explains this. The date on an
+entry is when the work happened, and the label says whether the writing happened then too.
 Reverse-chronological list of all published entries, each showing its date, title, opening line and
 tags. Above the list is a tag bar listing every tag in use with a count; the tags are derived from
 the entries, so there is no second list to maintain. Drafts never appear.
@@ -75,6 +81,7 @@ The folder sits at the repository root rather than under `src/` because every re
 | `date` | date | yes | `YYYY-MM-DD`. Drives sort order and the URL |
 | `tags` | string[] | no | Lowercase. The tag filter's options are derived from these; there is no separate tag list to maintain |
 | `draft` | boolean | no, defaults `false` | `true` hides the entry from every production surface while leaving it visible in `npm run dev` |
+| `backfilled` | boolean | no, defaults `false` | `true` marks the entry as written after the fact from commit history. The list shows "reconstructed" beside the date; the entry page carries a note saying so |
 | `backfilled` | boolean | no, defaults `false` | `true` marks an entry written after the fact from commit history rather than on the day. The list and entry pages show a badge saying so; entries written on the day simply omit the field |
 
 **Draft behaviour in full.** A `draft: true` entry is absent from: the `/log` list, every tag page, `/log/[slug]` (no route is generated for it), the home page's recent-entries block, and the RSS feed. This is a privacy guarantee, not a convenience — any new surface reading log entries goes through `src/lib/log.ts`, which applies the filter in one place.
