@@ -10,6 +10,12 @@ Each released version has a matching annotated git tag (`vX.Y.Z`), so any prior 
 
 ## [0.2.1] - 2026-09-06
 
+### Added
+- `backfilled` frontmatter flag, and a badge on the list and entry pages that renders it. Nineteen
+  entries were written after the fact from commit history; the log's worth to a reader is that a date
+  means what it says, so a reconstructed entry says so rather than quietly passing as same-day
+  writing.
+
 ### Changed
 - The daily log moved from `src/content/log/` to a root-level `log/` folder. Every repository I work
   in keeps its daily log in a root `log/` directory; this site's own log now uses the same shape, so

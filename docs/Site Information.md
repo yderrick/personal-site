@@ -73,6 +73,7 @@ One file per entry, named `YYYY-MM-DD.md`. A second entry on the same day is `YY
 | `date` | date | yes | `YYYY-MM-DD`. Drives sort order and the URL |
 | `tags` | string[] | no | Lowercase. The tag filter's options are derived from these; there is no separate tag list to maintain |
 | `draft` | boolean | no, defaults `false` | `true` hides the entry from every production surface while leaving it visible in `npm run dev` |
+| `backfilled` | boolean | no, defaults `false` | `true` marks an entry written after the fact from commit history rather than on the day. The list and entry pages show a badge saying so; entries written on the day simply omit the field |
 
 **Draft behaviour in full.** A `draft: true` entry is absent from: the `/log` list, every tag page, `/log/[slug]` (no route is generated for it), the home page's recent-entries block, and the RSS feed. This is a privacy guarantee, not a convenience — any new surface reading log entries goes through `src/lib/log.ts`, which applies the filter in one place.
 
