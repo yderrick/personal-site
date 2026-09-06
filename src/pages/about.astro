@@ -1,0 +1,132 @@
+---
+import { getEntry, render } from 'astro:content';
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { LINKS } from '../consts';
+
+const entry = await getEntry('about', 'index');
+if (!entry) throw new Error('src/content/about/index.md is missing');
+
+const { Content } = await render(entry);
+---
+
+<BaseLayout
+	title={entry.data.title}
+	description="Derrick Yao Dzotefe — fuel and gas operations in Tema, Ghana, and software the rest of the time."
+>
+	<header class="head">
+		<h1>{entry.data.headline}</h1>
+	</header>
+
+	<div class="prose">
+		<Content />
+	</div>
+
+	<section class="contact" aria-labelledby="contact-heading">
+		<h2 id="contact-heading">Elsewhere</h2>
+		<ul>
+			{
+				LINKS.map((link) => (
+					<li>
+						<a
+							href={link.href}
+							rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+						>
+							{link.label}
+						</a>
+					</li>
+				))
+			}
+		</ul>
+	</section>
+</BaseLayout>
+
+<style>
+	.head {
+		padding-block: var(--space-8) var(--space-5);
+	}
+
+	.head h1 {
+		font-size: var(--text-3xl);
+		max-width: 18ch;
+	}
+
+	.prose {
+		max-width: var(--measure);
+	}
+
+	.prose :global(p),
+	.prose :global(ul) {
+		margin-block: 0 var(--space-5);
+	}
+
+	/* Section headings inside the bio. Smaller than the page headline and set in
+	   mono, so they read as signposts through a long read rather than competing
+	   with it. */
+	.prose :global(h2) {
+		font-family: var(--font-mono);
+		font-weight: var(--weight-medium);
+		font-size: var(--text-sm);
+		letter-spacing: var(--tracking-mono);
+		text-transform: none;
+		color: var(--color-accent);
+		margin-block: var(--space-7) var(--space-4);
+		padding-bottom: var(--space-2);
+		border-bottom: var(--border) solid var(--color-rule);
+	}
+
+	.prose :global(ul) {
+		padding-left: var(--space-5);
+	}
+
+	.prose :global(li) {
+		margin-bottom: var(--space-3);
+	}
+
+	.prose :global(strong) {
+		color: var(--color-fg);
+		font-weight: var(--weight-semi);
+	}
+
+	.contact {
+		margin-top: var(--space-8);
+		padding-top: var(--space-5);
+		border-top: var(--border) solid var(--color-rule);
+	}
+
+	.contact h2 {
+		font-family: var(--font-mono);
+		font-weight: var(--weight-medium);
+		font-size: var(--text-sm);
+		letter-spacing: var(--tracking-mono);
+		color: var(--color-fg-muted);
+		margin-bottom: var(--space-4);
+	}
+
+	.contact ul {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-3);
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.contact a {
+		display: inline-block;
+		font-size: var(--text-base);
+		color: var(--color-fg);
+		text-decoration: none;
+		border: var(--border) solid var(--color-rule);
+		border-radius: var(--radius);
+		padding: var(--space-2) var(--space-4);
+		transition:
+			color var(--duration-fast) var(--ease),
+			border-color var(--duration-fast) var(--ease);
+	}
+
+	.contact a:hover {
+		color: var(--color-accent);
+		border-color: var(--color-accent-quiet);
+	}
+</style>

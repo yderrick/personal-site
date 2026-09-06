@@ -47,8 +47,14 @@ date. A public repo's name links to GitHub. **A private repo carries a "Private"
 all** — nothing on the card implies the code is one click away. The page footer states the date the
 data was fetched, and says explicitly when it is showing a saved snapshot rather than live data.
 
-### `/about` *(not built yet)*
-Short bio and links out.
+### `/about`
+Bio and contact links. The prose lives in `src/content/about/index.md` as plain Markdown, so the
+writing can be changed without touching the page markup; `headline` in its frontmatter is the large
+line at the top. The links come from `LINKS` in `src/consts.ts`, which the footer reads too.
+
+### `/404`
+Shown for any address that doesn't exist. Names the four real routes so a wrong link is a detour
+rather than a dead end.
 
 ### `/rss.xml` *(optional, Phase 6)*
 Feed of published log entries.
@@ -79,6 +85,12 @@ Re-run that check whenever a new surface starts reading the collection.
 share a date whenever a day has more than one, so without the tie-break their relative order would
 depend on whatever sequence the loader happened to return. The tie-break also puts `-2` above the
 plain file, which matches what the suffix means: the second entry written that day.
+
+### About page — `src/content/about/index.md`
+
+The body of `/about`, as Markdown. Frontmatter is `title` (browser tab) and `headline` (the large
+line above the body). Headings, lists, bold and links are all styled by the page. Kept as content
+rather than markup so the bio can be rewritten without editing an `.astro` file.
 
 ### Project blurbs — `src/content/projects/*.md`
 
@@ -151,10 +163,26 @@ it stops being current. The "Showing a saved snapshot" line is the signal that i
 
 | Module | What it does |
 |---|---|
-| `src/consts.ts` | Site title, tagline, description, and the nav route list. The route list is defined here only — the nav reads it rather than hardcoding links |
+| `src/consts.ts` | Site title, tagline, description, the nav route list, and `LINKS` — the contact and profile links. Both defined here only; the nav and footer read them rather than hardcoding anything |
 | `src/lib/log.ts` | Reads the log collection. The single place drafts are filtered — every page and feed calls this rather than `getCollection('log')` directly. Also owns entry sorting, tag counting, adjacent-entry lookup, UTC date formatting and list excerpts |
 | `src/lib/github.ts` | Build-time repo fetch, disclosure allowlist, activity statistics and snapshot fallback |
 | `src/lib/showcase.ts` | Merges the GitHub data with the `projects` collection blurbs, and formats relative dates |
+
+---
+
+## Metadata and assets
+
+Every page carries a canonical URL, a description, Open Graph and Twitter card tags, and a shared
+social image at `/og.png` (1200×630, generated from the site's own palette and type). `BaseLayout`
+builds all of it; a page only supplies `title` and `description`.
+
+Icons: `favicon.svg` (an amber block cursor on the site's ground — deliberately not animated, since a
+favicon can't honour `prefers-reduced-motion`), `favicon.ico` at 32×32 for older clients, and
+`apple-touch-icon.png` at 180×180. `theme-color` is set to the page ground so mobile browser chrome
+matches.
+
+`sitemap-index.xml` is generated at build time by `@astrojs/sitemap` and lists every real route; the
+404 is excluded. `robots.txt` points at it.
 
 ---
 

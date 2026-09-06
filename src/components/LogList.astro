@@ -5,9 +5,19 @@ interface Props {
 	entries: LogEntry[];
 	/** Show the opening line under each title. Off for tight lists. */
 	summaries?: boolean;
+	/**
+	 * Heading level for entry titles.
+	 *
+	 * Defaults to `h2`, which is right when the list follows the page `h1`
+	 * directly (`/log`, a tag page). The home page nests it under a "Recent"
+	 * `h2`, so it passes `h3`. Getting this wrong skips a level, which is a real
+	 * navigation problem for anyone moving through a page by headings.
+	 */
+	headingLevel?: 2 | 3;
 }
 
-const { entries, summaries = true } = Astro.props;
+const { entries, summaries = true, headingLevel = 2 } = Astro.props;
+const Heading = `h${headingLevel}` as 'h2' | 'h3';
 ---
 
 <ol class="entries">
@@ -19,9 +29,9 @@ const { entries, summaries = true } = Astro.props;
 				</time>
 
 				<div class="detail">
-					<h3>
+					<Heading class="title">
 						<a href={`/log/${entry.id}`}>{entry.data.title}</a>
-					</h3>
+					</Heading>
 
 					{entry.data.draft && <p class="draft-flag">Draft — visible in dev only</p>}
 
@@ -75,7 +85,7 @@ const { entries, summaries = true } = Astro.props;
 		font-variant-numeric: tabular-nums;
 	}
 
-	h3 {
+	.title {
 		font-family: var(--font-body);
 		font-weight: var(--weight-semi);
 		font-size: var(--text-md);
@@ -84,12 +94,12 @@ const { entries, summaries = true } = Astro.props;
 		margin-bottom: var(--space-2);
 	}
 
-	h3 a {
+	.title a {
 		color: var(--color-fg);
 		text-decoration: none;
 	}
 
-	h3 a:hover {
+	.title a:hover {
 		color: var(--color-accent);
 	}
 

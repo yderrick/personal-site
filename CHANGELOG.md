@@ -8,6 +8,40 @@ Each released version has a matching annotated git tag (`vX.Y.Z`), so any prior 
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-06
+
+Phases 4 and 5 — the projects showcase, the About page, and the polish pass — up to Release Gate 2.
+
+### Added
+- `/projects`: repository cards plus an activity summary — commits over the last 52 weeks, days with
+  commits, longest unbroken run, tagged releases — above a daily commit heatmap.
+- Private repositories now appear, showing language, commit cadence, release count and last-active
+  date behind a "Private" badge with no link. Which ones is an allowlist (`SHOWCASED_PRIVATE_REPOS`),
+  so forgetting to update it hides a project rather than exposing one.
+- `src/lib/github.ts` and `src/lib/showcase.ts`: build-time fetch, statistics, blurb merge, and a
+  snapshot fallback that never lets a GitHub failure break the deploy.
+- `.github/workflows/refresh.yml`: fires a Vercel deploy hook daily, so commits in other repositories
+  reach the site instead of the numbers quietly going stale.
+- `/about`, with its prose in `src/content/about/index.md` so it can be rewritten without touching
+  markup, and contact links driven by `LINKS` in `src/consts.ts`.
+- `/404` naming the real routes.
+- Favicon set (SVG, ICO, apple-touch-icon), a generated `/og.png` social image, Twitter card tags,
+  `theme-color`, `sitemap-index.xml` and `robots.txt`.
+
+### Fixed
+- `/log` and the tag pages skipped from `h1` to `h3`, because `LogList` hardcoded its heading level.
+  It's now a prop defaulting to `h2`; the home page passes `h3` where it nests under one.
+- A missing or under-scoped `GITHUB_TOKEN` produced a successful build that silently omitted every
+  private project while claiming to be current. A partial result is now treated as a failure and
+  answered with the snapshot.
+- Project activity used weekly commit buckets, which rendered a young repository's dense month as an
+  idle year. Switched to day-level counts.
+
+### Notes
+- Still **zero JavaScript** on every route.
+- Lighthouse on mobile: 100 accessibility, 100 best practices, 100 SEO, across `/`, `/projects` and
+  `/about`. No horizontal overflow at 360 / 768 / 1440 on any page.
+
 ## [0.1.0] - 2026-09-05
 
 First release. Covers Phases 1 to 3 — scaffold, design system and the daily log — up to Release Gate 1.

@@ -17,10 +17,12 @@ them or work them out again in six months.
 
 1. [Trigger a rebuild by hand](#1-trigger-a-rebuild-by-hand)
 2. [Add a new project to the site](#2-add-a-new-project-to-the-site)
-3. [Write a log entry](#3-write-a-log-entry)
-4. [Renew the GitHub token](#4-renew-the-github-token)
-5. [When something looks wrong](#5-when-something-looks-wrong)
-6. [Things to remember](#6-things-to-remember)
+3. [Update the About page](#3-update-the-about-page)
+4. [Write a log entry](#4-write-a-log-entry)
+5. [Renew the GitHub token](#5-renew-the-github-token)
+6. [When something looks wrong](#6-when-something-looks-wrong)
+7. [Things to remember](#7-things-to-remember)
+8. [Waiting on you](#8-waiting-on-you)
 
 ---
 
@@ -161,7 +163,68 @@ Forks and archived repos are excluded automatically.
 
 ---
 
-## 3. Write a log entry
+## 3. Update the About page
+
+The About page is built from **two** files, split so you can change the writing without touching any
+code.
+
+### To change the words
+
+Edit **[`src/content/about/index.md`](src/content/about/index.md)**. It's plain Markdown — rewrite,
+reorder, add or delete sections freely. Headings (`##`), bullet lists, **bold** and links all render
+correctly and are already styled.
+
+The frontmatter at the top has two fields:
+
+```markdown
+---
+title: About
+headline: An engineer who noticed the barrier had moved.
+---
+```
+
+- `title` — the browser tab title. Rarely needs changing.
+- `headline` — the big line at the top of the page. Keep it short; it's set very large.
+
+Everything below the `---` is the body.
+
+Then:
+
+```bash
+git add -A
+git commit -m "Update the About page"
+git push
+```
+
+### To change the links
+
+Edit the `LINKS` array in **[`src/consts.ts`](src/consts.ts)**. Both the About page and the site
+footer read from it, so one edit updates both.
+
+```ts
+export const LINKS: readonly SiteLink[] = [
+	{ label: 'GitHub', href: 'https://github.com/yderrick', inFooter: true },
+	{ label: 'Email', href: 'mailto:crystaladdison17@gmail.com', inFooter: true },
+	// { label: 'LinkedIn', href: 'https://www.linkedin.com/in/…' },
+	// { label: 'CV (PDF)', href: '/derrick-yao-dzotefe-cv.pdf' },
+];
+```
+
+- **To add a link:** add a line. Delete the `//` from a commented-out one to enable it.
+- **`inFooter: true`** also shows it in the footer on every page. Leave it off to show the link only
+  on About.
+- **To add your CV:** drop the PDF into the **`public/`** folder, then point `href` at
+  `/the-file-name.pdf`. Anything in `public/` is served from the site root as-is.
+- **To add a second email:** add another entry with a distinct label, e.g.
+  `{ label: 'Email (work)', href: 'mailto:…' }`.
+
+### To check it
+
+`npm run dev`, open http://localhost:4321/about, and read it before pushing.
+
+---
+
+## 4. Write a log entry
 
 1. Create a file at `src/content/log/YYYY-MM-DD.md` using today's date.
 2. Frontmatter:
@@ -191,7 +254,7 @@ tag. Only code and design changes get those.
 
 ---
 
-## 4. Renew the GitHub token
+## 5. Renew the GitHub token
 
 **Your current token expires 6 September 2027.** There's a reminder set for 30 August 2027.
 
@@ -214,7 +277,7 @@ page. But it stops being current, and nobody will tell you — so the reminder m
 
 ---
 
-## 5. When something looks wrong
+## 6. When something looks wrong
 
 ### `/projects` says "Showing a saved snapshot"
 
@@ -225,7 +288,7 @@ Causes, most likely first:
 
 | Cause | Fix |
 |---|---|
-| Token expired | [Renew it](#4-renew-the-github-token) |
+| Token expired | [Renew it](#5-renew-the-github-token) |
 | A new private repo isn't in the token's repo list | [Step 2 above](#step-2--give-the-token-access-to-that-repo) |
 | `GITHUB_TOKEN` missing in Vercel | Add it, then **redeploy** |
 | You added an env var but didn't redeploy | Redeploy |
@@ -262,7 +325,7 @@ wasted build minutes.
 
 ---
 
-## 6. Things to remember
+## 7. Things to remember
 
 - **Deploy = `git push origin main`.** There is no deploy command, and you should never run one.
 - **The daily refresh exists because Vercel only rebuilds when *this* repo is pushed.** Work in
@@ -288,3 +351,20 @@ wasted build minutes.
 
 Neither is ever committed to the repo. `.env` is gitignored; if you create one locally for testing,
 it stays on your machine.
+
+---
+
+## 8. Waiting on you
+
+Things I've built the slot for but don't have the content for. Each is a one-line change once you
+hand it over — send it and I'll wire it in, or follow the steps in
+[Update the About page](#3-update-the-about-page).
+
+| Item | What I need | Where it goes |
+|---|---|---|
+| **LinkedIn** | The profile URL | Uncomment the `LinkedIn` line in `LINKS` |
+| **Second email** | The address, and how to label it | A new `LINKS` entry |
+| **CV / résumé** | The PDF file | `public/`, then a `LINKS` entry pointing at it |
+
+Both the About page and the footer already render whatever is in `LINKS`, so nothing else needs
+changing when these arrive.

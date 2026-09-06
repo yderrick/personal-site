@@ -81,17 +81,17 @@
           build published live data.
     - [x] Show the data's as-of date on the page, so a failed refresh is visible rather than silent.
 
-- [ ] **Phase 5: About & Polish** *(→ **Release Gate 2** after this phase)*
-  - [ ] **Module 10: About**
-    - [ ] `/about` — short bio, links out.
-  - [ ] **Module 11: Polish pass**
-    - [ ] Favicon set and `og:image`.
-    - [ ] Meta tags: title/description per page, canonical URLs, Open Graph, `sitemap.xml`.
-    - [ ] Full responsive sweep at 360px / 768px / 1440px.
-    - [ ] Accessibility pass: heading order, focus visibility, colour contrast, alt text, keyboard-only navigation.
-    - [ ] Lighthouse run; check no unintended JavaScript is shipping (every `client:*` directive justified).
-    - [ ] 404 page.
-  - [ ] **Release Gate 2** — version bump, changelog, docs sync, tag, push; verify live.
+- [x] **Phase 5: About & Polish** *(→ **Release Gate 2** after this phase)*
+  - [x] **Module 10: About**
+    - [x] `/about` — short bio, links out.
+  - [x] **Module 11: Polish pass**
+    - [x] Favicon set and `og:image`.
+    - [x] Meta tags: title/description per page, canonical URLs, Open Graph, `sitemap.xml`.
+    - [x] Full responsive sweep at 360px / 768px / 1440px.
+    - [x] Accessibility pass: heading order, focus visibility, colour contrast, alt text, keyboard-only navigation.
+    - [x] Lighthouse run; check no unintended JavaScript is shipping (every `client:*` directive justified).
+    - [x] 404 page.
+  - [x] **Release Gate 2** — version bump, changelog, docs sync, tag, push; verify live. Shipped as `v0.2.0`.
 
 - [ ] **Phase 6: Optional Extras** *(nothing here blocks anything; pick up when wanted)*
   - [ ] RSS feed for the log at `/rss.xml` — drafts excluded, via the same `src/lib/log.ts` helper.

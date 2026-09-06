@@ -1,4 +1,5 @@
 // @ts-check
+import sitemap from '@astrojs/sitemap';
 import { defineConfig, envField } from 'astro/config';
 
 // https://astro.build/config
@@ -8,6 +9,10 @@ export default defineConfig({
 	// repo that has to change.
 	site: 'https://personal-site-phi-seven-43.vercel.app',
 	output: 'static',
+
+	// Generates /sitemap-index.xml at build time from the static routes.
+	// Needs `site` above to be set, which it is.
+	integrations: [sitemap()],
 
 	env: {
 		schema: {

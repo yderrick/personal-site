@@ -32,7 +32,7 @@ const featured = (pinned.length > 0 ? pinned : items).slice(0, 2);
 
 		{
 			recent.length > 0 ? (
-				<LogList entries={recent} />
+				<LogList entries={recent} headingLevel={3} />
 			) : (
 				<p class="slot-body">No entries yet. The first one lands the day I next build something.</p>
 			)

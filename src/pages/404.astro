@@ -1,0 +1,75 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Not found" description="That page doesn't exist.">
+	<section class="missing">
+		<p class="code">404</p>
+		<h1>That page isn't here.</h1>
+		<p class="body">
+			Either the address is wrong, or something used to be here and isn't any more. The log is the
+			most likely thing you were after.
+		</p>
+
+		<ul class="ways">
+			<li><a href="/">Home</a></li>
+			<li><a href="/log">Log</a></li>
+			<li><a href="/projects">Projects</a></li>
+			<li><a href="/about">About</a></li>
+		</ul>
+	</section>
+</BaseLayout>
+
+<style>
+	.missing {
+		padding-block: var(--space-9) var(--space-8);
+	}
+
+	/* The number is the one loud thing on an otherwise quiet page. */
+	.code {
+		font-family: var(--font-mono);
+		font-size: var(--text-sm);
+		letter-spacing: 0.2em;
+		color: var(--color-accent);
+		margin-bottom: var(--space-4);
+	}
+
+	h1 {
+		font-size: var(--text-3xl);
+		max-width: 16ch;
+		margin-bottom: var(--space-5);
+	}
+
+	.body {
+		max-width: var(--measure);
+		color: var(--color-fg-muted);
+		margin-bottom: var(--space-6);
+	}
+
+	.ways {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-3);
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.ways a {
+		display: inline-block;
+		font-size: var(--text-base);
+		color: var(--color-fg);
+		text-decoration: none;
+		border: var(--border) solid var(--color-rule);
+		border-radius: var(--radius);
+		padding: var(--space-2) var(--space-4);
+		transition:
+			color var(--duration-fast) var(--ease),
+			border-color var(--duration-fast) var(--ease);
+	}
+
+	.ways a:hover {
+		color: var(--color-accent);
+		border-color: var(--color-accent-quiet);
+	}
+</style>

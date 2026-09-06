@@ -1,0 +1,5 @@
+# Everything here is meant to be found.
+User-agent: *
+Allow: /
+
+Sitemap: https://personal-site-phi-seven-43.vercel.app/sitemap-index.xml

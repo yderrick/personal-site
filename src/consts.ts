@@ -7,7 +7,7 @@ export const SITE = {
 	title: 'yderrick',
 	tagline: 'I build things and write down what happened.',
 	description:
-		'A developer working in the open: a dated log of what I build, break and figure out, and the projects worth showing.',
+		'Derrick Yao Dzotefe — fuel and gas operations in Tema, Ghana, and software the rest of the time. A dated log of what I build, and the projects worth showing.',
 } as const;
 
 export interface NavItem {
@@ -22,8 +22,29 @@ export interface NavItem {
 	ready: boolean;
 }
 
+export interface SiteLink {
+	label: string;
+	href: string;
+	/** Shown in the footer as well as on /about. */
+	inFooter?: boolean;
+}
+
+/**
+ * Contact and profile links. **This is the only place to edit them.**
+ * `/about` and the footer both read this array.
+ *
+ * To add one: append an entry. To remove one: delete its entry. To link a CV,
+ * drop the PDF into `public/` and point `href` at `/its-filename.pdf`.
+ */
+export const LINKS: readonly SiteLink[] = [
+	{ label: 'GitHub', href: 'https://github.com/yderrick', inFooter: true },
+	{ label: 'Email', href: 'mailto:crystaladdison17@gmail.com', inFooter: true },
+	// { label: 'LinkedIn', href: 'https://www.linkedin.com/in/…' },
+	// { label: 'CV (PDF)', href: '/derrick-yao-dzotefe-cv.pdf' },
+] as const;
+
 export const NAV: readonly NavItem[] = [
 	{ href: '/log', label: 'log', ready: true },
 	{ href: '/projects', label: 'projects', ready: true },
-	{ href: '/about', label: 'about', ready: false },
+	{ href: '/about', label: 'about', ready: true },
 ] as const;
