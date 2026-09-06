@@ -1,6 +1,9 @@
 # The log format — a contract between repositories
 
-**Status: frozen. The aggregator that consumes it is not built yet.**
+**Status: frozen.** The fetch layer that consumes it is built and verified against the live API
+(`src/lib/log-sources.ts`, `src/lib/remote-log-loader.ts`); the routes that render the aggregated
+entries are not built yet, and `LOG_SOURCE_REPOS` is empty, so nothing from another repo is
+published today.
 
 Every repository I work in keeps a daily log in a root-level `log/` folder. This site aggregates
 those logs into one timeline at `/log`. That only works if every repo writes the same shape, so this

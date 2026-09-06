@@ -103,6 +103,32 @@ Optional hand-written descriptions for pinned repos, matched to API data by repo
 
 ## Build-time data
 
+### Log entries from other repositories — `src/lib/log-sources.ts`, `src/lib/remote-log-loader.ts`
+
+Every repo keeps its daily log in a root-level `log/` folder ([`Log Format.md`](Log%20Format.md)).
+This fetches those folders over the GitHub REST API at build time and feeds them into the
+`remoteLog` content collection, which shares one schema object with the local `log` collection so the
+two cannot drift apart.
+
+**What appears.** Nothing, unless a repository is named in `LOG_SOURCE_REPOS`. Unlike the projects
+showcase, public repos are *not* included automatically — a log folder is prose, and "the repo is
+public" is not the same statement as "every note in it was meant to be read". Adding a repo to that
+array publishes **every** non-draft entry in its `log/`, past and future, in full.
+
+**Ids and URLs.** Remote entries are namespaced by repo (`daylog/2026-09-06`), so two repositories
+logging on the same day never collide. Local entries keep their bare ids and existing URLs.
+
+**Failure handling**, deliberately different at the two levels:
+
+| Failure | Behaviour |
+|---|---|
+| One entry's frontmatter fails the schema, or has no readable YAML | Skipped, with a build warning naming the file. The build continues — a typo in another repo must not break this deploy |
+| A whole repo fails to fetch (404, network, revoked token) | The *entire* remote fetch falls back to `src/data/log-fallback.json` and is marked stale. Publishing some repos while claiming to be current is the failure this prevents |
+
+*Verified 2026-09-06* against the live API with `LOG_SOURCE_REPOS = ['personal-site']`: 22 entries
+fetched, validated and rendered; a bogus repo name produced the snapshot fallback and a warning; a
+deliberately unsatisfiable remote schema skipped every entry without failing the build.
+
 ### GitHub repositories
 
 Fetched once per build from the GitHub REST API. Nothing is fetched in the browser — by the time a
@@ -208,4 +234,6 @@ Motion respects `prefers-reduced-motion` globally rather than per component.
 Things that are deliberately not built, or built partially, so they don't get rediscovered as bugs:
 
 - **`AIstudio` is deliberately not on the site.** It is private and not in `SHOWCASED_PRIVATE_REPOS`, so it is excluded by default. Its GitHub description would need rewriting before it were added.
+- **`src/data/log-fallback.json` is empty.** The remote-log snapshot has never been populated, so today a fetch failure means remote entries disappear rather than appearing as stale-but-present. Harmless while `LOG_SOURCE_REPOS` is empty; it needs filling before the first repo is allowlisted.
+- **Remote log entries are fetched but not yet routed.** The `remoteLog` collection is populated at build time; `src/lib/log.ts` and the `/log` routes still read only the local collection, so nothing from another repo is rendered yet.
 - **A newly created repository reports zero commits for a while.** GitHub's `/stats/participation` lags behind a repo's first pushes, so `personal-site` shows no commit count despite being active. The card hides a zero count rather than displaying it; this corrects itself once GitHub's statistics catch up.

@@ -271,13 +271,32 @@ already correct when it is. Nothing you write reaches the site until then.
 4. Commit and push it with the rest of your work. The log lives in the repo it describes.
 
 **Nothing publishes until a repo is allowlisted on this site.** Creating `log/` in a repo — private
-or public — is safe by default and puts nothing on the internet. When the aggregator exists, adding
-a repo will be one string in an array here, and that is the deliberate act that makes its log
-public.
+or public — is safe by default and puts nothing on the internet.
+
+To allowlist one, add its name to `LOG_SOURCE_REPOS` in `src/lib/log-sources.ts`:
+
+```ts
+export const LOG_SOURCE_REPOS: readonly string[] = ['daylog'];
+```
+
+then commit and push. That one string is the deliberate act that makes a repo's log public.
+
+**Not yet, though.** The fetch works, but the pages that render aggregated entries are not built, so
+allowlisting a repo today fetches its entries and displays none of them. Wait until this note is
+gone.
 
 Before you allowlist a repo, re-read what is already in its `log/`. An allowlisted repo publishes
 **every** non-draft entry, past and future, in full — not a summary and not just the ones you were
 thinking of. `draft: true` on an entry keeps it out permanently.
+
+Two things to check while you are in there:
+
+- **A private repo needs the token.** `GITHUB_TOKEN` in Vercel must be able to read it, or the fetch
+  404s and the whole remote log falls back to a snapshot. See
+  [Renew the GitHub token](#6-renew-the-github-token).
+- **The repo must have `log/` at its root.** A missing folder reads as a 404, which is treated as the
+  repo failing rather than as "no entries yet" — deliberately, so a renamed or unreadable repo is
+  loud rather than silent.
 
 ---
 

@@ -8,6 +8,31 @@ Each released version has a matching annotated git tag (`vX.Y.Z`), so any prior 
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-09-06
+
+The fetch half of cross-repo log aggregation. Nothing is published by it yet: `LOG_SOURCE_REPOS` is
+empty and the routes are still to come.
+
+### Added
+- `src/lib/log-sources.ts` — fetches `log/*.md` from allowlisted repositories over the GitHub REST
+  API at build time, with a concurrency cap, a size guard, BOM/CRLF tolerance and a snapshot
+  fallback. Disclosure is an allowlist that, unlike the projects showcase, does not admit public
+  repos automatically: a log folder is prose, and a repo being public is not a statement that every
+  note in it was meant to be read.
+- `src/lib/remote-log-loader.ts` — an Astro content-layer loader that validates the fetched
+  frontmatter against the collection schema and renders it through the site's own Markdown pipeline,
+  so remote entries are indistinguishable from local ones downstream. Ids are namespaced by repo.
+- `remoteLog` content collection, sharing one `logEntrySchema` object with `log` so the two
+  collections cannot drift.
+- `yaml` promoted to an explicit dependency; it was previously only present transitively.
+
+### Notes
+- Failure granularity is deliberate: a single malformed entry is skipped with a warning so another
+  repo cannot break this deploy, while a whole repo failing to fetch falls back to the snapshot and
+  marks the data stale.
+- Verified against the live API: 22 entries fetched from `personal-site`, a bogus repo name exercised
+  the fallback, and an unsatisfiable remote schema exercised the per-entry skip.
+
 ## [0.2.1] - 2026-09-06
 
 ### Added
