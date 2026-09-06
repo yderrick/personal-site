@@ -1,7 +1,7 @@
 {
   "name": "personal-site",
   "type": "module",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "engines": {
     "node": ">=22.12.0"
   },
@@ -11,6 +11,7 @@
     "preview": "astro preview",
     "sync": "astro sync",
     "log": "node scripts/draft-log.mjs",
+    "snapshot:log": "node scripts/snapshot-log.mjs",
     "astro": "astro"
   },
   "dependencies": {

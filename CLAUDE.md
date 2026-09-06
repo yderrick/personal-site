@@ -18,6 +18,8 @@ Personal site + daily dev log — a static Astro site that does three jobs: a ho
 - `npm run build` — type-check (`astro check`) then build to `dist/`
 - `npm run preview` — serve the production build locally
 - `npx astro sync` — regenerate content-collection types after a schema change
+- `npm run log` — print today's commits across sibling repos, to write an entry from
+- `npm run snapshot:log` — refresh `src/data/log-fallback.json`, the fallback used when GitHub is unreachable. Run it after allowlisting a repo in `LOG_SOURCE_REPOS`, then commit the file
 
 There is no deploy command. **Deploy = `git push origin main`.** Vercel builds from the repo. Never run a manual deploy CLI; if a deploy is wrong, fix it in the repo and push again.
 

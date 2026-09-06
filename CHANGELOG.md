@@ -8,6 +8,27 @@ Each released version has a matching annotated git tag (`vX.Y.Z`), so any prior 
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-09-06
+
+### Added
+- `npm run snapshot:log` (`scripts/snapshot-log.mjs`) — refreshes `src/data/log-fallback.json`, the
+  snapshot the build falls back to when GitHub is unreachable. It drives the real loader with
+  `LOG_SNAPSHOT=1` rather than reimplementing the fetch, so the snapshot cannot drift from the code
+  that reads it, and it reports what changed before telling you to commit the file.
+- RUNBOOK §6 opens with the thing that is easiest to get wrong: pushing code to a repo does not
+  create log entries, and the four conditions that actually have to hold for another repo's log to
+  appear here.
+- `npm run log` and `npm run snapshot:log` added to the command list in `CLAUDE.md`; the first had
+  been missing since it was introduced.
+
+### Notes
+- The snapshot is written only under `LOG_SNAPSHOT=1`, never during an ordinary build: Vercel
+  discards its filesystem after a deploy, so a snapshot written there would be lost, and a build that
+  quietly rewrote a tracked source file would be a surprise worth avoiding. A write failure is
+  reported and swallowed — refreshing the snapshot is maintenance and must not break a good build.
+- Verified both ways: with an empty allowlist it prints a diagnostic instead of overwriting the file
+  with an empty one; with `['personal-site']` it wrote a 33KB snapshot of 22 entries.
+
 ## [0.6.0] - 2026-09-06
 
 Push-to-publish for logs written in other repositories.

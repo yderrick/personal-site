@@ -323,6 +323,19 @@ Every repo keeps its daily log in a root-level `log/` folder, written to the sha
 [`docs/Log Format.md`](docs/Log%20Format.md). This site aggregates those folders into one timeline
 at `/log`.
 
+**Pushing code to a repo does not create log entries.** Nothing reads commits and turns them into
+prose. Entries are Markdown files you write at `<repo>/log/YYYY-MM-DD.md`; if that folder is empty,
+the site publishes nothing from that repo however much you push to it. (Commits *do* already reach
+the site — as the cadence numbers and heatmap on `/projects`. That is a separate mechanism.)
+
+For another repo's log to appear here, all four must be true:
+
+1. It has `log/` at its root, with entries in the format above.
+2. Its name is in `LOG_SOURCE_REPOS` in `src/lib/log-sources.ts`, and that change is pushed.
+3. If it is private, `GITHUB_TOKEN` in Vercel can read it.
+4. Something triggers a rebuild — the daily refresh always does; `publish-log.yml` in that repo makes
+   it about a minute instead.
+
 1. In the other repo: `mkdir log`.
 2. Copy the entry template from `docs/Log Format.md` §8.
 3. File name is `YYYY-MM-DD.md`, matching the `date` in the frontmatter. Second entry that day is
@@ -376,6 +389,30 @@ can be most of a day away. To publish on push instead, install the workflow temp
 **Check it worked**: the other repo's Actions tab shows a green *Publish log* run, and Vercel shows a
 deployment starting within a few seconds. A red run means the hook was deleted or regenerated —
 recreate it in Vercel and update the secret.
+
+### Refresh the fallback snapshot
+
+Do this **after allowlisting a repo**, and occasionally afterwards:
+
+```bash
+npm run snapshot:log
+git add src/data/log-fallback.json
+git commit -m "Refresh the remote log snapshot"
+```
+
+It runs the real fetch and writes `src/data/log-fallback.json`, then prints how many entries came
+from which repo. If any allowlisted repo is private you need `GITHUB_TOKEN` in your environment or a
+`.env` file first, or the fetch 404s and the snapshot is left alone rather than overwritten with a
+worse one.
+
+**Why it matters.** When GitHub is unreachable during a build — outage, rate limit, expired token —
+the site falls back to this file and marks the data stale rather than failing the deploy. If the file
+is empty, that fallback means every remote entry silently disappears from the site instead. The
+snapshot is what makes the difference between "the log looks slightly old" and "half the log is
+gone".
+
+It cannot be generated during a deploy: Vercel throws its filesystem away afterwards, so the file has
+to be produced here and committed.
 
 The daily refresh stays on regardless, so a repo without this workflow still publishes; it is just
 slower. This is the fast path, not the only path.

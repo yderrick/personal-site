@@ -221,6 +221,40 @@ async function fetchRepoLog(repo: string): Promise<RemoteLogFile[]> {
 }
 
 /**
+ * Write the committed snapshot that a failed fetch falls back to.
+ *
+ * Only runs when `LOG_SNAPSHOT=1`, which `npm run snapshot:log` sets — never
+ * during an ordinary build. That matters: Vercel's filesystem is thrown away
+ * after a deploy, so a snapshot written there would be lost, and a build that
+ * silently rewrote a tracked source file would be a nasty surprise. The
+ * snapshot has to be produced from a working copy and committed, which is what
+ * the script does.
+ *
+ * A failure to write is reported and swallowed. Refreshing the snapshot is
+ * maintenance; it must not be able to break a build that was otherwise fine.
+ */
+async function writeSnapshot(data: Omit<RemoteLogData, 'stale'>): Promise<void> {
+	if (process.env.LOG_SNAPSHOT !== '1') return;
+
+	try {
+		const { writeFile } = await import('node:fs/promises');
+		const target = new URL('../data/log-fallback.json', import.meta.url);
+		await writeFile(target, `${JSON.stringify({ fetchedAt: data.fetchedAt, files: data.files }, null, 2)}\n`);
+		console.info(
+			`[log-sources] Snapshot written: ${data.files.length} entr${
+				data.files.length === 1 ? 'y' : 'ies'
+			} from ${new Set(data.files.map((f) => f.repo)).size} repo(s). Commit src/data/log-fallback.json.`,
+		);
+	} catch (error) {
+		console.warn(
+			`[log-sources] Could not write the snapshot: ${
+				error instanceof Error ? error.message : String(error)
+			}`,
+		);
+	}
+}
+
+/**
  * Every allowlisted repository's log, fetched at build time.
  *
  * **This must never throw.** A GitHub outage, a rate limit or a revoked token
@@ -235,7 +269,9 @@ export async function getRemoteLogFiles(): Promise<RemoteLogData> {
 
 	try {
 		const perRepo = await mapLimit(LOG_SOURCE_REPOS, 4, fetchRepoLog);
-		return { files: perRepo.flat(), fetchedAt: new Date().toISOString(), stale: false };
+		const data = { files: perRepo.flat(), fetchedAt: new Date().toISOString(), stale: false };
+		await writeSnapshot(data);
+		return data;
 	} catch (error) {
 		console.warn(
 			`[log-sources] Live fetch failed, using the committed snapshot instead. ${
