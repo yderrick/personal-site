@@ -2,11 +2,20 @@
 
 All notable changes to the site itself — pages, components, styles, build logic. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning is semantic (patch = fix or tweak, minor = new page or feature, major = redesign).
 
-**Log entries are not releases.** Adding or editing content in `src/content/log/` is a plain commit and does not appear here.
+**Log entries are not releases.** Adding or editing content in `log/` is a plain commit and does not appear here.
 
 Each released version has a matching annotated git tag (`vX.Y.Z`), so any prior state can be restored with `git checkout vX.Y.Z`.
 
 ## [Unreleased]
+
+## [0.2.1] - 2026-09-06
+
+### Changed
+- The daily log moved from `src/content/log/` to a root-level `log/` folder. Every repository I work
+  in keeps its daily log in a root `log/` directory; this site's own log now uses the same shape, so
+  one convention covers all of them and a future aggregator has a single path to look for. Only the
+  collection's `base` and the docs changed — entry filenames, frontmatter, URLs and the draft valve
+  are untouched.
 
 ## [0.2.0] - 2026-09-06
 

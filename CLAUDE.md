@@ -53,7 +53,7 @@ Astro ships no JavaScript unless a component asks for it. Every `client:*` direc
 
 ### Content collections
 
-The daily log is a content collection: one Markdown file per entry at `src/content/log/YYYY-MM-DD.md`, loaded by `glob()` and validated by a zod schema in `src/content.config.ts`. Frontmatter shape:
+The daily log is a content collection: one Markdown file per entry at `log/YYYY-MM-DD.md` (repo root, not under `src/`), loaded by `glob()` and validated by a zod schema in `src/content.config.ts`. Frontmatter shape:
 
 ```yaml
 ---
@@ -145,7 +145,7 @@ Phase 1 is done when a blank page is live at a public URL. Get something deploye
 ## Daily log workflow
 
 The normal ask is: *"Add a log entry for today — I worked on X, fixed Y, learned Z."* Then:
-1. Create `src/content/log/<today>.md` with valid frontmatter and `draft: false` unless I say otherwise.
+1. Create `log/<today>.md` with valid frontmatter and `draft: false` unless I say otherwise.
 2. Write it in my voice — first person, plain, past tense, no marketing register, no "excited to share".
 3. Show me the draft; I tweak, then push.
 

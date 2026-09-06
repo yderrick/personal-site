@@ -3,7 +3,11 @@ import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
 /**
- * The daily log. One Markdown file per entry at src/content/log/YYYY-MM-DD.md;
+ * The daily log. One Markdown file per entry at log/YYYY-MM-DD.md, at the repo
+ * root rather than under src/ — every repo I work in keeps its daily log in a
+ * root-level `log/` folder, and this site's own log follows that same shape so
+ * one convention covers all of them.
+ *
  * a second entry on the same day is YYYY-MM-DD-2.md. The filename becomes the
  * entry id, which becomes the URL slug.
  *
@@ -13,7 +17,7 @@ import { z } from 'astro/zod';
 const log = defineCollection({
 	// Leading-underscore files are ignored, so _scratch.md can sit in the
 	// directory without becoming a route.
-	loader: glob({ pattern: '**/[^_]*.md', base: './src/content/log' }),
+	loader: glob({ pattern: '**/[^_]*.md', base: './log' }),
 	schema: z.object({
 		title: z.string(),
 		date: z.coerce.date(),
@@ -24,6 +28,15 @@ const log = defineCollection({
 		 * src/lib/log.ts.
 		 */
 		draft: z.boolean().default(false),
+		/**
+		 * True for entries written after the fact from commit history rather than
+		 * on the day. The page says so.
+		 *
+		 * The log's worth to a reader is that a date means what it says, so a
+		 * reconstructed entry has to be visibly reconstructed. Entries written on
+		 * the day simply omit this.
+		 */
+		backfilled: z.boolean().default(false),
 	}),
 });
 

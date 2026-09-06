@@ -226,7 +226,7 @@ export const LINKS: readonly SiteLink[] = [
 
 ## 4. Write a log entry
 
-1. Create a file at `src/content/log/YYYY-MM-DD.md` using today's date.
+1. Create a file at `log/YYYY-MM-DD.md` using today's date.
 2. Frontmatter:
 
    ```markdown

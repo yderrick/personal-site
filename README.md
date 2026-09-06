@@ -45,7 +45,7 @@ There is no deploy command. Pushing to `main` is the deploy.
 
 ## Writing a log entry
 
-One Markdown file per entry, at `src/content/log/YYYY-MM-DD.md`:
+One Markdown file per entry, at `log/YYYY-MM-DD.md`:
 
 ```yaml
 ---

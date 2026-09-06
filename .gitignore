@@ -29,3 +29,7 @@ pnpm-debug.log*
 # local env
 .env.*
 !.env.example
+
+# playwright-mcp scratch output
+.playwright-mcp/
+log-full.png

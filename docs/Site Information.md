@@ -63,7 +63,7 @@ Feed of published log entries.
 
 ## Content
 
-### Log entries — `src/content/log/*.md`
+### Log entries — `log/*.md`
 
 One file per entry, named `YYYY-MM-DD.md`. A second entry on the same day is `YYYY-MM-DD-2.md`.
 
