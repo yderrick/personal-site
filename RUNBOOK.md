@@ -390,6 +390,28 @@ can be most of a day away. To publish on push instead, install the workflow temp
 deployment starting within a few seconds. A red run means the hook was deleted or regenerated —
 recreate it in Vercel and update the secret.
 
+### When an entry actually becomes public, and how to take it back
+
+Worth knowing precisely, because the automation removed the checkpoint you might expect.
+
+| Moment | Is it public? | Can you undo it? |
+|---|---|---|
+| You push `log/2026-09-10.md` to worldbuilder-engine | No — the repo is private | n/a |
+| 06:15 UTC: the site rebuilds and fetches it | **Yes**, the page is live | Yes — set `draft: true` or delete the file, push, gone next build |
+| You run `npm run snapshot:log` and commit | **Yes, permanently** | No — it is in this public repo's git history |
+
+**Nothing prompts you between step 1 and step 2.** Publication is unattended, by design. So the
+decision about whether an entry should be public has to be made *while writing it*, not at some later
+gate — there isn't one.
+
+**When unsure, write `draft: true`.** The entry stays in its repo and never reaches the site. Flip it
+to `false` next week after re-reading if you still want it. This is the cheap valve; use it freely
+rather than agonising while writing.
+
+**`npm run snapshot:log` is the point of no return.** Until you run it, nothing you have written is
+in this repo's git history, and even a published entry can be pulled back cleanly. So do not refresh
+the snapshot the same day you write something you are unsure about — let it sit first.
+
 ### Refresh the fallback snapshot
 
 Do this **after allowlisting a repo**, and occasionally afterwards:
