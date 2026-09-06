@@ -360,11 +360,31 @@ Things I've built the slot for but don't have the content for. Each is a one-lin
 hand it over — send it and I'll wire it in, or follow the steps in
 [Update the About page](#3-update-the-about-page).
 
-| Item | What I need | Where it goes |
-|---|---|---|
-| **LinkedIn** | The profile URL | Uncomment the `LinkedIn` line in `LINKS` |
-| **Second email** | The address, and how to label it | A new `LINKS` entry |
-| **CV / résumé** | The PDF file | `public/`, then a `LINKS` entry pointing at it |
+| Item | Status |
+|---|---|
+| **LinkedIn** | ✅ Live — `linkedin.com/in/derrick-dzotefe-a871071ab` |
+| **Second email** | ✅ Live — `dzotefederrickyao@gmail.com` is now primary (it matches the CV and LinkedIn), with `crystaladdison17@gmail.com` as "Second inbox" |
+| **CV / résumé** | ⏸ **Held back — needs a decision from you.** See below |
 
-Both the About page and the footer already render whatever is in `LINKS`, so nothing else needs
-changing when these arrive.
+### The CV is not published yet, on purpose
+
+`DZOTEFE YAO DERRICK_CV.pdf` contains the personal contact details of three other people:
+
+- Edmund Asamoah — email and mobile number
+- Emmanuel Kpogo — two emails and a mobile number
+- Daniel Gbeve — mobile number
+
+Putting that file on a public website publishes **their** phone numbers and email addresses to
+anyone, including scrapers, and Google will index it. They agreed to be referees for applications
+you send — not to be listed on the open internet. They can't consent to something they don't know
+about, which is why this is worth a moment rather than a shrug.
+
+Your own mobile number, `0547967841`, is on it too. That one is your call, but a phone number on a
+public page reliably attracts spam.
+
+**The fix is small:** a web version of the CV with the references section replaced by "References
+available on request" — which is the normal convention for a CV you hand out broadly — and
+optionally your phone number removed. The file you send to a specific employer keeps everything.
+
+Once you have that version, drop it into `public/` and uncomment the `CV (PDF)` line in
+`src/consts.ts`.

@@ -37,9 +37,14 @@ export interface SiteLink {
  * drop the PDF into `public/` and point `href` at `/its-filename.pdf`.
  */
 export const LINKS: readonly SiteLink[] = [
+	// Primary contact is the address on the CV and LinkedIn, so a recruiter
+	// following any route reaches the same inbox.
+	{ label: 'Email', href: 'mailto:dzotefederrickyao@gmail.com', inFooter: true },
+	{ label: 'LinkedIn', href: 'https://www.linkedin.com/in/derrick-dzotefe-a871071ab/', inFooter: true },
 	{ label: 'GitHub', href: 'https://github.com/yderrick', inFooter: true },
-	{ label: 'Email', href: 'mailto:crystaladdison17@gmail.com', inFooter: true },
-	// { label: 'LinkedIn', href: 'https://www.linkedin.com/in/…' },
+	{ label: 'Second inbox', href: 'mailto:crystaladdison17@gmail.com' },
+	// CV: drop the PDF into public/ and uncomment. Held back deliberately —
+	// see "Waiting on you" in RUNBOOK.md.
 	// { label: 'CV (PDF)', href: '/derrick-yao-dzotefe-cv.pdf' },
 ] as const;
 
