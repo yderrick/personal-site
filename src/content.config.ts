@@ -109,4 +109,24 @@ const about = defineCollection({
 	}),
 });
 
-export const collections = { log, remoteLog, projects, about };
+/**
+ * The /now page — what I'm currently working on, at
+ * src/content/now/index.md. Same shape as `about`, plus a date.
+ *
+ * `updated` is required and rendered on the page. A /now page whose whole claim
+ * is "this is current" and which quietly isn't is worse than no page at all, so
+ * the date is not optional and not derived from the file's mtime — a reformat
+ * would refresh an mtime, and only a person can say the words are still true.
+ */
+const now = defineCollection({
+	loader: glob({ pattern: '**/[^_]*.md', base: './src/content/now' }),
+	schema: z.object({
+		title: z.string(),
+		/** Large line above the body. Keep it short. */
+		headline: z.string(),
+		/** The day the words below were last checked against reality. */
+		updated: z.coerce.date(),
+	}),
+});
+
+export const collections = { log, remoteLog, projects, about, now };

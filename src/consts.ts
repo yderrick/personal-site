@@ -49,5 +49,6 @@ export const LINKS: readonly SiteLink[] = [
 export const NAV: readonly NavItem[] = [
 	{ href: '/log', label: 'log', ready: true },
 	{ href: '/projects', label: 'projects', ready: true },
+	{ href: '/now', label: 'now', ready: true },
 	{ href: '/about', label: 'about', ready: true },
 ] as const;

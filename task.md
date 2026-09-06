@@ -94,9 +94,9 @@
   - [x] **Release Gate 2** — version bump, changelog, docs sync, tag, push; verify live. Shipped as `v0.2.0`.
 
 - [ ] **Phase 6: Optional Extras** *(nothing here blocks anything; pick up when wanted)*
-  - [ ] RSS feed for the log at `/rss.xml` — drafts excluded, via the same `src/lib/log.ts` helper.
-  - [ ] `/now` page — what I'm currently focused on.
-  - [ ] Analytics (Vercel Analytics or Plausible free tier).
-  - [ ] Custom domain — point DNS at Vercel, update `site` in `astro.config.mjs`.
-  - [ ] Log-entry drafting from `git log --author=crystaladdison17@gmail.com --since=midnight` across other repos.
-  - [ ] Search across log entries (client-side index; only if the log gets big enough to need it).
+  - [x] RSS feed for the log at `/rss.xml` — drafts excluded, via the same `src/lib/log.ts` helper. Styled for browsers by `public/rss.xsl`. *(v0.5.0)*
+  - [x] `/now` page — what I'm currently focused on, with a required `updated` date and a staleness warning after 60 days. *(v0.5.0)*
+  - [ ] Analytics (Vercel Analytics or Plausible free tier). **Blocked on a decision, not on work:** every option adds a client script to a zero-JS site or sends visitor data to a third party.
+  - [ ] Custom domain — point DNS at Vercel, update `site` in `astro.config.mjs`. Needs a domain bought first.
+  - [x] Log-entry drafting from `git log --author=crystaladdison17@gmail.com --since=midnight` across other repos — `scripts/draft-log.mjs`, run as `npm run log`. Prints commits; the prose is still written by hand. *(v0.5.0)*
+  - [ ] Search across log entries (client-side index; only if the log gets big enough to need it). **Not worth it at 22 entries** — browser find-in-page covers a list this size, and an index plus a script is real JavaScript on a site that ships none.

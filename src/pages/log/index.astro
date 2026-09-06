@@ -22,6 +22,9 @@ const tags = await getLogTags();
 			<em>reconstructed</em>{' '}— written afterwards from the commit history of the day they
 			describe, rather than on the day itself.
 		</p>
+		<p class="subscribe">
+			<a href="/rss.xml">Follow by RSS</a>
+		</p>
 	</header>
 
 	{
@@ -76,6 +79,24 @@ const tags = await getLogTags();
 		font-family: var(--font-mono);
 		font-size: var(--text-xs);
 		color: var(--color-fg);
+	}
+
+	.subscribe {
+		margin-top: var(--space-5);
+	}
+
+	.subscribe a {
+		font-family: var(--font-mono);
+		font-size: var(--text-xs);
+		letter-spacing: var(--tracking-mono);
+		color: var(--color-accent);
+		text-decoration: none;
+		border-bottom: var(--border) solid var(--color-accent-quiet);
+		padding-bottom: 2px;
+	}
+
+	.subscribe a:hover {
+		border-bottom-color: var(--color-accent);
 	}
 
 	.tag-bar {

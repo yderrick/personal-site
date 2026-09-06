@@ -1,5 +1,11 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { NAV } from '../consts';
+
+// Read from NAV rather than listing routes here: a hand-kept second copy is
+// exactly the list that goes stale, and going stale on the 404 page means
+// offering someone a dead link after they already hit one.
+const ways = [{ href: '/', label: 'Home' }, ...NAV.filter((item) => item.ready)];
 ---
 
 <BaseLayout title="Not found" description="That page doesn't exist.">
@@ -12,10 +18,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 		</p>
 
 		<ul class="ways">
-			<li><a href="/">Home</a></li>
-			<li><a href="/log">Log</a></li>
-			<li><a href="/projects">Projects</a></li>
-			<li><a href="/about">About</a></li>
+			{ways.map((way) => (
+				<li>
+					<a href={way.href}>{way.label}</a>
+				</li>
+			))}
 		</ul>
 	</section>
 </BaseLayout>
@@ -57,6 +64,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 	.ways a {
 		display: inline-block;
+		/* NAV labels are lowercase for the mono nav bar; here they read as
+		   sentences, so they're capitalised in CSS rather than duplicated. */
+		text-transform: capitalize;
 		font-size: var(--text-base);
 		color: var(--color-fg);
 		text-decoration: none;

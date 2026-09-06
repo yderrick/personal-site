@@ -18,12 +18,13 @@ them or work them out again in six months.
 1. [Trigger a rebuild by hand](#1-trigger-a-rebuild-by-hand)
 2. [Add a new project to the site](#2-add-a-new-project-to-the-site)
 3. [Update the About page](#3-update-the-about-page)
-4. [Write a log entry](#4-write-a-log-entry)
-5. [Start a log folder in another repo](#5-start-a-log-folder-in-another-repo)
-6. [Renew the GitHub token](#6-renew-the-github-token)
-7. [When something looks wrong](#7-when-something-looks-wrong)
-8. [Things to remember](#8-things-to-remember)
-9. [Waiting on you](#9-waiting-on-you)
+4. [Update the Now page](#4-update-the-now-page)
+5. [Write a log entry](#5-write-a-log-entry)
+6. [Start a log folder in another repo](#6-start-a-log-folder-in-another-repo)
+7. [Renew the GitHub token](#7-renew-the-github-token)
+8. [When something looks wrong](#8-when-something-looks-wrong)
+9. [Things to remember](#9-things-to-remember)
+10. [Waiting on you](#10-waiting-on-you)
 
 ---
 
@@ -225,7 +226,62 @@ export const LINKS: readonly SiteLink[] = [
 
 ---
 
-## 4. Write a log entry
+## 4. Update the Now page
+
+`/now` says what you're working on at the moment. It is the one page that goes wrong by sitting
+still — its whole claim is that it is current.
+
+### To change the words
+
+1. Open **`src/content/now/index.md`**.
+2. Edit the text below the `---` block. Plain Markdown: `## Headings`, `**bold**`, `- lists`, links.
+3. **Change `updated:` to today's date.** This is the important step. The page prints it as "Last
+   checked …", so leaving it means telling readers that months-old words are today's truth.
+4. `npm run dev`, look at http://localhost:4321/now.
+5. `git add -A && git commit -m "Update /now" && git push`.
+
+Frontmatter:
+
+```markdown
+---
+title: Now
+headline: What I'm working on at the moment.
+updated: 2026-09-06
+---
+```
+
+`headline` is the large line at the top — keep it to one short sentence.
+
+### When it goes stale
+
+After 60 days without an update, two things happen: the build log prints a warning naming the file
+and how old it is, and the page itself adds "— overdue a rewrite" in amber beside the date. Neither
+breaks the build, on purpose — a stale sentence should not stop a deploy, and the daily refresh
+would otherwise start failing every morning.
+
+**If you stop wanting to maintain it, delete the page** rather than letting it rot. Remove
+`src/pages/now.astro`, `src/content/now/`, the `now` collection from `src/content.config.ts`, and the
+`/now` line from `NAV` in `src/consts.ts`. An honest absence beats a confident lie.
+
+**Content is not a release.** Editing the words is a plain commit — no version bump, no tag.
+
+---
+
+## 5. Write a log entry
+
+**First, if you can't remember what you did:** run `npm run log`. It prints every commit you made
+today across all the repos sitting next to this one, with times. It does not write the entry — that's
+the point; the log is worth reading because it says what the work *accomplished*, not what the commit
+subjects said. Check nothing in the output should stay private before it goes into an entry.
+
+```
+npm run log                      # today
+npm run log -- --date 2026-09-04 # one specific day
+npm run log -- --since 2026-09-01
+npm run log -- --root "C:/some/other/folder"   # if the repos live elsewhere
+```
+
+Then:
 
 1. Create a file at `log/YYYY-MM-DD.md` using today's date.
 2. Frontmatter:
@@ -261,7 +317,7 @@ value is that a reader can tell the difference.
 
 ---
 
-## 5. Start a log folder in another repo
+## 6. Start a log folder in another repo
 
 Every repo keeps its daily log in a root-level `log/` folder, written to the shared format in
 [`docs/Log Format.md`](docs/Log%20Format.md). This site will eventually aggregate those folders into
@@ -305,7 +361,7 @@ Two things to check while you are in there:
 
 ---
 
-## 6. Renew the GitHub token
+## 7. Renew the GitHub token
 
 **Your current token expires 6 September 2027.** There's a reminder set for 30 August 2027.
 
@@ -328,7 +384,7 @@ page. But it stops being current, and nobody will tell you — so the reminder m
 
 ---
 
-## 7. When something looks wrong
+## 8. When something looks wrong
 
 ### `/projects` says "Showing a saved snapshot"
 
@@ -376,7 +432,7 @@ wasted build minutes.
 
 ---
 
-## 8. Things to remember
+## 9. Things to remember
 
 - **Deploy = `git push origin main`.** There is no deploy command, and you should never run one.
 - **The daily refresh exists because Vercel only rebuilds when *this* repo is pushed.** Work in
@@ -390,8 +446,16 @@ wasted build minutes.
 - **Adding a private project needs two steps**, the code allowlist *and* the token's repo access.
   Missing the second is the most likely mistake, and the symptom is the whole page falling back to
   the snapshot rather than just that one project going missing.
-- **The site ships zero JavaScript.** If a change would add some, it needs to earn it.
-- **`/about` is still unbuilt** — it shows in the nav as dimmed, non-clickable text.
+- **The site ships zero JavaScript.** If a change would add some, it needs to earn it. This is why
+  there is no analytics on the site — every option either adds a client script or sends visitor data
+  to a third party. Say the word if you want it anyway and I'll set out the trade.
+- **`/now` goes stale by sitting still.** Nothing else on the site does. Update
+  `src/content/now/index.md` *and its `updated:` date* whenever what you're working on changes — see
+  [Update the Now page](#4-update-the-now-page). After 60 days the build warns and the page admits
+  it's overdue.
+- **The feed lives at `/rss.xml`.** Its address is
+  `https://personal-site-phi-seven-43.vercel.app/rss.xml`. If a custom domain is ever pointed here,
+  change `site` in `astro.config.mjs` — every feed URL is built from it.
 
 ### Credentials and where they live
 
@@ -405,7 +469,7 @@ it stays on your machine.
 
 ---
 
-## 9. Waiting on you
+## 10. Waiting on you
 
 Things I've built the slot for but don't have the content for. Each is a one-line change once you
 hand it over — send it and I'll wire it in, or follow the steps in
@@ -416,6 +480,8 @@ hand it over — send it and I'll wire it in, or follow the steps in
 | **LinkedIn** | ✅ Live — `linkedin.com/in/derrick-dzotefe-a871071ab` |
 | **Second email** | ✅ Live — `dzotefederrickyao@gmail.com` is now primary (it matches the CV and LinkedIn), with `crystaladdison17@gmail.com` as "Second inbox" |
 | **CV / résumé** | ✅ Live — a web-safe version at `/derrick-yao-dzotefe-cv.pdf`. See below for what differs from your original |
+| **Analytics** | ⏸ Not built — a decision, not a task. Adding it means either a client script on a zero-JS site or handing visitor data to a third party. Tell me which trade you'd take |
+| **Custom domain** | ⏸ Not built — needs a domain bought first. Once you have one: point its DNS at Vercel, then change `site` in `astro.config.mjs`. That one value drives every canonical URL and the whole feed |
 
 ### The published CV is a web-safe version, on purpose
 

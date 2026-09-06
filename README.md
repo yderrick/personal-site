@@ -39,6 +39,7 @@ it falls back to the committed snapshot and labels the page accordingly.
 - `npm run dev` — start the Astro dev server
 - `npm run build` — type-check and build to `dist/`
 - `npm run preview` — serve the production build locally
+- `npm run log` — print today's commits across every local repo, as raw material for a log entry
 - `npx astro sync` — regenerate content-collection types after a schema change
 
 There is no deploy command. Pushing to `main` is the deploy.
