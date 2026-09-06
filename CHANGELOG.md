@@ -8,6 +8,29 @@ Each released version has a matching annotated git tag (`vX.Y.Z`), so any prior 
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-09-06
+
+Push-to-publish for logs written in other repositories.
+
+### Added
+- `templates/publish-log.yml` — a workflow to copy into any repo whose log is published here. It
+  fires the Vercel deploy hook on a push touching `log/**` on the default branch, so an entry
+  written elsewhere is live in about a minute rather than waiting for the daily refresh. Optional
+  per repo: without it entries still publish, just more slowly.
+- RUNBOOK §6 gained the install steps, what a successful run looks like, and what a red run means.
+- `docs/Site Information.md` now states all three rebuild triggers and their latencies in one table,
+  and notes that they share one deploy-hook credential.
+
+### Fixed
+- RUNBOOK §6 still said the aggregator was not built, and linked to the GitHub-token section by its
+  old number. Both were left behind when the surrounding sections were renumbered.
+
+### Notes
+- The template checks curl's exit status explicitly rather than relying on GitHub running the step
+  with `bash -e`. The implicit behaviour is correct — verified — but a line whose correctness lives
+  in another file is a line waiting to break when it is copied somewhere else, which is exactly what
+  this file is for.
+
 ## [0.5.0] - 2026-09-06
 
 Phase 6, in part: the feed, a `/now` page, and a script for drafting log entries from commits.

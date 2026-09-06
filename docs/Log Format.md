@@ -118,7 +118,15 @@ The failure granularity is deliberately different at the two levels:
 
 Both are visible. Neither is silent.
 
-## 7. Starting a new repo
+## 7. Publishing on push
+
+An allowlisted repo's entries reach the site at the next daily refresh by default. To publish within
+a minute of pushing instead, copy `templates/publish-log.yml` from the personal-site repo into
+`.github/workflows/publish-log.yml` here, and add the Vercel deploy hook as a `VERCEL_DEPLOY_HOOK`
+secret. The workflow fires only on pushes that touch `log/**` on the default branch. Full steps are
+in the site's RUNBOOK §6.
+
+## 8. Starting a new repo
 
 Create the folder, copy the template, and write. Nothing is published until the repo is allowlisted
 on this site (§4).

@@ -1,0 +1,104 @@
+# Publish this repo's daily log to the personal site.
+#
+# ---------------------------------------------------------------------------
+# THIS FILE IS A TEMPLATE. It does not do anything in the personal-site repo.
+# Copy it to .github/workflows/publish-log.yml in the OTHER repository — the one
+# whose log/ folder you want published.
+# ---------------------------------------------------------------------------
+#
+# Why this exists
+#
+# The site is static. Vercel rebuilds it when personal-site is pushed, and only
+# then — so a log entry written here would sit on GitHub, correct and invisible,
+# until something else happened to trigger a build. This fires Vercel's deploy
+# hook when log/ changes, so an entry is live about a minute after it is pushed.
+#
+# The site also refreshes itself once a day (refresh.yml in personal-site), so a
+# missed run here delays an entry rather than losing it. This is the fast path,
+# not the only path.
+#
+# Setup (one time, per repository)
+#
+#   1. Copy this file to .github/workflows/publish-log.yml in that repo.
+#   2. Add the Vercel deploy hook URL as a secret named VERCEL_DEPLOY_HOOK:
+#        gh secret set VERCEL_DEPLOY_HOOK --body '<url>' --repo yderrick/<repo>
+#      It is the same hook URL personal-site already uses. Get it from
+#      Vercel → project → Settings → Git → Deploy Hooks, or from the existing
+#      secret in personal-site.
+#   3. Add the repo's name to LOG_SOURCE_REPOS in src/lib/log-sources.ts on the
+#      personal site, then push that. **Until you do, this workflow triggers
+#      builds that publish nothing** — the site only fetches from repos named
+#      in that allowlist.
+#
+# The deploy hook URL is a credential: anyone holding it can trigger builds of
+# the site. It lives in repository secrets, never in the repo. It cannot read
+# anything, and it is now stored in several repositories — if it ever leaks, the
+# fix is to delete the hook in Vercel and create a new one, then update the
+# secret everywhere.
+
+name: Publish log
+
+on:
+  push:
+    # Only when the log actually changes. Every other commit in this repo is
+    # already reflected on the site by the daily refresh, and rebuilding the
+    # whole site for a code change here would be noise.
+    paths:
+      - 'log/**'
+    # Both, so this works whether the repo's default branch is main or master.
+    # Entries on a feature branch are not published — only what is on the
+    # default branch is real.
+    branches:
+      - main
+      - master
+
+  # Lets you publish by hand: Actions → Publish log → Run workflow. Useful after
+  # allowlisting the repo on the site, when the entries are already pushed and
+  # no further log commit is coming.
+  workflow_dispatch:
+
+# Nothing in this repository is read or written. The job only calls an external
+# hook, so it needs no token at all.
+permissions: {}
+
+# Several log commits pushed together should produce one build, not one per
+# commit. The newest run wins; an in-flight one is cancelled, because it would
+# have built a strictly older version of the log anyway.
+concurrency:
+  group: publish-log
+  cancel-in-progress: true
+
+jobs:
+  trigger-rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger the site's Vercel deploy hook
+        env:
+          DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$DEPLOY_HOOK" ]; then
+            echo "::error::VERCEL_DEPLOY_HOOK is not set in this repository's secrets. See the setup notes at the top of this file."
+            exit 1
+          fi
+
+          # --fail turns an HTTP error into a non-zero exit, so a revoked or
+          # mistyped hook shows up as a failed run rather than a silent no-op.
+          # A publish step that quietly stops working is the failure this whole
+          # workflow exists to prevent.
+          #
+          # The `if !` is doing real work. GitHub runs this with `bash -e`, so a
+          # failing assignment would abort the step anyway — but only because of
+          # a flag set somewhere else, and a line whose correctness lives in
+          # another file is a line waiting to break. Checking explicitly means
+          # this behaves the same wherever it is run, or copied to.
+          if ! status=$(curl --silent --show-error --fail \
+            --request POST \
+            --write-out '%{http_code}' \
+            --output /dev/null \
+            "$DEPLOY_HOOK"); then
+            echo "::error::The deploy hook rejected the request (HTTP ${status:-none}). It may have been deleted or regenerated in Vercel — recreate it and update this repo's VERCEL_DEPLOY_HOOK secret."
+            exit 1
+          fi
+
+          echo "Deploy hook responded $status — the site is rebuilding."
+          echo "If the new entry does not appear, check that this repo is in LOG_SOURCE_REPOS on the site."

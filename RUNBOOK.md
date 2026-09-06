@@ -320,14 +320,11 @@ value is that a reader can tell the difference.
 ## 6. Start a log folder in another repo
 
 Every repo keeps its daily log in a root-level `log/` folder, written to the shared format in
-[`docs/Log Format.md`](docs/Log%20Format.md). This site will eventually aggregate those folders into
-one timeline at `/log`.
-
-**The aggregator is not built yet.** Right now this step only sets the repo up so the log is
-already correct when it is. Nothing you write reaches the site until then.
+[`docs/Log Format.md`](docs/Log%20Format.md). This site aggregates those folders into one timeline
+at `/log`.
 
 1. In the other repo: `mkdir log`.
-2. Copy the entry template from `docs/Log Format.md` §7.
+2. Copy the entry template from `docs/Log Format.md` §8.
 3. File name is `YYYY-MM-DD.md`, matching the `date` in the frontmatter. Second entry that day is
    `YYYY-MM-DD-2.md`.
 4. Commit and push it with the rest of your work. The log lives in the repo it describes.
@@ -354,10 +351,34 @@ Two things to check while you are in there:
 
 - **A private repo needs the token.** `GITHUB_TOKEN` in Vercel must be able to read it, or the fetch
   404s and the whole remote log falls back to a snapshot. See
-  [Renew the GitHub token](#6-renew-the-github-token).
+  [Renew the GitHub token](#7-renew-the-github-token).
 - **The repo must have `log/` at its root.** A missing folder reads as a 404, which is treated as the
   repo failing rather than as "no entries yet" — deliberately, so a renamed or unreadable repo is
   loud rather than silent.
+
+### Make its entries appear within the minute
+
+By default a new entry in another repo reaches the site at the next daily refresh (06:15 UTC), which
+can be most of a day away. To publish on push instead, install the workflow template in that repo:
+
+1. Copy [`templates/publish-log.yml`](templates/publish-log.yml) from this repo to
+   `.github/workflows/publish-log.yml` in the other one.
+2. Give that repo the deploy hook as a secret — the same URL this site already uses:
+
+   ```bash
+   gh secret set VERCEL_DEPLOY_HOOK --body '<url>' --repo yderrick/<repo>
+   ```
+
+   The URL is in Vercel → project → Settings → Git → Deploy Hooks.
+3. Commit and push. From then on, any push touching `log/**` on that repo's default branch triggers
+   a site rebuild, and the entry is live in about a minute.
+
+**Check it worked**: the other repo's Actions tab shows a green *Publish log* run, and Vercel shows a
+deployment starting within a few seconds. A red run means the hook was deleted or regenerated —
+recreate it in Vercel and update the secret.
+
+The daily refresh stays on regardless, so a repo without this workflow still publishes; it is just
+slower. This is the fast path, not the only path.
 
 ---
 

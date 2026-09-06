@@ -12,6 +12,19 @@ Describe what something *does*, from the outside. Architecture and conventions l
 
 Live at **https://personal-site-phi-seven-43.vercel.app**, built from `main` at `yderrick/personal-site`. Every push to `main` rebuilds and redeploys; pull requests get their own preview URLs. The production URL is set as `site` in `astro.config.mjs` — RSS and canonical URLs read it, so pointing a custom domain here later means changing that one value.
 
+**What triggers a rebuild**, since the site is static and its data is fetched at build time:
+
+| Trigger | Latency | Where it lives |
+|---|---|---|
+| A push to `main` here | immediate | Vercel's Git integration |
+| The daily refresh | up to 24h | `.github/workflows/refresh.yml`, 06:15 UTC |
+| A push touching `log/**` in another repo | ~1 min | `templates/publish-log.yml`, copied into that repo |
+
+The third is optional per repo. Without it a log entry written elsewhere still reaches the site, just
+at the next daily refresh — the fast path, not the only path. All three call the same Vercel deploy
+hook, so the hook URL is a shared credential: if it leaks, delete it in Vercel, create a new one, and
+update the secret in every repo that holds it.
+
 ---
 
 ## Pages
