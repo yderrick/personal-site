@@ -24,9 +24,12 @@ const Heading = `h${headingLevel}` as 'h2' | 'h3';
 	{
 		entries.map((entry) => (
 			<li class="entry">
-				<time class="date" datetime={isoDate(entry.data.date)}>
-					{formatLogDate(entry.data.date)}
-				</time>
+				<div class="when">
+					<time class="date" datetime={isoDate(entry.data.date)}>
+						{formatLogDate(entry.data.date)}
+					</time>
+					{entry.data.backfilled && <span class="recon" title="Reconstructed from commit history">reconstructed</span>}
+				</div>
 
 				<div class="detail">
 					<Heading class="title">
@@ -75,6 +78,19 @@ const Heading = `h${headingLevel}` as 'h2' | 'h3';
 			grid-template-columns: 1fr;
 			gap: var(--space-2);
 		}
+	}
+
+	.when {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-1);
+	}
+
+	.recon {
+		font-family: var(--font-mono);
+		font-size: var(--text-2xs);
+		letter-spacing: var(--tracking-mono);
+		color: var(--color-fg-muted);
 	}
 
 	.date {

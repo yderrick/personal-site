@@ -45,6 +45,14 @@ const { newer, older } = await getAdjacentEntries(entry.id);
 			{entry.data.draft && <p class="draft-flag">Draft — visible in dev only</p>}
 
 			{
+				entry.data.backfilled && (
+					<p class="backfilled">
+						Written later, reconstructed from the commit history for this date.
+					</p>
+				)
+			}
+
+			{
 				entry.data.tags.length > 0 && (
 					<ul class="tags">
 						{entry.data.tags.map((tag) => (
@@ -115,6 +123,18 @@ const { newer, older } = await getAdjacentEntries(entry.id);
 		background: var(--color-accent);
 		border-radius: var(--radius-sm);
 		padding: var(--space-1) var(--space-2);
+		margin-top: var(--space-4);
+	}
+
+	/* Quiet, but present. A reader should be able to tell at a glance which
+	   entries were written on the day and which were assembled afterwards. */
+	.backfilled {
+		font-family: var(--font-mono);
+		font-size: var(--text-2xs);
+		letter-spacing: var(--tracking-mono);
+		color: var(--color-fg-muted);
+		border-left: 2px solid var(--color-rule-strong);
+		padding-left: var(--space-3);
 		margin-top: var(--space-4);
 	}
 
