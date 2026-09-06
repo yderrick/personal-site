@@ -42,23 +42,48 @@
     - [x] **Verify the draft valve**: a `draft: true` entry appears in `npm run dev` and appears nowhere in `npm run build && npm run preview` — list, tag pages, entry route, home page.
   - [x] **Release Gate 1** — version bump, changelog, docs sync, tag, push; verify the log live on a phone and a desktop. Shipped as `v0.1.0`.
 
-- [ ] **Phase 4: Projects Showcase**
-  - [ ] **Module 7: GitHub fetch**
-    - [ ] `src/lib/github.ts` — build-time fetch of `/users/yderrick/repos`, sorted by push date.
-    - [ ] Filter forks, archived repos, and a `HIDDEN_REPOS` list.
-    - [ ] Optional `GITHUB_TOKEN` through `astro:env` with `access: 'secret'`; build must succeed with it unset.
-    - [ ] Fallback to `src/data/projects-fallback.json` on any fetch failure or rate limit — warn, never fail the build.
-    - [ ] Test the failure path deliberately (bad URL / offline) and confirm the build still completes.
-  - [ ] **Module 8: Grid**
-    - [ ] Bento layout with varied card sizes, not a uniform grid.
-    - [ ] Card: name, description, language, stars, last push, link.
-    - [ ] `src/content/projects/*.md` blurbs merged over API data by repo name for 2–3 pinned favourites, with screenshots.
-    - [ ] Home page pinned-projects block reads the same data.
+- [ ] **Phase 4: Projects & Activity** *(revised 2026-09-05 — see note)*
+
+  > **Why this changed.** The site's job is to show an employer what I actually do day to day and how
+  > often I ship. Three of four repos are private, so a showcase limited to public repos would show an
+  > empty page and imply I don't work. A build-time authenticated fetch can read cadence and metadata
+  > for private repos without exposing the code — visitors get the evidence, not the access.
+  >
+  > **Disclosure rule.** Public repos are included automatically. Private repos appear only if listed
+  > explicitly in `SHOWCASED_PRIVATE_REPOS`, and show name, description, language, commit cadence,
+  > last-active date and release tags — never commit messages, file names or a link. Adding a future
+  > project is one string in that array.
+
+  - [x] **Module 7: GitHub fetch**
+    - [x] `src/lib/github.ts` — build-time fetch of owned repos, sorted by push date.
+    - [x] Public repos auto-included; private repos require an explicit `SHOWCASED_PRIVATE_REPOS` entry.
+    - [x] Filter forks, archived repos, and a `HIDDEN_REPOS` list.
+    - [x] Per-repo activity via `/stats/participation` (52 weekly commit counts) **and
+          `/stats/commit_activity`** (day-level counts — weekly buckets made a young repo's dense
+          month look like an idle year). Handles the async 202-then-retry on a cold cache.
+    - [x] Release cadence via `/tags`; latest tag and count.
+    - [x] Optional `GITHUB_TOKEN` through `astro:env` with `access: 'secret'`; build succeeds with it
+          unset. A partial result (token missing, so private repos absent) is treated as a failure
+          rather than published as if current.
+    - [x] Fallback to `src/data/projects-fallback.json` on any fetch failure or rate limit — warn, never fail the build.
+    - [x] Test the failure path deliberately (bad URL / offline) and confirm the build still completes.
+    - [x] Confirm no token, repo URL or commit message for a private repo reaches `dist/`.
+  - [x] **Module 8: Grid**
+    - [x] Bento layout with varied card sizes, not a uniform grid.
+    - [x] Public card: name, description, language, stars, last push, link.
+    - [x] Private card: same minus the link, plus a "Private" badge and commit cadence.
+    - [x] Activity view: daily commit heatmap over 18 weeks, plus totals, active days and longest run.
+    - [x] `src/content/projects/*.md` blurbs merged over API data by repo name.
+    - [x] Home page pinned-projects block reads the same data.
+  - [ ] **Module 9: Freshness** *(new — the site makes a claim about recent activity, so stale data misleads)*
+    - [x] Vercel deploy hook + a scheduled GitHub Action in this repo that fires it daily.
+          *(Workflow committed; the deploy hook and secret still need creating — see the report.)*
+    - [x] Show the data's as-of date on the page, so a failed refresh is visible rather than silent.
 
 - [ ] **Phase 5: About & Polish** *(→ **Release Gate 2** after this phase)*
-  - [ ] **Module 9: About**
+  - [ ] **Module 10: About**
     - [ ] `/about` — short bio, links out.
-  - [ ] **Module 10: Polish pass**
+  - [ ] **Module 11: Polish pass**
     - [ ] Favicon set and `og:image`.
     - [ ] Meta tags: title/description per page, canonical URLs, Open Graph, `sitemap.xml`.
     - [ ] Full responsive sweep at 360px / 768px / 1440px.

@@ -70,12 +70,20 @@ Two entries on one day get `YYYY-MM-DD-2.md`. Tags are lowercase, single-word wh
 
 ### Projects showcase (build-time GitHub fetch)
 
-`src/lib/github.ts` calls the GitHub REST API at build time (`/users/yderrick/repos`, sorted by push date) and returns the cards rendered on `/projects`. Rules for this module:
+`src/lib/github.ts` calls the GitHub REST API at build time and returns the cards and activity data rendered on `/projects`. Most of my repos are private, and the site's job is to show an employer real working cadence — so this module reads **private** repo metadata too, and publishes only what it's told to.
 
-- **The build must never fail because GitHub did.** Unauthenticated requests are rate-limited (60/hr/IP) and the API can just be down. Wrap the fetch, catch everything, and fall back to a committed `src/data/projects-fallback.json` snapshot so the site still builds.
-- A local `GITHUB_TOKEN` (via `astro:env`, `access: 'secret'`) raises the rate limit during repeated dev builds. It's optional — the site must build with it unset.
-- Filter out forks, archived repos, and anything on the `HIDDEN_REPOS` list in that module.
-- Hand-written blurbs for pinned projects live in `src/content/projects/*.md` and are merged over the API data by repo name. The API supplies facts (stars, language, last push); the markdown supplies voice.
+- **Disclosure is an allowlist.** Public repos are included automatically. A private repo appears only if its name is in `SHOWCASED_PRIVATE_REPOS`. The failure mode of forgetting to edit that array is "a project is missing", never "something private is on the internet". Adding a future project is one string.
+- **What a private repo may publish:** name, blurb, language, commit cadence, release count and last-active date. Never a URL, a file name, or a commit message. Commit messages are written assuming nobody outside will read them; cadence numbers leak nothing.
+- **The build must never fail because GitHub did.** Wrap the fetch, catch everything, fall back to the committed `src/data/projects-fallback.json`.
+- **A partial result counts as a failure.** Without a token the API returns public repos and a cheerful 200, so a naive build would publish a page that silently omits every private project *and claims to be current*. If any allowlisted private repo is missing from the response, throw and use the snapshot. A page that confidently understates the work is worse than a visible error.
+- `GITHUB_TOKEN` goes through `astro:env` with `access: 'secret'` and `context: 'server'`. Optional: unset means public-only plus the snapshot, never a crash. It must be set in Vercel's env for production to show private repos.
+- The `/stats/*` endpoints compute asynchronously — a cold cache answers 202, or 200 with `{}`. Poll a few times, then give up; activity numbers are worth a short wait, not a failed build.
+- Prefer **daily** commit counts (`/stats/commit_activity`) over weekly (`/stats/participation`) for anything user-facing. A young repo with a month of dense work shows four active weeks out of fifty-two, which reads as idleness; the same data by day shows a working rhythm.
+- Hand-written blurbs live in `src/content/projects/*.md`, merged over the API data by repo name. The API supplies facts; the markdown supplies voice. Both private repos have an **empty** GitHub description, so for them the blurb *is* the description.
+
+### Freshness
+
+The site is static and Vercel only rebuilds when this repo is pushed. Work in any other repo would never reach the page, so the numbers would rot while still looking current. `.github/workflows/refresh.yml` fires a Vercel deploy hook daily to fix that. The page prints the date its data was fetched, so a broken refresh is visible rather than silent — if you change how project data is fetched, keep that line honest.
 
 ### Routes
 

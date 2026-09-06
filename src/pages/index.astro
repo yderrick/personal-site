@@ -1,11 +1,18 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import LogList from '../components/LogList.astro';
+import ProjectCard from '../components/ProjectCard.astro';
 import { getLogEntries, getRecentLogEntries } from '../lib/log';
+import { getShowcase } from '../lib/showcase';
 import { SITE } from '../consts';
 
 const recent = await getRecentLogEntries(3);
 const total = (await getLogEntries()).length;
+
+const { items } = await getShowcase();
+// Pinned projects if any are marked, otherwise just the most recently touched.
+const pinned = items.filter((item) => item.pinned);
+const featured = (pinned.length > 0 ? pinned : items).slice(0, 2);
 ---
 
 <BaseLayout>
@@ -35,13 +42,20 @@ const total = (await getLogEntries()).length;
 	<section class="slot" aria-labelledby="projects-heading">
 		<div class="slot-head">
 			<h2 id="projects-heading">Projects</h2>
-			<span class="status">phase 4</span>
+			<a class="more" href="/projects">All projects</a>
 		</div>
-		<p class="slot-body">
-			This will read my public repositories at build time and lay them out as cards. Right now that
-			list is genuinely empty — everything I have is still private, and I'd rather show nothing than
-			pad it out.
-		</p>
+
+		{
+			featured.length > 0 ? (
+				<div class="featured">
+					{featured.map((item) => (
+						<ProjectCard item={item} />
+					))}
+				</div>
+			) : (
+				<p class="slot-body">Nothing to show here yet.</p>
+			)
+		}
 	</section>
 </BaseLayout>
 
@@ -88,6 +102,25 @@ const total = (await getLogEntries()).length;
 
 	.more:hover {
 		color: var(--color-accent);
+	}
+
+	.featured {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: var(--space-4);
+	}
+
+	@media (max-width: 44rem) {
+		.featured {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+
+	/* Cards on the home page are previews, so they ignore their bento span and
+	   sit in an even two-up. */
+	.featured :global(.card) {
+		grid-column: auto;
+		grid-row: auto;
 	}
 
 	/* Which phase builds this. The roadmap is public, so the placeholder may as

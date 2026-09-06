@@ -35,8 +35,17 @@ reverse-chronological list. Slug derives from the filename, so `2026-09-05.md` �
 Entries carrying one tag, newest first, with a count and a link back to the full log. A page exists
 for every tag used by a published entry; a tag used only by drafts generates no page.
 
-### `/projects` — Showcase *(not built yet)*
-Bento grid of public GitHub repos, sorted by last push, with hand-written blurbs merged in for pinned favourites.
+### `/projects` — Showcase
+An activity summary followed by a bento grid of repositories, pinned first then most recently pushed.
+
+The summary reports commits over the last 52 weeks, days with commits, the longest unbroken run of
+days, and total tagged releases, above a calendar heatmap of the last 18 weeks. Both public and
+allowlisted private repositories feed it.
+
+Cards show name, blurb, language, commit count, release count with the latest tag, and last-active
+date. A public repo's name links to GitHub. **A private repo carries a "Private" badge and no link at
+all** — nothing on the card implies the code is one click away. The page footer states the date the
+data was fetched, and says explicitly when it is showing a saved snapshot rather than live data.
 
 ### `/about` *(not built yet)*
 Short bio and links out.
@@ -81,13 +90,44 @@ Optional hand-written descriptions for pinned repos, matched to API data by repo
 
 ### GitHub repositories
 
-Fetched once per build from the GitHub REST API (`/users/yderrick/repos`, sorted by push date). Nothing is fetched in the browser — the grid is static HTML by the time it reaches a visitor.
+Fetched once per build from the GitHub REST API. Nothing is fetched in the browser — by the time a
+visitor loads the page it is static HTML, and the site ships no JavaScript at all. The token is used
+only on the build machine and never reaches the output.
 
-Filtered out: forks, archived repos, and any name in `HIDDEN_REPOS` in `src/lib/github.ts`.
+**What appears.** Public repositories are included automatically. A private repository appears only
+if its name is listed in `SHOWCASED_PRIVATE_REPOS` in `src/lib/github.ts` — an allowlist, so
+forgetting to update it hides a project rather than exposing one. Forks, archived repos and anything
+in `HIDDEN_REPOS` are excluded either way.
 
-**Failure behaviour.** Unauthenticated requests are rate-limited to 60/hour per IP, and the API can be unavailable. On any failure the build logs a warning and renders from `src/data/projects-fallback.json`, a committed snapshot. The build does not fail. A visitor sees a slightly stale grid rather than a broken deploy.
+**What a private repository publishes:** name, language, commit cadence, release count and
+last-active date, plus its hand-written blurb. Never a URL, a file name or a commit message.
 
-An optional `GITHUB_TOKEN` (via `astro:env`, `access: 'secret'`) raises the rate limit for repeated local builds. Everything works with it unset.
+**Data sources.** Repository metadata comes from `/user/repos`; weekly commit counts from
+`/stats/participation`; day-level counts from `/stats/commit_activity`; release cadence from `/tags`.
+The `/stats/*` endpoints compute asynchronously and answer `202` — or `200` with an empty body — on a
+cold cache, so they are polled a few times before being given up on.
+
+**Failure behaviour.** On any failure the build logs a warning and renders from
+`src/data/projects-fallback.json`, a committed snapshot, then labels the page as showing saved data.
+The build never fails.
+
+A missing or under-scoped token counts as a failure even though the API returns `200`: without one,
+only public repos come back, and the page would silently omit every private project while claiming to
+be current. The fetch checks that every allowlisted private repo is present and falls back if any is
+missing.
+
+`GITHUB_TOKEN` is declared through `astro:env` with `access: 'secret'` and `context: 'server'`. It is
+optional — with it unset the build succeeds using the snapshot — but production needs it set in
+Vercel's environment variables for private repositories to appear.
+
+### Freshness
+
+Vercel rebuilds when this repository is pushed. Work done in any *other* repository would therefore
+never reach the site, and the activity numbers would go stale while still looking current.
+`.github/workflows/refresh.yml` fires a Vercel deploy hook on a daily schedule so the page tracks
+reality. It needs a `VERCEL_DEPLOY_HOOK` secret on this repository; the workflow fails loudly if the
+hook is missing or rejected, because a refresh that quietly stops working is the exact failure it
+exists to prevent.
 
 ---
 
@@ -96,6 +136,8 @@ An optional `GITHUB_TOKEN` (via `astro:env`, `access: 'secret'`) raises the rate
 | Component | Used on | What it does |
 |---|---|---|
 | `src/layouts/BaseLayout.astro` | Every page | Document head (title, description, canonical, Open Graph), self-hosted font imports, skip link, nav, footer. Takes optional `title` and `description` props; `title` is suffixed with the site name |
+| `src/components/Heatmap.astro` | `/projects` | Calendar heatmap of daily commit counts — one column per week, one row per weekday. Intensity is bucketed into four steps of the single accent colour. Scrolls horizontally inside its own container on narrow screens |
+| `src/components/ProjectCard.astro` | `/`, `/projects` | One repository: name, blurb, language, commit and release counts, last-active date. Links out only for public repos. Hides the commit count when it is zero, because GitHub's stats lag a newly created repo and "0 commits" beside "last active today" would be wrong |
 | `src/components/LogList.astro` | `/`, `/log`, `/log/tags/[tag]` | Renders a list of log entries: date, title, opening line, tags. Takes `entries` and an optional `summaries` flag. Shows a "Draft" badge on draft entries, which is only ever reachable in dev |
 | `src/components/Nav.astro` | Every page, via `BaseLayout` | Site nav. Marks the current route with `aria-current="page"`. Routes flagged `ready: false` render as plain dotted-underlined text rather than links, so nothing 404s while the site is being built |
 
@@ -107,7 +149,8 @@ An optional `GITHUB_TOKEN` (via `astro:env`, `access: 'secret'`) raises the rate
 |---|---|
 | `src/consts.ts` | Site title, tagline, description, and the nav route list. The route list is defined here only — the nav reads it rather than hardcoding links |
 | `src/lib/log.ts` | Reads the log collection. The single place drafts are filtered — every page and feed calls this rather than `getCollection('log')` directly. Also owns entry sorting, tag counting, adjacent-entry lookup, UTC date formatting and list excerpts |
-| `src/lib/github.ts` | Build-time repo fetch, filtering and fallback |
+| `src/lib/github.ts` | Build-time repo fetch, disclosure allowlist, activity statistics and snapshot fallback |
+| `src/lib/showcase.ts` | Merges the GitHub data with the `projects` collection blurbs, and formats relative dates |
 
 ---
 
@@ -129,4 +172,5 @@ Motion respects `prefers-reduced-motion` globally rather than per component.
 
 Things that are deliberately not built, or built partially, so they don't get rediscovered as bugs:
 
-- **`/projects` will render an empty grid until a public repo exists.** As of 2026-09-05 the `yderrick` account owns three repositories and all three are private. The showcase reads `/users/yderrick/repos`, which returns public repos only, so an empty result is the correct and expected output — not a broken fetch. The empty state needs to say something sensible rather than render a bare grid.
+- **`AIstudio` is deliberately not on the site.** It is private and not in `SHOWCASED_PRIVATE_REPOS`, so it is excluded by default. Its GitHub description would need rewriting before it were added.
+- **A newly created repository reports zero commits for a while.** GitHub's `/stats/participation` lags behind a repo's first pushes, so `personal-site` shows no commit count despite being active. The card hides a zero count rather than displaying it; this corrects itself once GitHub's statistics catch up.

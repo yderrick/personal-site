@@ -1,0 +1,201 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import Heatmap from '../components/Heatmap.astro';
+import { getShowcase, formatFetchedAt } from '../lib/showcase';
+import { activeDays, combinedDailyCommits, longestStreak, totalCommits } from '../lib/github';
+
+const { items, fetchedAt, stale } = await getShowcase();
+
+// ~18 weeks. Long enough to show a rhythm, short enough that a young repo's
+// pre-history doesn't drown the signal in empty cells.
+const daily = combinedDailyCommits(items, 126);
+const yearCommits = totalCommits(items);
+const daysActive = activeDays(daily);
+const streak = longestStreak(daily);
+const releases = items.reduce((sum, item) => sum + item.tagCount, 0);
+---
+
+<BaseLayout
+	title="Projects"
+	description="What I'm building, how often I ship, and roughly what each thing is."
+>
+	<header class="head">
+		<h1>Projects</h1>
+		<p>
+			Some of this is private work. Those repositories still show their language, release count and
+			commit rhythm — the cadence is the honest part, and it doesn't require handing over the code.
+		</p>
+	</header>
+
+	<section class="activity" aria-labelledby="activity-heading">
+		<h2 id="activity-heading" class="visually-hidden">Commit activity over the last 18 weeks</h2>
+
+		<dl class="figures">
+			<div>
+				<dt>Commits, last 52 weeks</dt>
+				<dd>{yearCommits.toLocaleString('en-GB')}</dd>
+			</div>
+			<div>
+				<dt>Days with commits</dt>
+				<dd>{daysActive}</dd>
+			</div>
+			<div>
+				<dt>Longest run</dt>
+				<dd>{streak} <span class="of">days</span></dd>
+			</div>
+			<div>
+				<dt>Tagged releases</dt>
+				<dd>{releases}</dd>
+			</div>
+		</dl>
+
+		{
+			daily.some((day) => day.count > 0) && (
+				<Heatmap days={daily} label="Commits per day across all projects" />
+			)
+		}
+	</section>
+
+	{
+		items.length > 0 ? (
+			<div class="bento">
+				{items.map((item) => (
+					<ProjectCard item={item} />
+				))}
+			</div>
+		) : (
+			<p class="empty">
+				Nothing to show here yet. This page reads my repositories when the site builds; if it's
+				empty, the fetch found nothing rather than failing.
+			</p>
+		)
+	}
+
+	<p class="asof">
+		{
+			stale
+				? `Showing a saved snapshot — the last live fetch didn't succeed. Data as of ${formatFetchedAt(fetchedAt)}.`
+				: `Fetched when the site was last built, ${formatFetchedAt(fetchedAt)}. Rebuilds daily.`
+		}
+	</p>
+</BaseLayout>
+
+<style>
+	.head {
+		padding-block: var(--space-8) var(--space-6);
+	}
+
+	.head h1 {
+		font-size: var(--text-3xl);
+		margin-bottom: var(--space-4);
+	}
+
+	.head p {
+		max-width: var(--measure);
+		color: var(--color-fg-muted);
+	}
+
+	.visually-hidden {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+	}
+
+	.activity {
+		border-top: var(--border) solid var(--color-rule);
+		border-bottom: var(--border) solid var(--color-rule);
+		padding-block: var(--space-5);
+		margin-bottom: var(--space-6);
+	}
+
+	.figures {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-4) var(--space-8);
+		margin: 0 0 var(--space-5);
+	}
+
+	.figures div {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-1);
+	}
+
+	.figures dt {
+		font-family: var(--font-mono);
+		font-size: var(--text-2xs);
+		letter-spacing: var(--tracking-mono);
+		color: var(--color-fg-muted);
+	}
+
+	.figures dd {
+		margin: 0;
+		font-family: var(--font-display);
+		font-weight: var(--weight-display);
+		font-size: var(--text-2xl);
+		line-height: 1;
+		letter-spacing: var(--tracking-display);
+		color: var(--color-accent);
+		font-variant-numeric: tabular-nums;
+	}
+
+	.of {
+		font-family: var(--font-mono);
+		font-size: var(--text-xs);
+		font-weight: var(--weight-normal);
+		color: var(--color-fg-muted);
+		letter-spacing: var(--tracking-mono);
+	}
+
+	.axis {
+		display: flex;
+		justify-content: space-between;
+		font-family: var(--font-mono);
+		font-size: var(--text-2xs);
+		letter-spacing: var(--tracking-mono);
+		color: var(--color-fg-muted);
+		margin-top: var(--space-2);
+	}
+
+	/* Bento: varied sizes, not a uniform grid. Wide cards take both columns. */
+	.bento {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: var(--space-4);
+	}
+
+	.bento :global(.span-wide) {
+		grid-column: span 2;
+	}
+
+	.bento :global(.span-tall) {
+		grid-row: span 2;
+	}
+
+	@media (max-width: 44rem) {
+		.bento {
+			grid-template-columns: minmax(0, 1fr);
+		}
+
+		.bento :global(.span-wide) {
+			grid-column: span 1;
+		}
+	}
+
+	.empty {
+		color: var(--color-fg-muted);
+		max-width: var(--measure);
+	}
+
+	.asof {
+		margin-top: var(--space-6);
+		font-family: var(--font-mono);
+		font-size: var(--text-2xs);
+		letter-spacing: var(--tracking-mono);
+		color: var(--color-fg-muted);
+	}
+</style>

@@ -1,0 +1,163 @@
+---
+import { relativeTime, type ShowcaseItem } from '../lib/showcase';
+
+interface Props {
+	item: ShowcaseItem;
+}
+
+const { item } = Astro.props;
+
+/**
+ * GitHub's weekly stats lag for a freshly created repo — it reports zeros for a
+ * while after the first push. Showing "0 commits" next to "last active today"
+ * would be actively wrong, so the count only appears once it's meaningful.
+ */
+const showCommits = item.totalCommits > 0;
+---
+
+<article class:list={['card', `span-${item.span}`]}>
+	<header>
+		<h3>
+			{
+				item.url ? (
+					<a href={item.url} rel="noopener noreferrer">
+						{item.name}
+					</a>
+				) : (
+					item.name
+				)
+			}
+		</h3>
+		{item.isPrivate && <span class="badge">Private</span>}
+	</header>
+
+	{item.summary && <p class="summary">{item.summary}</p>}
+
+	<dl class="meta">
+		{
+			item.language && (
+				<div>
+					<dt>Language</dt>
+					<dd>{item.language}</dd>
+				</div>
+			)
+		}
+		{
+			showCommits && (
+				<div>
+					<dt>Commits, 52w</dt>
+					<dd class="figure">{item.totalCommits.toLocaleString('en-GB')}</dd>
+				</div>
+			)
+		}
+		{
+			item.tagCount > 0 && (
+				<div>
+					<dt>Releases</dt>
+					<dd class="figure">
+						{item.tagCount}
+						{item.latestTag && <span class="latest">latest {item.latestTag}</span>}
+					</dd>
+				</div>
+			)
+		}
+		<div>
+			<dt>Last active</dt>
+			<dd>{relativeTime(item.lastPush)}</dd>
+		</div>
+	</dl>
+</article>
+
+<style>
+	.card {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-3);
+		background: var(--color-surface);
+		border: var(--border) solid var(--color-rule);
+		border-radius: var(--radius);
+		padding: var(--space-5);
+	}
+
+	header {
+		display: flex;
+		align-items: baseline;
+		gap: var(--space-3);
+		flex-wrap: wrap;
+	}
+
+	h3 {
+		font-size: var(--text-xl);
+		margin: 0;
+	}
+
+	h3 a {
+		color: var(--color-fg);
+		text-decoration: none;
+	}
+
+	h3 a:hover {
+		color: var(--color-accent);
+		text-decoration: underline;
+	}
+
+	/* Private repos read as deliberate, not as a locked door. The badge is
+	   quiet: the work is the point, not the fact you can't see it. */
+	.badge {
+		font-family: var(--font-mono);
+		font-size: var(--text-2xs);
+		letter-spacing: var(--tracking-mono);
+		color: var(--color-fg-muted);
+		border: var(--border) solid var(--color-rule-strong);
+		border-radius: var(--radius-sm);
+		padding: var(--space-1) var(--space-2);
+	}
+
+	.summary {
+		max-width: var(--measure);
+		font-size: var(--text-base);
+		color: var(--color-fg-muted);
+	}
+
+	.meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-3) var(--space-6);
+		margin: auto 0 0;
+		padding-top: var(--space-3);
+		border-top: var(--border) solid var(--color-rule);
+	}
+
+	.meta div {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-1);
+	}
+
+	dt {
+		font-family: var(--font-mono);
+		font-size: var(--text-2xs);
+		letter-spacing: var(--tracking-mono);
+		color: var(--color-fg-muted);
+	}
+
+	dd {
+		margin: 0;
+		font-size: var(--text-base);
+		color: var(--color-fg);
+	}
+
+	.figure {
+		font-family: var(--font-mono);
+		font-variant-numeric: tabular-nums;
+		color: var(--color-accent);
+		display: flex;
+		align-items: baseline;
+		gap: var(--space-2);
+	}
+
+	.latest {
+		font-size: var(--text-2xs);
+		color: var(--color-fg-muted);
+	}
+</style>

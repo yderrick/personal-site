@@ -27,4 +27,28 @@ const log = defineCollection({
 	}),
 });
 
-export const collections = { log };
+/**
+ * Hand-written project blurbs, merged over the GitHub API data by repo name.
+ *
+ * The API supplies facts — language, stars, commit cadence, last push. These
+ * supply the voice. For the private repos this is load-bearing rather than
+ * decorative: they carry no GitHub description, so without a blurb their card
+ * would have nothing to say.
+ *
+ * A blurb whose `repo` matches nothing in the showcase is ignored, not rendered.
+ */
+const projects = defineCollection({
+	loader: glob({ pattern: '**/[^_]*.md', base: './src/content/projects' }),
+	schema: z.object({
+		/** Repository name this blurb attaches to. */
+		repo: z.string(),
+		/** One line. Used as the card description when GitHub has none. */
+		summary: z.string(),
+		/** Pinned projects lead the grid and appear on the home page. */
+		pinned: z.boolean().default(false),
+		/** Bento sizing. Varied by design — a uniform grid is not the brief. */
+		span: z.enum(['normal', 'wide', 'tall']).default('normal'),
+	}),
+});
+
+export const collections = { log, projects };

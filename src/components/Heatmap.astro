@@ -1,0 +1,176 @@
+---
+import type { DailyCount } from '../lib/github';
+
+interface Props {
+	days: DailyCount[];
+	label: string;
+}
+
+const { days, label } = Astro.props;
+
+/*
+ * A calendar grid: one column per week, one row per weekday, the way commit
+ * history is conventionally read. Building it column-major means the DOM order
+ * is already the visual order, so no grid-auto-flow gymnastics.
+ *
+ * Intensity is bucketed rather than continuous. Exact counts per day aren't the
+ * point — the reader is looking for rhythm and gaps, and four steps carry that
+ * without implying a precision the eye can't resolve anyway.
+ */
+const max = Math.max(...days.map((d) => d.count), 1);
+
+function level(count: number): 0 | 1 | 2 | 3 | 4 {
+	if (count === 0) return 0;
+	const ratio = count / max;
+	if (ratio > 0.6) return 4;
+	if (ratio > 0.3) return 3;
+	if (ratio > 0.1) return 2;
+	return 1;
+}
+
+// Pad the front so the first column starts on a Sunday.
+const leading = days.length > 0 ? new Date(`${days[0].date}T00:00:00Z`).getUTCDay() : 0;
+const cells: (DailyCount | null)[] = [...Array<null>(leading).fill(null), ...days];
+
+const weeks: (DailyCount | null)[][] = [];
+for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
+
+const monthLabels = weeks.map((week, index) => {
+	const first = week.find((cell) => cell !== null);
+	if (!first) return null;
+	const date = new Date(`${first.date}T00:00:00Z`);
+	// Label a column only when its month differs from the previous column's.
+	const previous = weeks[index - 1]?.find((cell) => cell !== null);
+	const previousMonth = previous ? new Date(`${previous.date}T00:00:00Z`).getUTCMonth() : -1;
+	return date.getUTCMonth() === previousMonth
+		? null
+		: date.toLocaleDateString('en-GB', { month: 'short', timeZone: 'UTC' });
+});
+
+const total = days.reduce((sum, day) => sum + day.count, 0);
+---
+
+<figure class="heatmap">
+	<div class="scroll">
+		<div class="months" aria-hidden="true">
+			{monthLabels.map((month) => <span>{month ?? ''}</span>)}
+		</div>
+
+		<div class="grid" role="img" aria-label={`${label}: ${total} commits over ${days.length} days`}>
+			{
+				weeks.map((week) => (
+					<div class="week">
+						{Array.from({ length: 7 }, (_, dayIndex) => {
+							const cell = week[dayIndex];
+							return cell ? (
+								<span
+									class="day"
+									data-level={level(cell.count)}
+									title={`${cell.date}: ${cell.count} ${cell.count === 1 ? 'commit' : 'commits'}`}
+								/>
+							) : (
+								<span class="day empty" />
+							);
+						})}
+					</div>
+				))
+			}
+		</div>
+	</div>
+
+	<figcaption>
+		<span>Less</span>
+		<span class="key">
+			{[0, 1, 2, 3, 4].map((n) => <span class="day" data-level={n} />)}
+		</span>
+		<span>More</span>
+	</figcaption>
+</figure>
+
+<style>
+	.heatmap {
+		margin: 0;
+	}
+
+	/* Narrow screens scroll the grid rather than shrinking cells into mush. */
+	.scroll {
+		overflow-x: auto;
+		padding-bottom: var(--space-2);
+	}
+
+	.months,
+	.grid {
+		display: flex;
+		gap: 3px;
+		min-width: max-content;
+	}
+
+	.months {
+		margin-bottom: var(--space-1);
+	}
+
+	.months span {
+		width: 11px;
+		font-family: var(--font-mono);
+		font-size: var(--text-2xs);
+		color: var(--color-fg-muted);
+		white-space: nowrap;
+	}
+
+	.week {
+		display: flex;
+		flex-direction: column;
+		gap: 3px;
+	}
+
+	.day {
+		width: 11px;
+		height: 11px;
+		border-radius: 2px;
+		background: var(--color-surface);
+		border: 1px solid var(--color-rule);
+	}
+
+	.day.empty {
+		background: none;
+		border-color: transparent;
+	}
+
+	/* Four steps of the one accent. A second hue here would be decoration. */
+	.day[data-level='1'] {
+		background: color-mix(in srgb, var(--color-accent) 28%, var(--color-bg));
+		border-color: transparent;
+	}
+
+	.day[data-level='2'] {
+		background: color-mix(in srgb, var(--color-accent) 52%, var(--color-bg));
+		border-color: transparent;
+	}
+
+	.day[data-level='3'] {
+		background: color-mix(in srgb, var(--color-accent) 76%, var(--color-bg));
+		border-color: transparent;
+	}
+
+	.day[data-level='4'] {
+		background: var(--color-accent);
+		border-color: transparent;
+	}
+
+	figcaption {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		gap: var(--space-2);
+		margin-top: var(--space-2);
+		font-family: var(--font-mono);
+		font-size: var(--text-2xs);
+		letter-spacing: var(--tracking-mono);
+		color: var(--color-fg-muted);
+	}
+
+	.key {
+		display: flex;
+		gap: 3px;
+	}
+</style>

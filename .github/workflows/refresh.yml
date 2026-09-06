@@ -1,0 +1,53 @@
+name: Daily refresh
+
+# The projects page reports commit activity across my repositories, including
+# private ones. Vercel only rebuilds when this repo is pushed to, so work done
+# in any *other* repo would never reach the site — the numbers would quietly
+# rot while still looking current. This fires a Vercel deploy hook once a day so
+# the page reflects reality rather than the last time I touched this repo.
+#
+# Setup (one time):
+#   1. Vercel → project → Settings → Git → Deploy Hooks → create one for `main`.
+#   2. Copy the URL into this repo's secrets as VERCEL_DEPLOY_HOOK.
+#      gh secret set VERCEL_DEPLOY_HOOK --body '<url>'
+#   3. Vercel → Settings → Environment Variables → add GITHUB_TOKEN
+#      (a read-only token with `repo` scope) so the build can see private repos.
+#
+# The deploy hook URL is a credential: anyone holding it can trigger builds.
+# It lives in secrets, never in the repo.
+
+on:
+  schedule:
+    # 06:15 UTC daily. Off the hour because GitHub's scheduler is busiest then
+    # and delays cron jobs that pile up on it.
+    - cron: '15 6 * * *'
+  # Lets me trigger a refresh by hand without waiting for the schedule.
+  workflow_dispatch:
+
+# No repository contents are read or written; this only calls an external hook.
+permissions: {}
+
+jobs:
+  trigger-rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Vercel deploy hook
+        env:
+          DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$DEPLOY_HOOK" ]; then
+            echo "::error::VERCEL_DEPLOY_HOOK is not set. See the setup notes at the top of this file."
+            exit 1
+          fi
+
+          # --fail turns an HTTP error into a non-zero exit, so a broken or
+          # revoked hook shows up as a failed run rather than a silent no-op.
+          # A refresh that quietly stops working is the failure mode this whole
+          # workflow exists to prevent.
+          status=$(curl --silent --show-error --fail \
+            --request POST \
+            --write-out '%{http_code}' \
+            --output /dev/null \
+            "$DEPLOY_HOOK")
+
+          echo "Deploy hook responded $status"

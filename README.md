@@ -17,15 +17,22 @@ npm run dev       # http://localhost:4321
 
 No configuration needed. The site builds with no environment variables set — the GitHub API is called unauthenticated, and if that fails or hits its rate limit the build falls back to a committed snapshot rather than erroring.
 
-### Optional: a GitHub token
+### The GitHub token
 
-Unauthenticated GitHub API requests are limited to 60 per hour per IP, which is easy to burn through on repeated local builds. To raise the limit, create a `.env` file with a fine-grained token that has **public repository read access only**:
+The projects page reads private repository metadata, so production needs a token. Create a `.env`
+file with one that has **read access to your repositories**:
 
 ```
 GITHUB_TOKEN=github_pat_...
 ```
 
-The token is declared in `astro.config.mjs` via `astro:env` with `access: 'secret'`, so the build refuses to bundle it into client-side code. For production, add the same variable in the Vercel project's environment settings. It stays optional — the site builds fine without it.
+The token is declared in `astro.config.mjs` via `astro:env` with `access: 'secret'`, so the build
+refuses to bundle it into client-side code — and the site ships no JavaScript anyway, so nothing but
+the resulting numbers reaches a visitor. Add the same variable in the Vercel project's environment
+settings for production.
+
+It stays optional: with it unset the build still succeeds, but it can only see public repositories, so
+it falls back to the committed snapshot and labels the page accordingly.
 
 ## Commands
 
@@ -66,11 +73,33 @@ Then `git add`, commit, `git push` — live in about a minute. Content commits d
 
 ## Projects showcase
 
-`/projects` is built from a build-time call to the GitHub REST API, sorted by last push. Each card shows the repo name, description, primary language, stars and last-push date. Push a new public repo and it appears on the next deploy — no manual step.
+`/projects` is built from a build-time call to the GitHub REST API. It shows commit cadence, release
+counts and a daily activity heatmap, so the page answers "how often does this person actually ship?"
+rather than just listing names.
 
-Forks, archived repos and anything listed in `HIDDEN_REPOS` in `src/lib/github.ts` are filtered out. For pinned favourites, add a Markdown file in `src/content/projects/` with a hand-written blurb and a screenshot; it's merged over the API data by repo name, so the facts stay automatic and the writing stays mine.
+Most of my work is in private repositories. Those still appear — with their language, commit rhythm,
+release count and last-active date — but with a **Private** badge and no link. The API supplies the
+facts; nothing about the code, its files or its commit messages is published.
 
-If the API is unreachable at build time, the build uses `src/data/projects-fallback.json` and logs a warning instead of failing.
+Which repos appear is an allowlist, not a blocklist:
+
+- Public repos are included automatically.
+- A private repo appears only if its name is in `SHOWCASED_PRIVATE_REPOS` in `src/lib/github.ts`.
+  Adding a future project is one string in that array.
+- Forks, archived repos and anything in `HIDDEN_REPOS` are excluded either way.
+
+Add a Markdown file in `src/content/projects/` for a hand-written blurb, merged over the API data by
+repo name. For private repos this is the description — GitHub's own is empty.
+
+If the API is unreachable, rate-limited, or the token is missing, the build logs a warning and renders
+`src/data/projects-fallback.json` instead of failing, and the page says it is showing saved data.
+
+### Keeping it current
+
+Vercel only rebuilds when *this* repo is pushed, so commits elsewhere wouldn't show up.
+`.github/workflows/refresh.yml` triggers a daily rebuild via a Vercel deploy hook. It needs a
+`VERCEL_DEPLOY_HOOK` secret here, and `GITHUB_TOKEN` set in the Vercel project's environment
+variables.
 
 ## Deploying
 
