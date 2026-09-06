@@ -66,6 +66,11 @@ draft: false
 
 **The draft valve is a privacy feature, not a convenience.** `draft: true` entries must be excluded from every production build path — the list page, the tag index, the RSS feed, `getStaticPaths()` for `/log/[slug]`, and the home page's recent-entries block. They stay visible in `npm run dev` so I can write freely. Any new surface that reads the log collection filters drafts in the same commit it's added; there is one shared helper for this (`src/lib/log.ts`), and new code routes through it rather than calling `getCollection('log')` raw.
 
+Every repo I work in keeps its daily log in a root-level `log/` folder in this same format —
+`docs/Log Format.md` is the frozen contract, and this site's `log/` is its reference
+implementation. A future aggregator will pull those folders in over the GitHub API; when
+changing anything about log frontmatter or file naming, change that contract too.
+
 Two entries on one day get `YYYY-MM-DD-2.md`. Tags are lowercase, single-word where possible; the tag list is derived from the entries, never hand-maintained in a second place.
 
 ### Projects showcase (build-time GitHub fetch)

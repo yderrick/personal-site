@@ -19,10 +19,11 @@ them or work them out again in six months.
 2. [Add a new project to the site](#2-add-a-new-project-to-the-site)
 3. [Update the About page](#3-update-the-about-page)
 4. [Write a log entry](#4-write-a-log-entry)
-5. [Renew the GitHub token](#5-renew-the-github-token)
-6. [When something looks wrong](#6-when-something-looks-wrong)
-7. [Things to remember](#7-things-to-remember)
-8. [Waiting on you](#8-waiting-on-you)
+5. [Start a log folder in another repo](#5-start-a-log-folder-in-another-repo)
+6. [Renew the GitHub token](#6-renew-the-github-token)
+7. [When something looks wrong](#7-when-something-looks-wrong)
+8. [Things to remember](#8-things-to-remember)
+9. [Waiting on you](#9-waiting-on-you)
 
 ---
 
@@ -254,7 +255,33 @@ tag. Only code and design changes get those.
 
 ---
 
-## 5. Renew the GitHub token
+## 5. Start a log folder in another repo
+
+Every repo keeps its daily log in a root-level `log/` folder, written to the shared format in
+[`docs/Log Format.md`](docs/Log%20Format.md). This site will eventually aggregate those folders into
+one timeline at `/log`.
+
+**The aggregator is not built yet.** Right now this step only sets the repo up so the log is
+already correct when it is. Nothing you write reaches the site until then.
+
+1. In the other repo: `mkdir log`.
+2. Copy the entry template from `docs/Log Format.md` §7.
+3. File name is `YYYY-MM-DD.md`, matching the `date` in the frontmatter. Second entry that day is
+   `YYYY-MM-DD-2.md`.
+4. Commit and push it with the rest of your work. The log lives in the repo it describes.
+
+**Nothing publishes until a repo is allowlisted on this site.** Creating `log/` in a repo — private
+or public — is safe by default and puts nothing on the internet. When the aggregator exists, adding
+a repo will be one string in an array here, and that is the deliberate act that makes its log
+public.
+
+Before you allowlist a repo, re-read what is already in its `log/`. An allowlisted repo publishes
+**every** non-draft entry, past and future, in full — not a summary and not just the ones you were
+thinking of. `draft: true` on an entry keeps it out permanently.
+
+---
+
+## 6. Renew the GitHub token
 
 **Your current token expires 6 September 2027.** There's a reminder set for 30 August 2027.
 
@@ -277,7 +304,7 @@ page. But it stops being current, and nobody will tell you — so the reminder m
 
 ---
 
-## 6. When something looks wrong
+## 7. When something looks wrong
 
 ### `/projects` says "Showing a saved snapshot"
 
@@ -325,7 +352,7 @@ wasted build minutes.
 
 ---
 
-## 7. Things to remember
+## 8. Things to remember
 
 - **Deploy = `git push origin main`.** There is no deploy command, and you should never run one.
 - **The daily refresh exists because Vercel only rebuilds when *this* repo is pushed.** Work in
@@ -354,7 +381,7 @@ it stays on your machine.
 
 ---
 
-## 8. Waiting on you
+## 9. Waiting on you
 
 Things I've built the slot for but don't have the content for. Each is a one-line change once you
 hand it over — send it and I'll wire it in, or follow the steps in

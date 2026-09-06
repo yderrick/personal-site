@@ -67,6 +67,8 @@ Feed of published log entries.
 
 One file per entry, named `YYYY-MM-DD.md`. A second entry on the same day is `YYYY-MM-DD-2.md`.
 
+The folder sits at the repository root rather than under `src/` because every repo I work in keeps its log in the same place, and this site's own log is the reference implementation of that shared shape. The full cross-repo contract is [`Log Format.md`](Log%20Format.md).
+
 | Field | Type | Required | Behaviour |
 |---|---|---|---|
 | `title` | string | yes | Shown on the list, the entry page and the browser title |
