@@ -42,7 +42,7 @@
     - [x] **Verify the draft valve**: a `draft: true` entry appears in `npm run dev` and appears nowhere in `npm run build && npm run preview` — list, tag pages, entry route, home page.
   - [x] **Release Gate 1** — version bump, changelog, docs sync, tag, push; verify the log live on a phone and a desktop. Shipped as `v0.1.0`.
 
-- [ ] **Phase 4: Projects & Activity** *(revised 2026-09-05 — see note)*
+- [x] **Phase 4: Projects & Activity** *(revised 2026-09-05 — see note)*
 
   > **Why this changed.** The site's job is to show an employer what I actually do day to day and how
   > often I ship. Three of four repos are private, so a showcase limited to public repos would show an
@@ -75,9 +75,10 @@
     - [x] Activity view: daily commit heatmap over 18 weeks, plus totals, active days and longest run.
     - [x] `src/content/projects/*.md` blurbs merged over API data by repo name.
     - [x] Home page pinned-projects block reads the same data.
-  - [ ] **Module 9: Freshness** *(new — the site makes a claim about recent activity, so stale data misleads)*
+  - [x] **Module 9: Freshness** *(new — the site makes a claim about recent activity, so stale data misleads)*
     - [x] Vercel deploy hook + a scheduled GitHub Action in this repo that fires it daily.
-          *(Workflow committed; the deploy hook and secret still need creating — see the report.)*
+          Verified 2026-09-06 by a manual `workflow_dispatch`: hook returned 201 and the resulting
+          build published live data.
     - [x] Show the data's as-of date on the page, so a failed refresh is visible rather than silent.
 
 - [ ] **Phase 5: About & Polish** *(→ **Release Gate 2** after this phase)*

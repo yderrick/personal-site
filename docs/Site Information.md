@@ -124,10 +124,14 @@ Vercel's environment variables for private repositories to appear.
 
 Vercel rebuilds when this repository is pushed. Work done in any *other* repository would therefore
 never reach the site, and the activity numbers would go stale while still looking current.
-`.github/workflows/refresh.yml` fires a Vercel deploy hook on a daily schedule so the page tracks
-reality. It needs a `VERCEL_DEPLOY_HOOK` secret on this repository; the workflow fails loudly if the
-hook is missing or rejected, because a refresh that quietly stops working is the exact failure it
-exists to prevent.
+`.github/workflows/refresh.yml` fires a Vercel deploy hook on a daily schedule (06:15 UTC) so the page
+tracks reality. It reads a `VERCEL_DEPLOY_HOOK` secret on this repository and fails loudly if the hook
+is missing or rejected, because a refresh that quietly stops working is the exact failure it exists to
+prevent. It can also be run on demand from the Actions tab.
+
+**Watch the token expiry.** `GITHUB_TOKEN` in Vercel is what lets the build see private repositories.
+When it expires the site does not break — it falls back to the snapshot and says so on the page — but
+it stops being current. The "Showing a saved snapshot" line is the signal that it needs renewing.
 
 ---
 
