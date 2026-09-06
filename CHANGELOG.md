@@ -8,6 +8,23 @@ Each released version has a matching annotated git tag (`vX.Y.Z`), so any prior 
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-09-06
+
+### Added
+- `worldbuilder-engine` is allowlisted in `LOG_SOURCE_REPOS`. Its `log/` folder now publishes to the
+  site: entries appear in the `/log` timeline, on their tag pages, in the RSS feed and on the home
+  page, at `/log/worldbuilder-engine/<date>` with the repo named beside the date.
+- `src/data/log-fallback.json` populated with that repo's entries, so a GitHub outage or rate limit
+  serves them stale rather than dropping them.
+
+### Notes
+- This is a deliberate disclosure decision, and a different one from the projects page. `/projects`
+  publishes a private repo's cadence numbers and never a file name or a commit message; an
+  allowlisted log publishes every non-draft entry **in full**, internal names and all. Entries that
+  should not go out are kept back with `draft: true` in the source repo.
+- Because the snapshot is committed here and this repository is public, an allowlisted repo's entries
+  are in this repo's git history as well as on the site.
+
 ## [0.6.1] - 2026-09-06
 
 ### Added

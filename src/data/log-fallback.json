@@ -1,4 +1,22 @@
 {
-  "fetchedAt": null,
-  "files": []
+  "fetchedAt": "2026-09-06T18:11:24.523Z",
+  "files": [
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-09-06.md",
+      "frontmatter": {
+        "title": "Jots stopped belonging to the account",
+        "date": "2026-09-06",
+        "tags": [
+          "worldbuilder",
+          "bugfix",
+          "data"
+        ],
+        "draft": false,
+        "backfilled": false
+      },
+      "body": "\nTwo commits finishing the move of Jots from account scope to project scope, and the ugly bug that\nmove exposed: switching projects silently threw away whatever you typed next.\n\nPhase 1 landed last night — Jots now live under a project instead of the account. This morning was\nthe fallout. `JotsWorkspace` re-subscribed when you changed project but never cleared the selected\njot id, so a stale id from the old project sat there blocking auto-select. The old project's note\nstayed on screen under the new project's name, and the next autosave went to the wrong address:\nproject B, jot id from project A. In mock mode that write is quietly discarded. In live mode it's\nrejected. Either way your typing is gone and nothing tells you.\n\nThe fix resets the active jot on project change and cancels any autosave debounce still in flight,\nbut the part I care about is that the \"what should be selected\" rule moved out of the component into\n`jotSelection.ts`, with tests. It's a rule with an obvious trap in it — two projects can coincidentally\nhave a jot with the same id, and the old code would have trusted that. That's not something I want\nliving inside a 1000-line workspace component where nobody can see it.\n\nSame commit, a smaller thing that had been bothering me: creating a project dropped you on a blank\nworkspace. Now creating a project — desktop, mobile, or the default one made at first sign-in —\nseeds the starter jots and lands you on the Jots tab with the Read Me open. A blank page is a\nquestion the app should answer, not ask.\n\nThen Phase 3: the migration modal for anyone with legacy account-level jots. Ask-once, mandatory,\npick which project the old notes belong to, copy them in with re-based order, seed starter jots into\nevery other project, mark it done. The decision logic sits behind a pure module so the\n\"nothing to migrate, complete yourself\" path is testable without a DOM.\n\nAlso swept up three bits of drift the scope move left behind: two stale \"existing account\" comments,\nand the Add Starter Jots buttons being clickable with no active project when the handler flatly\nrequires one.\n\nNothing released yet — these are phase commits.\n\nLast thing today, and the reason this file exists at all: I set up the daily log. From here every\nsession writes the day's entry in `log/` **as the work happens**, not at the end — every fix,\nfeature, bug, phase commit, worker hand-off and release, shipped or not. These files get consumed\nby the aggregator I'm building, so a missing entry is a missing published page rather than a\nmissing note. The rules are in CLAUDE.md and in the master session brief, so a fresh session picks\nthem up without me repeating myself, and the frozen format contract sits in `log/_format.md` where\nthe aggregator ignores it.\n\nOne correction to myself: I asked for `logs/`. The contract says `log/`. The contract wins.\n",
+      "sha": "493943ab1ae62ce206027ed47410baab79789d17"
+    }
+  ]
 }

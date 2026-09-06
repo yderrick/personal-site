@@ -24,7 +24,7 @@ const OWNER = 'yderrick';
  * This site's own log is not listed: it lives in `log/` on disk and is loaded
  * from the filesystem, so drafts stay previewable in `npm run dev`.
  */
-export const LOG_SOURCE_REPOS: readonly string[] = [];
+export const LOG_SOURCE_REPOS: readonly string[] = ['worldbuilder-engine'];
 
 /**
  * Repo names that cannot be used, because a remote entry's URL is

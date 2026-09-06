@@ -163,6 +163,8 @@ This fetches those folders over the GitHub REST API at build time and feeds them
 `remoteLog` content collection, which shares one schema object with the local `log` collection so the
 two cannot drift apart.
 
+**Currently allowlisted:** `worldbuilder-engine` (private). Its `log/` folder is published in full.
+
 **What appears.** Nothing, unless a repository is named in `LOG_SOURCE_REPOS`. Unlike the projects
 showcase, public repos are *not* included automatically — a log folder is prose, and "the repo is
 public" is not the same statement as "every note in it was meant to be read". Adding a repo to that
@@ -287,5 +289,5 @@ Motion respects `prefers-reduced-motion` globally rather than per component.
 Things that are deliberately not built, or built partially, so they don't get rediscovered as bugs:
 
 - **`AIstudio` is deliberately not on the site.** It is private and not in `SHOWCASED_PRIVATE_REPOS`, so it is excluded by default. Its GitHub description would need rewriting before it were added.
-- **`src/data/log-fallback.json` is empty until a repo is allowlisted.** `npm run snapshot:log` fills it; see RUNBOOK §6. Empty is correct while `LOG_SOURCE_REPOS` is empty, but leaving it empty *after* allowlisting means a GitHub failure drops remote entries entirely instead of serving them stale.
+- **`src/data/log-fallback.json` goes stale between refreshes.** It is a committed snapshot, so it only contains what `npm run snapshot:log` last fetched. Re-run it after a run of entries lands in an allowlisted repo, or a GitHub outage will serve a build several entries behind. See RUNBOOK §6.
 - **A newly created repository reports zero commits for a while.** GitHub's `/stats/participation` lags behind a repo's first pushes, so `personal-site` shows no commit count despite being active. The card hides a zero count rather than displaying it; this corrects itself once GitHub's statistics catch up.
