@@ -42,10 +42,8 @@ export const LINKS: readonly SiteLink[] = [
 	{ label: 'Email', href: 'mailto:dzotefederrickyao@gmail.com', inFooter: true },
 	{ label: 'LinkedIn', href: 'https://www.linkedin.com/in/derrick-dzotefe-a871071ab/', inFooter: true },
 	{ label: 'GitHub', href: 'https://github.com/yderrick', inFooter: true },
+	{ label: 'CV (PDF)', href: '/derrick-yao-dzotefe-cv.pdf' },
 	{ label: 'Second inbox', href: 'mailto:crystaladdison17@gmail.com' },
-	// CV: drop the PDF into public/ and uncomment. Held back deliberately —
-	// see "Waiting on you" in RUNBOOK.md.
-	// { label: 'CV (PDF)', href: '/derrick-yao-dzotefe-cv.pdf' },
 ] as const;
 
 export const NAV: readonly NavItem[] = [

@@ -364,9 +364,9 @@ hand it over — send it and I'll wire it in, or follow the steps in
 |---|---|
 | **LinkedIn** | ✅ Live — `linkedin.com/in/derrick-dzotefe-a871071ab` |
 | **Second email** | ✅ Live — `dzotefederrickyao@gmail.com` is now primary (it matches the CV and LinkedIn), with `crystaladdison17@gmail.com` as "Second inbox" |
-| **CV / résumé** | ⏸ **Held back — needs a decision from you.** See below |
+| **CV / résumé** | ✅ Live — a web-safe version at `/derrick-yao-dzotefe-cv.pdf`. See below for what differs from your original |
 
-### The CV is not published yet, on purpose
+### The published CV is a web-safe version, on purpose
 
 `DZOTEFE YAO DERRICK_CV.pdf` contains the personal contact details of three other people:
 
@@ -382,9 +382,23 @@ about, which is why this is worth a moment rather than a shrug.
 Your own mobile number, `0547967841`, is on it too. That one is your call, but a phone number on a
 public page reliably attracts spam.
 
-**The fix is small:** a web version of the CV with the references section replaced by "References
-available on request" — which is the normal convention for a CV you hand out broadly — and
-optionally your phone number removed. The file you send to a specific employer keeps everything.
+So the file on the site is a **regenerated** version at `public/derrick-yao-dzotefe-cv.pdf`, with the
+references section replaced by "References available on request" — the normal convention for a CV
+handed out broadly. Your original file is untouched; keep sending that one to specific employers.
 
-Once you have that version, drop it into `public/` and uncomment the `CV (PDF)` line in
-`src/consts.ts`.
+**Other differences from your original, so nothing surprises you:**
+
+- LinkedIn and GitHub added to the header contact line.
+- Skills rewritten to reflect the experience above it: added *stock reconciliation and custody
+  transfer* and *ERP systems (Odoo), NPA portal, ICUMS*, which your roles demonstrate but the old
+  list omitted. Changed *"Artificial Intelligence and Machine Learning"* to *"Software development
+  with AI tooling"* — closer to what you actually do, and a claim you can defend in an interview.
+  **If you'd rather have the original wording back, say so.**
+- Your phone number is still on it. You chose to keep it; it's the one remaining piece of personal
+  data on a public, indexable file.
+- The layout was rebuilt from your content rather than edited in place, so it looks different from
+  your Word original.
+
+**To replace it with your own version:** export a PDF, name it `derrick-yao-dzotefe-cv.pdf`, and drop
+it into `public/` overwriting the existing file. Commit and push. Nothing else changes — the link
+already points there.
