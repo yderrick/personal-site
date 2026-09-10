@@ -1,6 +1,292 @@
 {
-  "fetchedAt": "2026-09-06T18:11:24.523Z",
+  "fetchedAt": "2026-09-10T19:01:41.855Z",
   "files": [
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-08-11.md",
+      "frontmatter": {
+        "title": "The first commit, and beats become scenes",
+        "date": "2026-08-11",
+        "tags": [
+          "worldbuilder",
+          "planning"
+        ],
+        "draft": false,
+        "backfilled": true
+      },
+      "body": "\nPut the Worldbuilder codebase under version control and immediately tore out the first thing that\nwasn't working.\n\nThe Story Planner had a beats checklist — tick a box when your story hits a beat. It looked useful\nand taught me nothing. A checklist tells you whether something happened; it can't tell you whether\nthe scene is doing any work. Replaced it with a structured scene-and-sequel model, which asks what\nthe character wants going in, what stops them, and what they decide as a result. Harder to fill in,\nwhich is the point. A form you can complete without thinking is a form that isn't asking anything.\n\nAlso fixed a scene modal you couldn't scroll to the bottom of — a self-inflicted wound, since the\nfields I'd just added were the ones out of reach — and made chapters reorderable by dragging.\n\nStarting a log on day one of version control feels like the right moment, even though the app is a\nfew months old by now. Everything before this exists only as a working directory.\n",
+      "sha": "ad2a5d17298c2396faf6a7ef3cc86ec36df36849"
+    },
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-08-12.md",
+      "frontmatter": {
+        "title": "Search that finds the thing you meant",
+        "date": "2026-08-12",
+        "tags": [
+          "worldbuilder",
+          "ux"
+        ],
+        "draft": false,
+        "backfilled": true
+      },
+      "body": "\nChapter search in the Manuscript Spine, and a fix for Jots content search that had been matching\ntitles but not bodies.\n\nSmall day. Search is one of those features nobody praises and everybody notices when it's missing, or\nworse, when it's there and quietly wrong. A search that returns nothing looks identical to a search\nfor something that isn't there.\n",
+      "sha": "984a9a64adc32b5f5fb53d39c43b02cc4e105a76"
+    },
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-08-13.md",
+      "frontmatter": {
+        "title": "Scene cards that say how a scene connects",
+        "date": "2026-08-13",
+        "tags": [
+          "worldbuilder",
+          "planning"
+        ],
+        "draft": false,
+        "backfilled": true
+      },
+      "body": "\nExtended the scene card to record three things I'd been keeping in my head: how a scene connects to\nthe one before it, whether it charges the story positively or negatively, and what kind of\ncliffhanger it ends on.\n\nThe connector is the one I care about most. A sequence of scenes that are each fine on their own can\nstill read as a list, and the reason is almost always that nothing in scene four needs scene three\nto have happened. Making the connection an explicit field means the gap shows up while I'm planning\nrather than on a reread three chapters later.\n\nThe rest of the day was making sure those fields don't die in the form. A field you fill in once and\nnever see again is worse than no field — it costs you the effort and returns nothing. So they now\nsurface in the scene export and in the writing guide that sits beside the manuscript while I draft,\nand the guide shows every scene card field rather than a curated few, with a minimize toggle for\nwhen I want the screen back.\n\nAlso made the manuscript sidebar collapsible, which is a small thing that matters on a laptop.\n",
+      "sha": "75c333dd67bd15aed25aafb53d05c254d8bb9483"
+    },
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-08-14.md",
+      "frontmatter": {
+        "title": "The app became something I can use on a phone",
+        "date": "2026-08-14",
+        "tags": [
+          "worldbuilder",
+          "mobile",
+          "pwa"
+        ],
+        "draft": false,
+        "backfilled": true
+      },
+      "body": "\nTwenty commits taking the app from desktop-only to an installable phone app, ending at v2.0.0. Six\nphases: the install shell, then the layout, then the easy workspaces, then dragging, then the hard\ncanvases — the relation graph, the timeline, the story planner.\n\nTwo bugs worth keeping.\n\nDropping an event on the timeline landed it years away from where I released it. The drop was being\nmeasured against the wrong thing, and on a phone — where the whole gesture is your thumb covering\nthe target — it was unusable rather than merely annoying.\n\nThe second one cost me the most and taught me the most. Any modal opened from a mobile pane was\ndead: it painted perfectly and swallowed every tap. The pane marks the rest of the app inert so\ntouches can't leak through, and the browser then excludes that whole region from hit testing — so\nthe modal drawn inside it was visible and untouchable. Everything now goes through one shared modal\nthat escapes the pane entirely. I'd have found this in ten minutes on a device and spent an hour\nlooking at it in a desktop browser at phone width.\n\nAlso took the chance to fix two things I'd have defended if asked: a timing guess where a real\nmeasurement belonged, and styles being injected at runtime into the editor.\n\nThe standing rule out of today is that mobile isn't a follow-up. If a change only works on desktop,\nit's half-done.\n",
+      "sha": "eabbc391c04f7fefc83798468b61bb596d2b1a28"
+    },
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-08-15.md",
+      "frontmatter": {
+        "title": "What shipping to a phone actually revealed",
+        "date": "2026-08-15",
+        "tags": [
+          "worldbuilder",
+          "pwa",
+          "refactor"
+        ],
+        "draft": false,
+        "backfilled": true
+      },
+      "body": "\nThe biggest day so far, and it started with three bugs that only exist once something is genuinely\ninstalled rather than merely responsive.\n\nSigning in with Google inside the installed app bounced you straight back to the login screen. The\nservice worker — the thing that makes it work offline — only registered after sign-in, so a first\nvisit got none of it. And the page itself was being cached for an hour, which meant shipping a fix\nand watching people keep the old one. None of these can be found on localhost. You have to install\nthe thing and use it.\n\nThen a long stretch of making the manuscript editor feel like a manuscript editor: book typography\nwith a draft/page toggle, dialogue tools that do curly quotes and new-speaker line breaks properly,\nexport to .docx and Markdown, autocorrect, and find-and-replace.\n\nThe part I'm most glad about is less visible. I added a test harness and wrote the first real tests,\nmade the app degrade to local storage instead of half-dying when Firebase can't start, and fixed\nbackups that didn't actually contain the project — which is a terrifying sentence to write about a\nfeature named backup. Then I broke the largest component into pieces and deleted AI Loom outright.\n\nDeleting AI Loom was the right call. It generated prose. I don't want an app that writes for me; I\nwant one that notices things about what I wrote. Everything I built afterwards — the Chekhov ledger\nthat pairs setups with payoffs, character arcs, the scene rhythm strip, prose diagnostics for echoed\nwords and filter words — follows from that. They tell me things and never touch the text.\n",
+      "sha": "790337c74d7f1fccc5ccedb129fbf3d51e3257bf"
+    },
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-08-16.md",
+      "frontmatter": {
+        "title": "Magic systems got their own category",
+        "date": "2026-08-16",
+        "tags": [
+          "worldbuilder",
+          "data",
+          "release"
+        ],
+        "draft": false,
+        "backfilled": true
+      },
+      "body": "\nTwo themes today: making the app easier to extend, and then immediately using that to add the thing\nI'd been faking.\n\nThe extensibility work first — one registry for local-mode collections instead of the same list\ncopied in several places, the sprawling Analysis Hub split into per-tab panels, and form fields\ndescribed by the schema rather than hand-built one at a time. Boring, and it paid for itself within\nhours.\n\nBecause then: Systems. Magic, technology, whatever set of rules your world runs on. I'd previously\nhandled this with four fixed fields bolted onto a scene, which was a guess about what a system is\nthat turned out to be wrong for every system I actually wrote. Now a system is a first-class thing\nyou can define, and a scene records which ones it invokes. Existing data migrates itself, once,\nwithout asking.\n\nI also changed how this project ships. Previously every phase got its own version and release. That\nmeant releasing things I hadn't looked at together, which is how you find out two features are fine\nalone and contradictory side by side. Now a group of phases ends at a gate, and only gates ship.\n\nEnded the day starting in-world calendars, so a story can have its own months and its own year\ncount rather than pretending everything happens in ours.\n\nAlso shipped: a global search palette, margin comments on the manuscript, and writing history with\ntargets.\n",
+      "sha": "451664b4e88c4f2d6b46efda11ba738977fcd740"
+    },
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-08-17.md",
+      "frontmatter": {
+        "title": "Fifty-four commits, and one feature deleted",
+        "date": "2026-08-17",
+        "tags": [
+          "worldbuilder",
+          "release",
+          "refactor"
+        ],
+        "draft": false,
+        "backfilled": true
+      },
+      "body": "\nThe longest day on this project. Four release gates, v2.11.0 through v2.15.0.\n\nThe Continuity Audit landed, with four checks that know when to shut up — a check that fires on every\nscene gets ignored, so each one has conditions under which it stays quiet. Alongside it, dual\nordering, so the Storyboard reads in either narrative or chronological order.\n\nThen progressions: how an entity changes over time, with a resolver to ask what something looked like\nat a given point, and a stated rule for mixed indexing. That made the dead-character-speaking check\npossible, which is exactly the kind of error you don't catch by rereading.\n\nMore in the same day — typed relationships and four layout modes for the Relation Graph, nested maps\nand layers on the Lore Maps canvas, custom fields per lore category, three new categories, entity\ntemplates, an unwritten-entity worklist, unlinked mentions, location mood boards, EPUB export,\nread-aloud, chapter word-count targets, accessibility controls, Markdown and .docx import, and\nproject-wide restore checkpoints built on word-level snapshot diffs.\n\nTwo things I'd point at rather than the volume.\n\nI ran a fix wave — a deliberate pass through review findings, rather than fixing things as I tripped\nover them. The critical one: code was setting a key to undefined instead of omitting it, which\nFirestore treats very differently from the local mock.\n\nAnd I deleted Lore Maps entirely, three commits after building more of it that same day. Code, docs\nand stray references. It was a feature I wanted rather than one the app needed, and keeping it would\nhave meant maintaining a second canvas forever. Also deleted the Character Dashboard, folding it into\nLore Explorer so there's one character editor instead of two that drift apart.\n",
+      "sha": "37768301aa7193289c91ee4ccd374e03e252b763"
+    },
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-08-18.md",
+      "frontmatter": {
+        "title": "Letting someone read the book without an account",
+        "date": "2026-08-18",
+        "tags": [
+          "worldbuilder",
+          "sharing",
+          "release"
+        ],
+        "draft": false,
+        "backfilled": true
+      },
+      "body": "\nTwo gates, v2.16.0 and v2.17.0. The first was sharing, which is the first feature in this app that\nlets anyone other than me see anything.\n\nThat made it the first feature where being wrong is expensive. A share link opens a read-only view\nwith no account required, so everything about it had to be built assuming the reader is a stranger:\na separate, deliberately narrow set of rules for what public data can be touched, and a sanitiser\nthat strips anything not meant to leave. It refuses links whose destination it can't vouch for\nrather than passing them through, and I proved the rules against a local emulator instead of\ntrusting that they read correctly. Readers can leave feedback, which lands in the same worklist as\nmy own margin comments — one place to look, not two.\n\nAlongside it, series support: several books sharing one codex of characters and places, so an entity\ncan belong to the series rather than to a single book. A share can then cover one book or the whole\nseries.\n\nThe second gate was help. The app had grown far more fields than anyone could guess the meaning of,\nincluding me on a bad day. Rather than write help text twice, the in-app help is generated from the\nreference document I already maintain, so there's no second copy to drift. Every field can carry a\nsmall \"?\" that explains itself in place.\n\nAlso settled that the name is Worldbuilder, one word, everywhere. It had been spelled three ways.\n",
+      "sha": "3e8bfb8ff54cffa0ec463b99e633f19bc3223303"
+    },
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-08-19.md",
+      "frontmatter": {
+        "title": "The bug that hid every piece of feedback",
+        "date": "2026-08-19",
+        "tags": [
+          "worldbuilder",
+          "bugfix",
+          "mobile"
+        ],
+        "draft": false,
+        "backfilled": true
+      },
+      "body": "\nWrote help text and proper labels for the fields across every category, which is unglamorous and was\noverdue — a form full of terms only I understand is a form only I can fill in.\n\nThen a density pass on mobile. The phone layout had been a direct translation of the desktop one,\nwhich meant enormous headings, padding sized for a mouse, and about a third of the screen doing\nnothing. Tighter type, edge-to-edge panes, denser lists.\n\nThe bug of the day was the worst kind. Reader feedback on a shared link was arriving and being stored\ncorrectly, and the worklist showed nothing at all. Not an error, not an empty state that admitted\nuncertainty — just a clean, confident \"no feedback\". The query needed an index that didn't exist, so\nit failed quietly and the screen reported the failure as an answer. Anyone who'd left me notes on the\nmanuscript would have assumed I'd read them and ignored them.\n\nThat's the shape of failure I keep meeting on this project: something breaks and the interface fills\nthe gap with a plausible-looking nothing. A visible error is always better.\n\nAlso made local mode reject the same bad writes that the real database rejects. They'd been diverging,\nwhich meant testing locally could pass while the live version quietly refused — the exact thing local\nmode exists to prevent.\n\nTwo follow-up fixes after that: mobile layers opening behind the sheet that spawned them, and a\ncalendar day field that would run away from you as you typed.\n",
+      "sha": "da5e927e3e468c29a1522cee7a2275eef27c3f38"
+    },
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-08-20.md",
+      "frontmatter": {
+        "title": "Nobody should have to paste a UUID",
+        "date": "2026-08-20",
+        "tags": [
+          "worldbuilder",
+          "ux",
+          "release"
+        ],
+        "draft": false,
+        "backfilled": true
+      },
+      "body": "\nTwo releases, both fixing places where the app made me do its work for it.\n\nThe first was dates. Entering an in-world date meant typing numbers into boxes, which is slow and\nwrong often enough to be irritating. Now you tap a calendar and a clock, in your own world's months.\nScenes can also carry a date relative to another scene — \"three days after the funeral\" — because\nthat's how I actually think about chronology while drafting. Absolute dates come later, if ever.\n\nThe second was worse and had been there a long time. Linking one entity to another meant pasting its\nunique id, a string of random characters, into a field. I'd built it that way early on because it was\neasy to build, and then I got used to it — which is the part that bothers me. I stopped noticing that\nthe app was asking me to look up an internal identifier and copy it by hand. You now type the name.\n\nBoth are the same lesson from different angles: the app should meet me where I'm thinking. If I'm\nthinking about a funeral three days ago, or about a character named Elias, that's what I should be\nable to type.\n",
+      "sha": "0d345bc98f6075f8739d5f49d801f2df335cd603"
+    },
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-08-23.md",
+      "frontmatter": {
+        "title": "Fields that link instead of describing",
+        "date": "2026-08-23",
+        "tags": [
+          "worldbuilder",
+          "ux",
+          "release"
+        ],
+        "draft": false,
+        "backfilled": true
+      },
+      "body": "\nFour releases, all about the same complaint: the app kept asking me to write out things it already\nknew.\n\nEight fields that had been free text — the sort of thing where you type a character's name into a\nbox about another character — now link to the actual entity. Once they link, the connection works in\nboth directions and shows up everywhere that entity appears, instead of being a name I typed that\nhappens to match. The version where you describe a relationship in prose looks equivalent and gives\nyou nothing back.\n\nAlso: a Reference Panel that keeps the same shape whichever entity you open, rather than rearranging\nitself depending on which fields happen to be filled. That instability made it useless for glancing\nat, which is its entire job. And a Lore Explorer that finally uses the width of a desktop screen\ninstead of one narrow column with acres of grey either side.\n\nOne fix I'd call an admission rather than a bug. The Storyboard's opening field was labelled Goal,\nand I'd been filling it with a description of the scene every single time. Rather than train myself,\nI relabelled it to what everyone was actually using it for. When the whole user base gets a field\nwrong the same way, the field is wrong.\n",
+      "sha": "2c53546d1bb37c56dbac20b1a94bd85b6e5bde78"
+    },
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-08-24.md",
+      "frontmatter": {
+        "title": "Killing a character became something the app knows about",
+        "date": "2026-08-24",
+        "tags": [
+          "worldbuilder",
+          "data",
+          "release"
+        ],
+        "draft": false,
+        "backfilled": true
+      },
+      "body": "\nCharacter death, properly modelled. Until today a character dying was just something that happened in\nthe prose, which meant nothing downstream could know about it — the app would happily let a dead\ncharacter speak eleven chapters later and say nothing.\n\nNow a death is pinned to the scene it happens in. Mark it from the writing guide or the storyboard,\nundo it if the draft changes its mind, and there's a read-only status ledger showing who's alive, who\nisn't, and where it happened. Because it's pinned to a scene rather than set as a flag, it moves\ncorrectly when scenes get reordered, which they constantly do.\n\nThree defects turned up in the logic before it shipped and one after — a retry could leave the record\nhalf-written, orphaning the death from the character. Worth saying plainly: I found those by writing\ntests for the reasoning before wiring any of it to a button. The alternative is discovering it in\nDecember when a ledger tells me someone's alive who died in chapter nine.\n\nEarlier in the day, a release making the writing guide something you open when you want it, with an\nexplicit End Scene, and Write Scene taking you to the scene rather than the top of the chapter.\n\nAlso pinned the mobile manuscript box above the keyboard toolbar. Typing on a phone and watching your\nown sentence disappear behind the keyboard is the kind of thing that makes you close the app.\n",
+      "sha": "fae58f26e3e6acf720d39693a1bfb010771426a0"
+    },
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-08-25.md",
+      "frontmatter": {
+        "title": "Stopped losing edits I had not saved",
+        "date": "2026-08-25",
+        "tags": [
+          "worldbuilder",
+          "ux",
+          "release"
+        ],
+        "draft": false,
+        "backfilled": true
+      },
+      "body": "\nNine commits, two releases, v2.28.0 and v2.29.0.\n\nThe whole day was one theme: the app was throwing away work. Switching tabs or chapters discarded\npending manuscript edits. Leaving the Lore Explorer with unsaved changes lost them silently.\n\nFixed both. Added a dirty-tracking layer to the lore form with an \"Unsaved changes\" pill, and made\nleaving park the edits rather than drop them — you get them back when you return, instead of a dialog\nasking whether you meant it. Cross-workspace history plumbing so navigation between workspaces is a\nreal route with real entries.\n\nLosing someone's writing is the worst thing a writing app can do. Everything else is an\ninconvenience; that one makes you stop trusting it, and you don't come back.\n\nAlso fixed the Reference Panel's Physical Description and Voice fields and its prose truncation,\nadded an Edit-in-Lore jump from the panel, and put the Writing Scene Guide on the mobile keyboard\ntoolbar.\n",
+      "sha": "b04851d61a964e6ab70e1e1d79eeb19a508dba01"
+    },
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-09-02.md",
+      "frontmatter": {
+        "title": "The Chekhov ledger stopped guessing",
+        "date": "2026-09-02",
+        "tags": [
+          "worldbuilder",
+          "analysis",
+          "release"
+        ],
+        "draft": false,
+        "backfilled": true
+      },
+      "body": "\nA gate about making the analysis tools stop pretending to be more certain than they are.\n\nThe Chekhov ledger pairs setups with payoffs — the gun on the wall in chapter one, fired in chapter\ntwelve. It had been inferring those pairs, which works until two setups look similar and it\nconfidently pairs the wrong ones. Now a payoff can name the exact setup it settles, picked from a\nlist, and the panel says which pairings I stated and which it guessed. It also reports them in the\norder they appear in the book rather than the order it happened to process them, which sounds trivial\nand was the difference between a useful list and a scrambled one.\n\nSame principle in the continuity audit. It was flagging events as impossibly close together using\nscenes that had no time of day recorded at all — inventing precision from missing data. It now grades\nfindings by how much it actually knows, and where several scenes conflict it reports the worst one\nrather than the first one it stumbled into.\n\nAlso redrew the character arc as a real chart instead of an approximation, then immediately fixed it\ndistorting its own dots and labels when the container changed size.\n\nSmaller things: the deaths section in the scene modal collapses, and you can carry the previous\nscene's cast forward with one click instead of re-tagging six people who never left the room.\n",
+      "sha": "34d07d5fb0f2c3f2184f5c527e3686daa71debc4"
+    },
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-09-03.md",
+      "frontmatter": {
+        "title": "Dialogue attribution stopped counting names",
+        "date": "2026-09-03",
+        "tags": [
+          "worldbuilder",
+          "analysis",
+          "ai"
+        ],
+        "draft": false,
+        "backfilled": true
+      },
+      "body": "\nTwo things today, and both were replacing a cheap approximation with something that actually reasons.\n\nMagic systems got costs. A system can define a reserve — mana, stamina, whatever it is in your world\n— and each time a scene invokes it, it says who used it and how much it drained. That produces a\ntrack per character showing their reserve rising and falling through the book, and a check that fires\nwhen someone spends more than they have. The rule I stuck to: it reports the recovery that actually\nhappened in the text, not the amount they theoretically should have regained. Where it had to infer\nwho was wielding something from whose viewpoint the scene is in, it marks that point as inferred\nrather than quietly presenting a guess as a fact.\n\nI also removed the tier escalation ladder I'd built earlier the same day. It imposed a structure on\nmagic systems that only suited the one I had in mind.\n\nThe second half: dialogue attribution. Working out who said a line had been done by seeing whose name\nappeared nearby, which is barely better than a coin flip in a scene with three people in it. Replaced\nwith a cascade of real rules, tried in order of confidence. Everything downstream that claims to know\nwho's speaking now rests on that instead.\n\nThen the beginning of bring-your-own-key AI support, so the rules engine can hand its genuinely\nambiguous lines to a model. Mostly a day of finding out which providers can be called from a browser\nat all, and making failures say what actually went wrong instead of guessing from a status code.\n",
+      "sha": "8a1c1507b93101c4bc2fdd2b1b889aa866d218fa"
+    },
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-09-04.md",
+      "frontmatter": {
+        "title": "AI that labels, never writes",
+        "date": "2026-09-04",
+        "tags": [
+          "worldbuilder",
+          "ai",
+          "release"
+        ],
+        "draft": false,
+        "backfilled": true
+      },
+      "body": "\nShipped the AI work and wrote down the constraint that governs it: the model labels things, it never\ngenerates prose. It gets the lines the rules engine honestly can't attribute and returns a name. It\nnever writes a sentence that ends up in my book, and it never returns a number I then present as a\nmeasurement.\n\nI recorded that as a standing rule rather than leaving it as an intention, because it's the sort of\nthing that erodes one reasonable-sounding feature at a time. I deleted an AI prose feature back in\nAugust for exactly this reason and I'd rather not relearn it.\n\nSeveral releases across the day, and most of them were the same lesson: a failing run has to say what\nfailed. Early on it would report a generic error while the provider had sent a perfectly clear\nexplanation. A rate limit now reads as \"not yet\" rather than \"broken\", since those need completely\ndifferent responses from me. And you choose which chapters to run rather than paying for the whole\nmanuscript to answer a question about chapter three.\n\nThe other half of the day was analysis that needed the better attribution to be possible at all:\nchecking whether a character's dialogue matches the idiolect I recorded for them, ranking who\nactually speaks to whom, and naming setups I forgot to mark so I can mark them with a click.\n\nTwo small parsing fixes I enjoyed: it was reading contractions as quote marks, and treating a\nparagraph's several quoted lines as one utterance.\n\nAlso added a daily word goal that survives having the app open in two tabs.\n",
+      "sha": "390d83792265fd9d252023100f64c96ae6f7f812"
+    },
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-09-05.md",
+      "frontmatter": {
+        "title": "Rebuilt the plot timeline as a thread chart",
+        "date": "2026-09-05",
+        "tags": [
+          "worldbuilder",
+          "refactor",
+          "release"
+        ],
+        "draft": false,
+        "backfilled": true
+      },
+      "body": "\nTwo releases of the Story Planner and Timeline overhaul today, v2.43.0 and v2.44.0.\n\nThe first gate was mostly about admitting a feature hadn't worked. The Snowflake Wizard was meant to\nwalk you from a one-line premise up to a full outline, and in practice nobody finished it — you'd get\nthree steps in and abandon it. I pulled it out and replaced it with eleven starter Jots you can pick\nup in any order, or ignore entirely.\n\nTwo follow-ups from that, both small and both my own fault:\n\n- The starter Jots inherited copy from the wizard that promised automation they don't do. Writing a\n  cheque the feature can't cash is worse than saying nothing.\n- \"Add Starter Jots\" was confirming through a dialog whose primary button was a red *Delete*. It had\n  been that way for a while, which is the part that bothers me — I'd looked straight past it more\n  than once.\n\nThe second gate was the interesting one. Plot threads can now branch and merge, which meant the\ntimeline could no longer be drawn as a set of parallel lines. Redrew it as a proper thread chart\nwhere a branch visibly leaves its parent and a merge visibly rejoins.\n\nThat surfaced a real bug rather than a cosmetic one. The code that works out the shape could be\nhanded a cycle — threads that eventually loop back into each other — and the cycle-breaking picked an\nessentially arbitrary edge to cut, so the same project could render a different shape between runs.\nNow it demotes the thread that closes the ring specifically, which is both stable and the answer a\nreader would expect.\n\nNon-determinism in a rendering path is the kind of bug that wastes a whole afternoon later,\nbecause you can't reproduce it on demand. Worth the detour.\n",
+      "sha": "98747cad331fc2815680732318a1adfd0a6aeb1c"
+    },
     {
       "repo": "worldbuilder-engine",
       "name": "2026-09-06.md",
@@ -15,8 +301,47 @@
         "draft": false,
         "backfilled": false
       },
-      "body": "\nTwo commits finishing the move of Jots from account scope to project scope, and the ugly bug that\nmove exposed: switching projects silently threw away whatever you typed next.\n\nPhase 1 landed last night — Jots now live under a project instead of the account. This morning was\nthe fallout. `JotsWorkspace` re-subscribed when you changed project but never cleared the selected\njot id, so a stale id from the old project sat there blocking auto-select. The old project's note\nstayed on screen under the new project's name, and the next autosave went to the wrong address:\nproject B, jot id from project A. In mock mode that write is quietly discarded. In live mode it's\nrejected. Either way your typing is gone and nothing tells you.\n\nThe fix resets the active jot on project change and cancels any autosave debounce still in flight,\nbut the part I care about is that the \"what should be selected\" rule moved out of the component into\n`jotSelection.ts`, with tests. It's a rule with an obvious trap in it — two projects can coincidentally\nhave a jot with the same id, and the old code would have trusted that. That's not something I want\nliving inside a 1000-line workspace component where nobody can see it.\n\nSame commit, a smaller thing that had been bothering me: creating a project dropped you on a blank\nworkspace. Now creating a project — desktop, mobile, or the default one made at first sign-in —\nseeds the starter jots and lands you on the Jots tab with the Read Me open. A blank page is a\nquestion the app should answer, not ask.\n\nThen Phase 3: the migration modal for anyone with legacy account-level jots. Ask-once, mandatory,\npick which project the old notes belong to, copy them in with re-based order, seed starter jots into\nevery other project, mark it done. The decision logic sits behind a pure module so the\n\"nothing to migrate, complete yourself\" path is testable without a DOM.\n\nAlso swept up three bits of drift the scope move left behind: two stale \"existing account\" comments,\nand the Add Starter Jots buttons being clickable with no active project when the handler flatly\nrequires one.\n\nNothing released yet — these are phase commits.\n\nLast thing today, and the reason this file exists at all: I set up the daily log. From here every\nsession writes the day's entry in `log/` **as the work happens**, not at the end — every fix,\nfeature, bug, phase commit, worker hand-off and release, shipped or not. These files get consumed\nby the aggregator I'm building, so a missing entry is a missing published page rather than a\nmissing note. The rules are in CLAUDE.md and in the master session brief, so a fresh session picks\nthem up without me repeating myself, and the frozen format contract sits in `log/_format.md` where\nthe aggregator ignores it.\n\nOne correction to myself: I asked for `logs/`. The contract says `log/`. The contract wins.\n",
-      "sha": "493943ab1ae62ce206027ed47410baab79789d17"
+      "body": "\nFinished moving Jots — the loose-notes workspace — from living on your account to living inside a\nproject, and cleaned up the bug that move exposed.\n\nThe bug: switching projects silently threw away whatever you typed next. The workspace would keep\nshowing the old project's note under the new project's name, and your next keystroke got saved to\nan address that no longer existed. In one mode that write is quietly discarded, in the other it's\nrejected. Either way the writing is gone and nothing tells you. That's the worst class of bug this\napp can have, so the rule for what should be selected after a switch came out of the workspace and\ninto its own tested piece — it has a trap in it, two projects can coincidentally hold notes with\nthe same id, and the old code trusted that.\n\nThen the migration for anyone who already had notes from before the move: ask once, pick which\nproject the old notes belong to, move them in, done.\n\nTwo smaller things I'd been walking past. Creating a project dropped you on an empty workspace — a\nblank page is a question the app should answer, not ask, so new projects now arrive with starter\nnotes and the Read Me open. And the \"Add Starter Jots\" button was clickable when there was no\nproject to add them to.\n\nAlso set up this log. From here every session writes the day's entry as the work happens rather\nthan at the end, and the rules live in the repo so I don't have to keep repeating them. I'd asked\nfor the folder to be called `logs`; the format contract says `log`. The contract wins.\n\n## Later — finishing it\n\nNotes now travel with a project's backup. Leaving them out was right while they belonged to the\naccount, and wrong the moment they didn't — a backup that quietly drops every note in a project\nisn't a backup.\n\nThen the thing I only found by opening the migration screen myself instead of trusting the report\non it, and it's the same shape as the switch bug: a failure hiding behind a success message. If a\nnote failed to move it was skipped, the migration marked itself finished anyway, and that note was\nstranded with the prompt never coming back. The likely cause is a note too long for the database to\nswallow in one piece — exactly the kind of note I write. It now refuses to finish unless every note\nlands, and says which didn't.\n\nI checked all this in a browser before shipping, but against a fake account rather than my own. The\nmigration asks once which project your old notes belong to, and running it for real would have\nanswered that question for me. Not my call to make.\n\nShipped as v2.46.0.\n\nCut v2.46.1 straight after, with nothing in it. Two sessions had been committing to this repo at\nonce today and I wanted certainty rather than a reassurance that neither had left work stranded.\nChecking said everything was already pushed and the only commits after the release were log entries,\nso the running app was current either way — but \"I checked and it's fine\" is worth less than a tag\nyou can point at. An empty release is a cheap way to buy that.\n\n\n## Later still — the chapter kept jumping to the top\n\nWriting on the phone had a habit that finally annoyed me enough to chase: leave the app for\nunder a minute, come back, and the chapter you were in the middle of was scrolled back to its\nfirst line. Your cursor was still exactly where you left it — tap once and you're typing in the\nright place — but you had to scroll a thousand words to see what you were typing.\n\nIt turned out not to be about backgrounding at all. When the keyboard comes up, the prose box\nstops being an ordinary block on the page and becomes its own little scrolling window, pinned\nbetween the header and the toolbar so the writing area gets its height back on a small screen.\nThat swap is deliberate and I like it. What nobody had thought about is that a scrolling box\nthat has just come into existence starts at the top, and nothing ever moved it. Every keyboard\ndown-and-up did it; backgrounding was just the easiest way to trigger one. The reverse was\nbroken too — put the keyboard away and the page underneath was near the top, because the box\nhad been covering it and nobody was watching where it sat.\n\nThe fix is to notice which thing is doing the scrolling right now and put the cursor back about\na third of the way down it, in both directions. A third rather than the middle because it leaves\nthe paragraphs you just wrote on screen, which is the context you actually want.\n\nThe awkward part is that the box keeps growing while the keyboard slides in, so one correction\ngets measured against a box that isn't finished yet — it has to keep re-checking until the size\nholds still. And it has to know when to get out of the way: the moment you scroll it yourself,\nput a finger on it, or type a character, it stops. A helpful nudge that fights you is worse than\nno nudge.\n\nThat fixed the case where the app was still running. It doesn't help when the phone actually\nkills it, or the tab reloads, or you come back the next morning — then the cursor is genuinely\ngone and the chapter opens at the top with nothing to put back. So the position is now written\ndown, per device, and restored when you reopen the chapter. Four hundred milliseconds after the\ncursor settles, and immediately whenever you leave: switching chapters, tapping out of the prose,\nor the phone shoving the app into the background, which on a phone is usually the last thing that\nhappens before it gets killed.\n\nI decided against syncing this to the account. It would mean a write on every sentence, and where\nyou stopped on your phone is rarely where you want to resume on a laptop — it's a device habit,\nnot a fact about the manuscript. Fifty chapters are remembered, oldest forgotten first, and the\nwhole thing is treated as untrusted on the way back in: it's storage a user can edit and it\noutlives deploys, so a garbled entry has to be a shrug rather than a crash. A position past the\nend of a chapter that's since been trimmed lands at the end.\n\nIt places the cursor and stops there — it doesn't open the keyboard. iOS won't do that without a\ntap anyway, and an app that starts typing at you before you've asked is obnoxious on a laptop too.\n\nTwo things I got wrong in the first pass and only saw while wiring this up. The correction knew to\nstand down when you typed, but not when something else moved the cursor — so a jump to a scene or\na search result would land, and then half a second later the earlier correction would drag the\nview back to where the cursor used to be. And the cleanup on leaving the workspace was starting a\ncorrection nobody would ever stop; harmless in practice because it times out, but it worked by\naccident rather than on purpose. Both now say what they mean.\n\nChecked both halves in a browser at a phone width before shipping: with the cursor left in the\nmiddle of a long chapter, closing and reopening the keyboard now lands it a third of the way down\nthe box instead of at the top, and after a hard reload the chapter reopens exactly where it was —\nwith the cursor waiting there rather than the keyboard springing up. Shipped as v2.47.0.\n\n## Killing the health strip\n\nDeleted the row of count chips across the top of the Analysis Hub. It had ten tabs' worth of\nnumbers in it — unpaid plants, continuity errors, uncosted invocations — each one clicking through\nto the tab that explains it.\n\nI built it because ten tabs with no landing surface felt unfriendly: nothing told you what needed\nattention without visiting each tab and already knowing what it was for. That reasoning was fine\nand the thing I built to satisfy it was still wrong, because the Hub already has a landing surface.\nIt's called Overview and it's the first tab. So the strip was a second front door in front of the\nfirst one, and it charged rent: it sat above the tab row on *every* tab, so a chunk of vertical\nspace went to duplicate numbers no matter which one you were reading. On a phone that's most of\nwhat you can see at once. Every count it showed is still computed and still displayed by the tab\nthat owns it, so removing it loses nothing except the copy.\n\nWhat made it interesting is what fell out. The Hub's tab row is icon-only below 768px, and I'd\njustified that at the time by pointing at the chips right above it — the labels are there, just one\nrow up. Which means the strip I was about to delete was the only thing telling a phone user what\nthose ten icons were. Ten unlabelled icons is not a navigation bar, it's a puzzle.\n\nSo the tabs got their labels back at every width. They can't share the row equally anymore now that\nthey have text in them, so the row scrolls sideways instead — which is exactly what the chip row\ndid, so the gesture is one a user of this screen already had. Desktop is untouched.\n\nSmall lesson I keep relearning: a feature that's quietly propping up another one won't announce\nitself. You find out when you pull it.\n\nChecking the scrolling row in a browser turned up the thing I hadn't thought about: which tab you're\non is remembered globally, but where the row is scrolled to isn't. Leave the Hub on one of the last\ntabs, come back, and the row is back at the start with the highlight sitting off-screen — so the\nscreen reads as having nothing selected. That's worse on a phone but it isn't a phone bug; a 1440px\nwindow overflows too. The row now scrolls the selected tab into view on arrival and on every change,\nat every width.\n\nOne more thing the release check caught, and it's the failure shape I keep finding: something\nhalf-landing with nothing to announce it. The write-up of this change went into the reference doc\nbut never made it into the Help panel inside the app, because the compiled copy had been mistaken\nfor leftover clutter in the working folder and left behind. Nothing errors when that happens —\nthe doc is right, the app quietly says something older. My own build had muddied the water enough\nto make the mistake reasonable, which is the part worth remembering: the check is to look at the\nfile, not to work out whose it was.\n\nShipped as v2.48.0.\n",
+      "sha": "b36d415e82fdc7660b7bdef2c68369d3a3d8fb5a"
+    },
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-09-08.md",
+      "frontmatter": {
+        "title": "The day I stopped guessing at Google",
+        "date": "2026-09-08",
+        "tags": [
+          "worldbuilder",
+          "drive",
+          "spike",
+          "tests"
+        ],
+        "draft": false,
+        "backfilled": false
+      },
+      "body": "\nI want to point the app at my Google Docs and have them turn up as notes, kept in step as I edit\nthem. There's a plan for it that runs to six phases, and all six rested on assumptions nobody had\nchecked. Two sittings today, both spent replacing a guess with a measurement.\n\nThe first assumption was about permissions. Google's cheap permission level is per-file — you get\nwhat the user hands you through the picker and nothing more. What isn't documented is what happens\nwhen the thing handed over is a *folder*. Does that reach the files inside, or just the folder? The\npermission level that would settle it outright needs a formal security assessment, which is absurd\nfor a personal app. So I built the smallest possible thing that answers the question and nothing\nelse.\n\nThe answer is no. Picking a folder grants you the folder and its contents stay invisible. Asking\nfor them doesn't even fail — you get a perfectly cheerful empty list, which is the worst way to be\ntold no. Two false starts before I could trust that, both mine: the screen first reported success\non an empty result because I'd written the check to treat \"no error\" as \"it worked\", and then the\npick wasn't registering at all because I'd left out a parameter the picker needs to record the\ngrant, having read it as optional. For about an hour I had an answer that looked much worse than\nthe truth. Rather than take the failure at face value I tested the fallback in the same sitting:\npicking documents individually works, and the permission grows by exactly what you picked. The\nfeature survives, one shape smaller — you choose documents rather than a folder, and adding one\nlater is a deliberate act rather than something that happens by itself.\n\nThe second sitting was the piece that turns a Google Doc into a note, and the same lesson landed\nagain. I had already guessed twice at what a Docs export looks like and been wrong both times, so\nthis time I exported a real chapter and read it. Three things in there would have quietly wrecked\nmy research. Most of the formatting markers say *nothing is applied here* — 29 of 41 — so a\nconverter that emphasises anything carrying a marker bolds the entire document. Runs of text split\nmid-word, so joining them with a space sprinkles \"two w eeks\" through prose nobody re-reads line by\nline. And every link is wrapped in a Google tracking redirect, so unprocessed, each cited source\npoints back at Google with a timestamp attached. Tables can't survive at all — the editor has no\nnotion of one — so each row becomes a line with the cells separated by pipes: content kept, grid\nhonestly lost.\n\nThe rest is rules about what a sync may do. It never overwrites a note I've edited, never deletes\none because a file went missing, and never fetches a document that hasn't changed. There's a\nversion stamp folded into the fingerprints so improving the converter later re-does the notes\ninstead of declaring every one of them conflicted forever.\n\nAlso found the throwaway test screen was unreachable but still being shipped, keys and all — the\nbundler doesn't drop code just because nothing can reach it. Unreachable and absent aren't the same\nthing.\n",
+      "sha": "6a52e5d02b6217e046eb8e0b9c36a277515b137d"
+    },
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-09-09.md",
+      "frontmatter": {
+        "title": "The whole Drive feature, and three ways it could have eaten my prose",
+        "date": "2026-09-09",
+        "tags": [
+          "worldbuilder",
+          "drive",
+          "jots",
+          "sync",
+          "conflicts",
+          "import",
+          "release"
+        ],
+        "draft": false,
+        "backfilled": false
+      },
+      "body": "\nSeven sittings and two releases, and the thing I set out to build a couple of days ago is done: my\nresearch in Google Drive turns up in the app as notes and keeps itself current, a note that's\nchanged on both sides hands me the decision instead of picking for me, and any file on this machine\ncan become a note without Google being involved at all.\n\nThe only test I actually cared about all day was one I ran by hand. Edit a note here, edit the same\ndocument in Drive, sync. If the app had quietly taken Drive's version, the whole feature would have\nbeen a liability dressed up as a convenience. It stopped, said the note had been edited in both\nplaces, and left my words alone.\n\nWhich is the theme of the day, really. Almost everything hard was a way this could have destroyed\nsomething without ever telling me, and three of them nearly shipped. The sync works out that I've\ndeleted a note by not finding it in the list it was handed — perfectly correct until the list hasn't\nloaded yet, at which point every mirrored document looks deleted and stops syncing for good,\nsilently. The background permission check was set to an option I was sure meant \"don't show\nanything\", and it actually means \"skip the consent screen if they've already agreed\" — so the app\nwould have thrown a Google popup at me roughly hourly, unprompted. And the worst one arrived through\nthe button built to prevent exactly this: pressing \"keep mine\" has to convince the next sync there's\nnothing left to do, but there are *two* separate reasons it can decide a note needs rewriting, and\nclearing one and not the other makes the button look like it worked and then overwrites the words I\njust chose to keep, five minutes later, with nothing on screen. There's a test now that starts in\nthat state and insists the next sync does nothing at all.\n\nNone of those would have failed loudly. That's what makes them worth the paranoia — a crash you find\nin a minute; a note quietly replaced overnight you find in a month, if ever. The same instinct runs\nthrough the rest of it: the access token is never written down anywhere, none of the Drive\nbookkeeping goes into a backup, and keeping my own version asks Google when the document actually\nchanged rather than guessing, refusing to resolve at all if it can't reach it.\n\nThe smaller feature took an hour because the hard part already existed. Point at a Markdown file, a\nWord document or a saved web page and it becomes a note, formatting intact, no account and no\nnetwork needed. One rule in there is invisible and would produce garbage backwards: Markdown has to\nbecome markup *before* the sanitiser sees it, or every heading and bullet collapses into one grey\nslab that looks almost right until you read it. I'd learned that on the Drive side already, so this\ntime there's a test that fails the moment anyone removes the step. An imported note is deliberately\njust a note — no pretend link back to a file nothing is watching.\n\nTwo things about writing it all down. Documenting a feature forces you to notice what it doesn't do,\nand three honest limitations went into the docs that I'd been comfortably not saying out loud — then\na day later two of them stopped being true and I had to go back and fix a limitations list that was\nnow *underselling* the thing, which is exactly as untrustworthy as one that oversells it. And I'd\nbeen filing each sitting as its own dated file, so one day had four. That's not a daily log, that's\nfour fragments of a Tuesday. Merged them and changed the rules so it doesn't happen again; the\nformat always allowed either shape, so this was my own habit drifting rather than a spec problem.\n\nLeft undone on purpose: it only syncs while I'm actually looking at my notes, and nothing syncs with\nthe app closed. There's no server to receive Google's nudge, and there isn't going to be one.\n",
+      "sha": "27fdd662dd2145dabf1a44a697190a585bfb3bbf"
     }
   ]
 }
