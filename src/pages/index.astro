@@ -2,12 +2,17 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import LogList from '../components/LogList.astro';
 import ProjectCard from '../components/ProjectCard.astro';
+import WritingList from '../components/WritingList.astro';
 import { getLogEntries, getRecentLogEntries } from '../lib/log';
+import { getRecentWriting, getWritingEntries } from '../lib/writing';
 import { getShowcase } from '../lib/showcase';
 import { SITE } from '../consts';
 
 const recent = await getRecentLogEntries(3);
 const total = (await getLogEntries()).length;
+
+const recentWriting = await getRecentWriting(2);
+const writingTotal = (await getWritingEntries()).length;
 
 const { items } = await getShowcase();
 // Pinned projects if any are marked, otherwise just the most recently touched.
@@ -38,6 +43,21 @@ const featured = (pinned.length > 0 ? pinned : items).slice(0, 2);
 			)
 		}
 	</section>
+
+	{
+		recentWriting.length > 0 && (
+			<section class="slot" aria-labelledby="writing-heading">
+				<div class="slot-head">
+					<h2 id="writing-heading">Writing</h2>
+					<a class="more" href="/writing">
+						All {writingTotal} pieces
+					</a>
+				</div>
+
+				<WritingList entries={recentWriting} headingLevel={3} />
+			</section>
+		)
+	}
 
 	<section class="slot" aria-labelledby="projects-heading">
 		<div class="slot-head">

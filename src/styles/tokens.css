@@ -62,6 +62,11 @@
 	/* Line length. Prose should not exceed this. */
 	--measure: 64ch;
 
+	/* Verse sets narrower than prose: a poem's line breaks are the author's,
+	   so the column only has to be wide enough that they are rarely overridden
+	   by the browser's. */
+	--measure-verse: 46ch;
+
 	/* ---- Space --------------------------------------------------------- */
 	/* 4px base. Named by step, not by use, so they stay reusable. */
 	--space-1: 0.25rem;

@@ -8,6 +8,51 @@ Each released version has a matching annotated git tag (`vX.Y.Z`), so any prior 
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-09-14
+
+A place for writing that isn't about work, and a way to show a piece was here first.
+
+### Added
+- `/writing` — essays, poems and fragments, in their own stream separate from the log. One piece per
+  file in `src/content/writing/`, with the filename as the slug so a piece can be re-dated or
+  reclassified without breaking a shared link. `/writing/[...slug]` renders one piece,
+  `/writing/rss.xml` is a second feed, and both feeds are now in the head of every page and in the
+  footer.
+- Poems render as exact text rather than Markdown. Line breaks, blank-line stanzas and leading
+  indentation survive verbatim, and a line too long for the column wraps with a hanging indent so a
+  wrap is distinguishable from a line the author broke. `*italics*` is the only inline markup.
+- `/writing/proof` and `npm run stamp` — a committed ledger of the SHA-256 of every published piece,
+  submitted to OpenTimestamps for a Bitcoin-anchored proof file under `proofs/`. `npm run
+  stamp:upgrade` completes proofs once they confirm; `npm run stamp -- --check` reports drift.
+- `src/lib/content.ts`, holding the date formatting and list excerpt that `log.ts` and `writing.ts`
+  both need. `log.ts` re-exports them under their old names, so nothing that used them changed.
+- `--measure-verse` token (46ch), for the narrower column a poem sets in.
+
+### Fixed
+- The comment in `src/pages/rss.xml.ts` claiming Sätteri has no string-rendering entry point. It
+  exports `markdownToHtml`. The feed still carries excerpts, but for the reason that actually
+  applies — a feed that formats entries differently from the pages they link to is worse than one
+  that links out — rather than a constraint that doesn't exist.
+
+### Notes
+- **Sätteri has no `breaks` option.** Its `Features` interface covers gfm, frontmatter, math,
+  headingAttributes, directive, superscript, subscript, wikilinks, definitionList, smartPunctuation
+  and rawHtml, and nothing else, and there is no remark-breaks to reach for because this site does
+  not use remark. That is why poems bypass Markdown entirely instead of configuring it.
+- **`draft: true` is not privacy here, and the writing section says so.** This repository is public,
+  so a drafted piece is off the site but still readable by anyone who opens the repo. Writing that
+  must stay unread goes in a `_`-prefixed file, which the collection glob skips and `.gitignore`
+  excludes. The distinction is documented on the schema, in Site Information and in RUNBOOK §6,
+  because for personal writing it matters more than it does for a dev log.
+- **A proof that proves nothing is worse than no proof.** `OpenTimestamps.stamp()` resolves
+  successfully when every calendar server is unreachable, returning a timestamp with no attestations
+  that serializes to a small, well-formed, worthless file. The script rejects an empty result: the
+  hash is still recorded, `ots` is left absent, and the next run retries. Same reasoning as the
+  projects page treating a partial GitHub response as a failure.
+- The proof page states what each layer actually establishes — that the hash alone proves nothing
+  because I commit it, that the git dates ask you to trust GitHub, and that only the OpenTimestamps
+  proof stands on its own. Overstating it would make the whole page worth less.
+
 ## [0.7.0] - 2026-09-06
 
 ### Added

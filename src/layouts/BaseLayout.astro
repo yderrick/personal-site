@@ -45,12 +45,21 @@ const year = new Date().getFullYear();
 		<meta name="twitter:description" content={description} />
 		<meta name="twitter:image" content={ogImage.href} />
 
-		<!-- Feed autodiscovery: this is how a reader finds the feed from any page. -->
+		<!-- Feed autodiscovery: this is how a reader finds the feeds from any page.
+		     Two of them, because the log and the writing are two different
+		     invitations — the titles are what let a reader's client tell them
+		     apart, so both carry one. -->
 		<link
 			rel="alternate"
 			type="application/rss+xml"
 			title={`${SITE.title} — log`}
 			href={new URL('/rss.xml', Astro.site ?? Astro.url).href}
+		/>
+		<link
+			rel="alternate"
+			type="application/rss+xml"
+			title={`${SITE.title} — writing`}
+			href={new URL('/writing/rss.xml', Astro.site ?? Astro.url).href}
 		/>
 
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -83,7 +92,10 @@ const year = new Date().getFullYear();
 						))
 					}
 					<li>
-						<a href="/rss.xml">RSS</a>
+						<a href="/rss.xml">Log feed</a>
+					</li>
+					<li>
+						<a href="/writing/rss.xml">Writing feed</a>
 					</li>
 					<li>
 						<a href="https://github.com/yderrick/personal-site">Source</a>

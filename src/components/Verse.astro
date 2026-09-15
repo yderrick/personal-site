@@ -1,0 +1,46 @@
+---
+/**
+ * A poem's body, rendered as exact text rather than parsed Markdown.
+ * See src/lib/verse.ts for why.
+ */
+import { renderVerse } from '../lib/verse';
+
+interface Props {
+	body: string;
+}
+
+const { body } = Astro.props;
+---
+
+<div class="verse" set:html={renderVerse(body)} />
+
+<style>
+	.verse {
+		max-width: var(--measure-verse);
+		font-size: var(--text-md);
+		line-height: var(--leading-normal);
+	}
+
+	.verse :global(.line) {
+		display: block;
+		/* The whole point: the author's line breaks and leading indentation
+		   survive verbatim. */
+		white-space: pre-wrap;
+		/* A line too long for the column wraps inwards, so a wrap reads as a
+		   wrap and not as a new line of the poem. Matters most on a phone, where
+		   almost any long line wraps. Per line, because text-indent only affects
+		   the first formatted line of a block — see src/lib/verse.ts. */
+		padding-left: 2ch;
+		text-indent: -2ch;
+	}
+
+	/* A blank line between stanzas. An empty element is zero-height, so it has
+	   to be given the height of a line explicitly or the stanza break vanishes. */
+	.verse :global(.line:empty) {
+		min-height: 1lh;
+	}
+
+	.verse :global(em) {
+		font-style: italic;
+	}
+</style>

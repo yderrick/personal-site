@@ -13,12 +13,11 @@ import { entryHref, entryRepo, excerpt, getLogEntries } from '../lib/log';
  * reader subscribing to the log wants the whole log, not the part of it that
  * happens to live in this repository.
  *
- * Items carry an excerpt rather than the full post. Rendering the Markdown
- * would mean a second Markdown engine in the build — this site renders through
- * Sätteri, which has no string-rendering entry point — and a feed that formats
+ * Items carry an excerpt rather than the full post, because a feed that formats
  * entries differently from the pages they link to is worse than a feed that
- * links out. If full text is ever wanted, render through Astro's container API
- * rather than bolting on markdown-it.
+ * links out. (Full text is available if it is ever wanted: Sätteri exports
+ * `markdownToHtml`, so no second Markdown engine would be needed. An earlier
+ * version of this comment said otherwise.)
  */
 export async function GET(context: APIContext): Promise<Response> {
 	const entries = await getLogEntries();

@@ -1,7 +1,7 @@
 {
   "name": "personal-site",
   "type": "module",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "engines": {
     "node": ">=22.12.0"
   },
@@ -12,6 +12,8 @@
     "sync": "astro sync",
     "log": "node scripts/draft-log.mjs",
     "snapshot:log": "node scripts/snapshot-log.mjs",
+    "stamp": "node scripts/stamp-writing.mjs",
+    "stamp:upgrade": "node scripts/stamp-writing.mjs --upgrade",
     "astro": "astro"
   },
   "dependencies": {
@@ -28,6 +30,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "opentimestamps": "^0.4.9",
     "typescript": "^6.0.3"
   },
   "private": true,

@@ -33,3 +33,11 @@ pnpm-debug.log*
 # playwright-mcp scratch output
 .playwright-mcp/
 log-full.png
+
+# Writing kept off the site AND out of the repository.
+#
+# `draft: true` hides a piece from the built site, but this repository is
+# public — a drafted piece is still readable by anyone who opens it. An
+# underscore-prefixed file is ignored by the writing collection's glob and by
+# this rule, so it never leaves the machine it was written on.
+src/content/writing/_*.md

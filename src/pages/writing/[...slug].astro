@@ -1,0 +1,286 @@
+---
+import { render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Verse from '../../components/Verse.astro';
+import { excerpt, formatDate, isoDate } from '../../lib/content';
+import {
+	getAdjacentWriting,
+	getWritingEntries,
+	writingHref,
+	type WritingEntry,
+} from '../../lib/writing';
+
+/**
+ * Routes come from getWritingEntries(), so a draft never gets a page generated
+ * in a production build — the URL 404s rather than existing unlinked.
+ *
+ * A rest parameter for consistency with the log route. Writing ids are always a
+ * single segment today; this costs nothing and leaves room to group later.
+ */
+export const getStaticPaths = (async () => {
+	const entries = await getWritingEntries();
+	return entries.map((entry) => ({
+		params: { slug: entry.id },
+		props: { entry },
+	}));
+}) satisfies GetStaticPaths;
+
+interface Props {
+	entry: WritingEntry;
+}
+
+const { entry } = Astro.props;
+const isPoem = entry.data.kind === 'poem';
+
+// A poem's body is never parsed — see src/lib/verse.ts. Only render() the
+// Markdown for the kinds that are actually Markdown. Null for a poem, and the
+// template branches on this rather than on `isPoem` so the type narrows.
+const Body = isPoem ? null : (await render(entry)).Content;
+const { newer, older } = await getAdjacentWriting(entry.id);
+
+// A poem has no meaningful opening paragraph to summarise, so fall back to the
+// title rather than publishing a flattened first stanza as the page description.
+const description = isPoem ? `${entry.data.title} — a poem.` : excerpt(entry, 155);
+---
+
+<BaseLayout title={entry.data.title} description={description}>
+	<article class:list={['piece', { verse: isPoem }]}>
+		<header class="head">
+			<p class="meta">
+				<time datetime={isoDate(entry.data.date)}>{formatDate(entry.data.date)}</time>
+				<span class="kind">{entry.data.kind}</span>
+			</p>
+
+			<h1>{entry.data.title}</h1>
+
+			{
+				entry.data.updated && (
+					<p class="revised">
+						Revised <time datetime={isoDate(entry.data.updated)}>{formatDate(entry.data.updated)}</time>.
+						Earlier versions are in the <a href="/writing/proof">authorship record</a>.
+					</p>
+				)
+			}
+
+			{entry.data.draft && <p class="draft-flag">Draft — visible in dev only</p>}
+
+			{
+				entry.data.tags.length > 0 && (
+					<ul class="tags">
+						{entry.data.tags.map((tag) => (
+							<li>{tag}</li>
+						))}
+					</ul>
+				)
+			}
+		</header>
+
+		{
+			Body ? (
+				<div class="prose">
+					<Body />
+				</div>
+			) : (
+				<Verse body={entry.body ?? ''} />
+			)
+		}
+	</article>
+
+	<nav class="adjacent" aria-label="Other writing">
+		<div class="side">
+			{
+				older && (
+					<a href={writingHref(older)}>
+						<span class="dir">Older</span>
+						<span class="what">{older.data.title}</span>
+					</a>
+				)
+			}
+		</div>
+		<div class="side end">
+			{
+				newer && (
+					<a href={writingHref(newer)}>
+						<span class="dir">Newer</span>
+						<span class="what">{newer.data.title}</span>
+					</a>
+				)
+			}
+		</div>
+	</nav>
+</BaseLayout>
+
+<style>
+	.head {
+		padding-block: var(--space-8) var(--space-5);
+		margin-bottom: var(--space-6);
+	}
+
+	/* A poem's header carries no rule under it. The log and the essays use one
+	   to separate metadata from body; verse wants more air and less furniture. */
+	.piece:not(.verse) .head {
+		border-bottom: var(--border) solid var(--color-rule);
+	}
+
+	.meta {
+		display: flex;
+		align-items: baseline;
+		gap: var(--space-3);
+		font-family: var(--font-mono);
+		font-size: var(--text-sm);
+		letter-spacing: var(--tracking-mono);
+		color: var(--color-accent);
+		margin-bottom: var(--space-3);
+	}
+
+	.kind {
+		font-size: var(--text-2xs);
+		color: var(--color-fg-muted);
+	}
+
+	h1 {
+		font-size: var(--text-3xl);
+		max-width: 20ch;
+	}
+
+	/* A poem's title sets smaller and lighter than an essay's. It is a label on
+	   the thing, not a headline making a claim. */
+	.verse h1 {
+		font-size: var(--text-2xl);
+	}
+
+	.revised {
+		font-family: var(--font-mono);
+		font-size: var(--text-2xs);
+		letter-spacing: var(--tracking-mono);
+		color: var(--color-fg-muted);
+		margin-top: var(--space-3);
+	}
+
+	.draft-flag {
+		display: inline-block;
+		font-family: var(--font-mono);
+		font-size: var(--text-2xs);
+		color: var(--color-bg);
+		background: var(--color-accent);
+		border-radius: var(--radius-sm);
+		padding: var(--space-1) var(--space-2);
+		margin-top: var(--space-4);
+	}
+
+	/* Not links — there are no /writing/tags/ routes yet. */
+	.tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-2);
+		list-style: none;
+		margin: var(--space-4) 0 0;
+		padding: 0;
+		font-family: var(--font-mono);
+		font-size: var(--text-2xs);
+		letter-spacing: var(--tracking-mono);
+		color: var(--color-fg-muted);
+	}
+
+	.tags li::before {
+		content: '#';
+		opacity: 0.55;
+	}
+
+	/* Essay and fragment bodies. Mirrors the log entry route's prose block;
+	   see docs/Site Information.md, Known gaps, on factoring these together. */
+	.prose {
+		max-width: var(--measure);
+	}
+
+	.prose :global(p),
+	.prose :global(ul),
+	.prose :global(ol),
+	.prose :global(blockquote),
+	.prose :global(pre) {
+		margin-block: 0 var(--space-5);
+	}
+
+	.prose :global(h2) {
+		font-size: var(--text-xl);
+		margin-block: var(--space-7) var(--space-4);
+	}
+
+	.prose :global(h3) {
+		font-size: var(--text-lg);
+		margin-block: var(--space-6) var(--space-3);
+	}
+
+	.prose :global(li) {
+		margin-bottom: var(--space-2);
+	}
+
+	.prose :global(ul),
+	.prose :global(ol) {
+		padding-left: var(--space-5);
+	}
+
+	.prose :global(blockquote) {
+		border-left: 2px solid var(--color-accent-quiet);
+		padding-left: var(--space-4);
+		color: var(--color-fg-muted);
+	}
+
+	.prose :global(hr) {
+		margin-block: var(--space-7);
+	}
+
+	.prose :global(img) {
+		border-radius: var(--radius);
+		margin-block: var(--space-5);
+	}
+
+	.adjacent {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: var(--space-5);
+		margin-top: var(--space-9);
+		padding-top: var(--space-5);
+		border-top: var(--border) solid var(--color-rule);
+	}
+
+	.side.end {
+		text-align: right;
+	}
+
+	.adjacent a {
+		display: inline-flex;
+		flex-direction: column;
+		gap: var(--space-1);
+		text-decoration: none;
+	}
+
+	.dir {
+		font-family: var(--font-mono);
+		font-size: var(--text-xs);
+		letter-spacing: var(--tracking-mono);
+		color: var(--color-fg-muted);
+	}
+
+	.what {
+		color: var(--color-fg);
+		font-size: var(--text-base);
+		line-height: var(--leading-snug);
+	}
+
+	.adjacent a:hover .what {
+		color: var(--color-accent);
+	}
+
+	@media (max-width: 34rem) {
+		.adjacent {
+			grid-template-columns: 1fr;
+		}
+
+		.side.end {
+			text-align: left;
+		}
+	}
+</style>

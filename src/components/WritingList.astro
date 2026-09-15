@@ -1,0 +1,171 @@
+---
+/**
+ * A list of writing, in the same visual grammar as LogList — date gutter,
+ * title, summary — but a sibling rather than a widening of it. LogList is
+ * typed to `LogEntry`, a union that carries remote-log provenance; making it
+ * generic would drag that into a collection that has none.
+ */
+import { excerpt, formatDate, isoDate } from '../lib/content';
+import { writingHref, type WritingEntry } from '../lib/writing';
+
+interface Props {
+	entries: WritingEntry[];
+	/** Show the opening line under each title. Off for tight lists. */
+	summaries?: boolean;
+	/**
+	 * Heading level for titles. `h2` when the list follows the page `h1`
+	 * directly, `h3` when the home page nests it under a section heading.
+	 */
+	headingLevel?: 2 | 3;
+}
+
+const { entries, summaries = true, headingLevel = 2 } = Astro.props;
+const Heading = `h${headingLevel}` as 'h2' | 'h3';
+---
+
+<ol class="entries">
+	{
+		entries.map((entry) => (
+			<li class="entry">
+				<div class="when">
+					<time class="date" datetime={isoDate(entry.data.date)}>
+						{formatDate(entry.data.date)}
+					</time>
+					<span class="kind">{entry.data.kind}</span>
+				</div>
+
+				<div class="detail">
+					<Heading class="title">
+						<a href={writingHref(entry)}>{entry.data.title}</a>
+					</Heading>
+
+					{entry.data.draft && <p class="draft-flag">Draft — visible in dev only</p>}
+
+					{/* No summary for a poem. Flattening verse into one line to
+					    160 characters reads as damage, not as a preview. */}
+					{summaries && entry.data.kind !== 'poem' && (
+						<p class="summary">{excerpt(entry)}</p>
+					)}
+
+					{entry.data.tags.length > 0 && (
+						<ul class="tags">
+							{entry.data.tags.map((tag) => (
+								<li>{tag}</li>
+							))}
+						</ul>
+					)}
+				</div>
+			</li>
+		))
+	}
+</ol>
+
+<style>
+	.entries {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.entry {
+		display: grid;
+		grid-template-columns: 7.5rem 1fr;
+		gap: var(--space-5);
+		align-items: baseline;
+		padding-block: var(--space-5);
+		border-bottom: var(--border) solid var(--color-rule);
+	}
+
+	/* On a phone the date sits above the title rather than beside it — a
+	   7.5rem gutter costs more than it's worth at 360px. */
+	@media (max-width: 34rem) {
+		.entry {
+			grid-template-columns: 1fr;
+			gap: var(--space-2);
+		}
+	}
+
+	.when {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-1);
+	}
+
+	.date {
+		font-family: var(--font-mono);
+		font-size: var(--text-sm);
+		letter-spacing: var(--tracking-mono);
+		color: var(--color-accent);
+		font-variant-numeric: tabular-nums;
+	}
+
+	/* Essay, poem or fragment. Sits under the date as metadata — it tells a
+	   reader what they are about to open, which matters more here than on the
+	   log, where every entry is the same kind of thing. */
+	.kind {
+		font-family: var(--font-mono);
+		font-size: var(--text-2xs);
+		letter-spacing: var(--tracking-mono);
+		color: var(--color-fg-muted);
+	}
+
+	.title {
+		font-family: var(--font-body);
+		font-weight: var(--weight-semi);
+		font-size: var(--text-md);
+		letter-spacing: var(--tracking-normal);
+		line-height: var(--leading-snug);
+		margin-bottom: var(--space-2);
+	}
+
+	.title a {
+		color: var(--color-fg);
+		text-decoration: none;
+	}
+
+	.title a:hover {
+		color: var(--color-accent);
+	}
+
+	.summary {
+		max-width: var(--measure);
+		font-size: var(--text-base);
+		color: var(--color-fg-muted);
+		margin-bottom: var(--space-3);
+	}
+
+	.draft-flag {
+		display: inline-block;
+		font-family: var(--font-mono);
+		font-size: var(--text-2xs);
+		color: var(--color-bg);
+		background: var(--color-accent);
+		border-radius: var(--radius-sm);
+		padding: var(--space-1) var(--space-2);
+		margin-bottom: var(--space-3);
+	}
+
+	/* Not links. There are no /writing/tags/ routes yet — see docs/Site
+	   Information.md, Known gaps. Styled flatter than the log's tag pills so
+	   they don't invite a click that goes nowhere. */
+	.tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-2);
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.tags li {
+		font-family: var(--font-mono);
+		font-size: var(--text-2xs);
+		letter-spacing: var(--tracking-mono);
+		color: var(--color-fg-muted);
+	}
+
+	.tags li::before {
+		content: '#';
+		opacity: 0.55;
+	}
+</style>

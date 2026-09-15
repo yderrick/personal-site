@@ -1,6 +1,6 @@
 # Personal Site + Daily Dev Log
 
-A static personal site built with Astro and deployed on Vercel. It does three things: introduces who I am and what I'm working on, keeps a timestamped daily log of what I build and learn, and shows an auto-updating gallery of my public GitHub projects.
+A static personal site built with Astro and deployed on Vercel. It does four things: introduces who I am and what I'm working on, keeps a timestamped daily log of what I build and learn, shows an auto-updating gallery of my public GitHub projects, and holds the writing that isn't about work.
 
 Every push to `main` rebuilds and redeploys in under a minute. No CMS, no database, no server — content is Markdown in this repo, and project data is fetched from the GitHub API at build time.
 
@@ -40,6 +40,8 @@ it falls back to the committed snapshot and labels the page accordingly.
 - `npm run build` — type-check and build to `dist/`
 - `npm run preview` — serve the production build locally
 - `npm run log` — print today's commits across every local repo, as raw material for a log entry
+- `npm run stamp` — hash and timestamp new writing before publishing it (see [RUNBOOK §6](RUNBOOK.md))
+- `npm run stamp:upgrade` — complete OpenTimestamps proofs the day after stamping
 - `npx astro sync` — regenerate content-collection types after a schema change
 
 There is no deploy command. Pushing to `main` is the deploy.
@@ -71,6 +73,28 @@ Two entries on the same day: `2026-09-05-2.md`.
 **Drafts.** `draft: true` entries are visible in `npm run dev` and excluded from every production build — the log list, tag pages, the RSS feed and the home page. Write freely, publish when comfortable. Verify with `npm run build && npm run preview` if you're unsure.
 
 Then `git add`, commit, `git push` — live in about a minute. Content commits don't get a version bump or a changelog entry; only code and design changes do.
+
+## Publishing writing
+
+Essays, poems and fragments live at `src/content/writing/`, one file per piece, separate from the log. The filename is the slug; the date goes in frontmatter, not the URL.
+
+```markdown
+---
+title: 'Low tide'
+date: 2026-09-12
+kind: poem
+tags: [sea, distance]
+draft: false
+---
+```
+
+`kind` is `essay`, `poem` or `fragment`, and it changes the rendering rather than just the label. **A poem is published exactly as typed** — line breaks, stanza gaps and indentation are preserved, and `*italics*` is the only markup it understands. Essays and fragments are normal Markdown.
+
+Run `npm run stamp` before committing. It hashes each new or changed piece into `src/data/writing-ledger.json` and gets an OpenTimestamps proof, which is what `/writing/proof` publishes. The day after, `npm run stamp:upgrade` completes the proofs once Bitcoin has confirmed them.
+
+**`draft: true` is not privacy.** This repo is public, so a draft is off the site but still readable on GitHub. For writing nobody should see, prefix the filename with an underscore — the site ignores it and `.gitignore` keeps it out of the repo.
+
+Full procedure in [RUNBOOK §6](RUNBOOK.md).
 
 ## Projects showcase
 
@@ -113,19 +137,26 @@ To add a custom domain later, point it at the Vercel project in the dashboard �
 ```
 src/
   content/
-    log/            one .md per daily entry
     projects/       hand-written blurbs for pinned repos
+    writing/        essays, poems and fragments (_prefixed = private, never committed)
   content.config.ts collection schemas (Astro 7 — note: not src/content/config.ts)
   components/
   layouts/
   lib/
-    log.ts          the one place drafts are filtered
+    log.ts          the one place log drafts are filtered
+    writing.ts      the one place writing drafts are filtered
+    verse.ts        poems, rendered as exact text rather than Markdown
+    content.ts      date formatting and excerpts, shared by both collections
     github.ts       build-time repo fetch + fallback
   pages/
   styles/
     tokens.css      every colour, font and spacing value
   data/
     projects-fallback.json
+    writing-ledger.json   dated hash of every published piece
+log/                one .md per daily entry (repo root — see docs/Log Format.md)
+proofs/             OpenTimestamps proof files, one per revision
+scripts/
 docs/
   Site Information.md
 ```

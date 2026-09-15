@@ -129,4 +129,44 @@ const now = defineCollection({
 	}),
 });
 
-export const collections = { log, remoteLog, projects, about, now };
+const writing = defineCollection({
+	// Flat, and the filename is the slug — `src/content/writing/low-tide.md` is
+	// `/writing/low-tide`. Deliberately not date-prefixed like `log/`: a poem is
+	// identified by its title, not the day it was finished, and reclassifying a
+	// piece from essay to fragment must never break a URL that has been shared.
+	loader: glob({ pattern: '**/[^_]*.md', base: './src/content/writing' }),
+	schema: z.object({
+		title: z.string(),
+		date: z.coerce.date(),
+		/**
+		 * What kind of thing this is. Drives the rendering, not just a label:
+		 * a poem's body is emitted as exact text (see src/lib/verse.ts) because
+		 * Markdown collapses the line breaks that a poem is partly made of.
+		 */
+		kind: z.enum(['essay', 'poem', 'fragment']).default('essay'),
+		/**
+		 * Displayed, but not yet browsable — there are no /writing/tags/ routes.
+		 * Stored from the start so the tags exist when there is enough here to
+		 * make an index worth having.
+		 */
+		tags: z.array(z.string()).default([]),
+		/**
+		 * The draft valve, same contract as the log: excluded from every
+		 * production build path, visible in `npm run dev`.
+		 *
+		 * Note what this does NOT do. This repository is public, so a drafted
+		 * piece is off the site but still readable by anyone who opens the repo.
+		 * Writing that must stay private goes in a `_`-prefixed file, which the
+		 * glob above ignores and .gitignore keeps out of the repository entirely.
+		 */
+		draft: z.boolean().default(false),
+		/**
+		 * Set when the text is revised after publishing. Pairs with the
+		 * authorship ledger, which records a new hash per revision — this is the
+		 * human-facing half of the same fact.
+		 */
+		updated: z.coerce.date().optional(),
+	}),
+});
+
+export const collections = { log, remoteLog, projects, about, now, writing };

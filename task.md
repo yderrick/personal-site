@@ -96,6 +96,10 @@
 - [ ] **Phase 6: Optional Extras** *(nothing here blocks anything; pick up when wanted)*
   - [x] RSS feed for the log at `/rss.xml` — drafts excluded, via the same `src/lib/log.ts` helper. Styled for browsers by `public/rss.xsl`. *(v0.5.0)*
   - [x] `/now` page — what I'm currently focused on, with a required `updated` date and a staleness warning after 60 days. *(v0.5.0)*
+  - [x] `/writing` — essays, poems and fragments, separate from the log, with its own feed. Poems render as exact text rather than Markdown, since Sätteri follows CommonMark and has no `breaks` option. *(v0.8.0)*
+  - [x] Authorship record at `/writing/proof` — SHA-256 per revision in a committed ledger, submitted to OpenTimestamps for a Bitcoin-anchored proof. `npm run stamp`, then `npm run stamp:upgrade` the next day. *(v0.8.0)*
+  - [ ] Tag routes for `/writing`. Tags are stored and displayed but don't link anywhere; `kind` is the only facet worth browsing by at this size. The log's tag routes are the template.
+  - [ ] Submit published writing URLs to the Wayback Machine, so a neutral third party holds dated copies of the rendered pages. Wants a workflow that waits on the Vercel deploy first; worth doing once there's enough published to archive.
   - [ ] Analytics (Vercel Analytics or Plausible free tier). **Blocked on a decision, not on work:** every option adds a client script to a zero-JS site or sends visitor data to a third party.
   - [ ] Custom domain — point DNS at Vercel, update `site` in `astro.config.mjs`. Needs a domain bought first.
   - [x] Log-entry drafting from `git log --author=crystaladdison17@gmail.com --since=midnight` across other repos — `scripts/draft-log.mjs`, run as `npm run log`. Prints commits; the prose is still written by hand. *(v0.5.0)*

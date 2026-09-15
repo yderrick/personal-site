@@ -20,11 +20,12 @@ them or work them out again in six months.
 3. [Update the About page](#3-update-the-about-page)
 4. [Update the Now page](#4-update-the-now-page)
 5. [Write a log entry](#5-write-a-log-entry)
-6. [Start a log folder in another repo](#6-start-a-log-folder-in-another-repo)
-7. [Renew the GitHub token](#7-renew-the-github-token)
-8. [When something looks wrong](#8-when-something-looks-wrong)
-9. [Things to remember](#9-things-to-remember)
-10. [Waiting on you](#10-waiting-on-you)
+6. [Publish an essay or a poem](#6-publish-an-essay-or-a-poem)
+7. [Start a log folder in another repo](#7-start-a-log-folder-in-another-repo)
+8. [Renew the GitHub token](#8-renew-the-github-token)
+9. [When something looks wrong](#9-when-something-looks-wrong)
+10. [Things to remember](#10-things-to-remember)
+11. [Waiting on you](#11-waiting-on-you)
 
 ---
 
@@ -317,7 +318,134 @@ value is that a reader can tell the difference.
 
 ---
 
-## 6. Start a log folder in another repo
+## 6. Publish an essay or a poem
+
+Writing lives at `src/content/writing/`, one file per piece, separate from the daily log. The
+filename is the URL: `low-tide.md` becomes `/writing/low-tide`. Keep it lowercase with hyphens, and
+don't put the date in it — the date goes in the frontmatter, so a piece can be re-dated later
+without breaking a link anyone has shared.
+
+### Write it
+
+1. Create `src/content/writing/<slug>.md`.
+2. Frontmatter:
+
+   ```markdown
+   ---
+   title: 'Low tide'
+   date: 2026-09-12
+   kind: poem
+   tags: [sea, distance]
+   draft: false
+   ---
+
+   The poem or the essay goes here.
+   ```
+
+   `kind` is `essay`, `poem` or `fragment`. It defaults to `essay` if you leave it out, and it
+   changes how the piece is rendered, not just what it's labelled.
+
+3. Check it: `npm run dev`, then open http://localhost:4321/writing. Look at it on a phone-width
+   window too.
+
+### Poems are not Markdown
+
+A poem's text is published **exactly as you type it**. Line breaks, blank lines between stanzas and
+leading indentation all survive — you don't need to do anything special to keep them, and you
+should not add two trailing spaces or backslashes at the ends of lines the way Markdown normally
+wants. Those would show up as literal characters.
+
+The only formatting a poem understands is `*italics*` (or `_italics_`). Everything else — headings,
+links, lists — is printed as the characters you typed. Essays and fragments are full Markdown as
+usual.
+
+A line too long for the column wraps with an indent, so you can tell a wrap from a line you broke
+yourself.
+
+### Stamp it, then publish
+
+Before committing, run:
+
+```
+npm run stamp
+```
+
+This hashes each new or changed piece, records it in `src/data/writing-ledger.json`, and submits the
+hash to OpenTimestamps, which writes a proof file into `proofs/`. That proof is what lets you show —
+to someone who trusts neither you nor GitHub — that your text existed before a particular date.
+
+You should see something like:
+
+```
+  + low-tide @ 5017d8ce → proofs/low-tide-5017d8ce.ots
+
+1 revision(s) hashed, 1 with an OpenTimestamps proof.
+```
+
+**If it says `0 with an OpenTimestamps proof`**, it couldn't reach the timestamp servers — usually
+no internet, or a network that blocks them. The hash is still saved, which is the time-sensitive
+part. Just run `npm run stamp` again when you're back online and it will add the proof.
+
+Then commit everything together:
+
+```
+git add -A
+git commit -m "Publish: Low tide"
+git push
+```
+
+Live in about a minute. **Writing is content, not a release** — no version bump, no changelog entry,
+no tag. Only changes to the site's code or design get those.
+
+### Come back tomorrow — this is the easy step to forget
+
+A fresh proof is a promise, not yet a proof. OpenTimestamps batches submissions and anchors them in
+the Bitcoin blockchain, which takes a few hours, sometimes a day. Until that happens the proof is
+marked *awaiting confirmation* on https://personal-site-phi-seven-43.vercel.app/writing/proof.
+
+The next day, run:
+
+```
+npm run stamp:upgrade
+git add -A && git commit -m "Complete timestamp proofs" && git push
+```
+
+You'll see `✓ <slug> — anchored in Bitcoin` for each one that's ready, and `… still pending` for any
+that aren't. Pending ones are fine — run it again the day after. Once anchored, the proof page shows
+*anchored* and the count at the top of the record goes up.
+
+Nothing breaks if you forget. The hash and the git history still date the piece; you just don't have
+the strongest form of the evidence until you run it.
+
+### Keep something private
+
+`draft: true` takes a piece off the live site but **does not hide it** — this repository is public,
+so anyone can read a draft by opening the repo on GitHub. Use it for something not ready, not for
+something private.
+
+For writing nobody should see, put an underscore at the front of the filename:
+
+```
+src/content/writing/_not-for-anyone.md
+```
+
+The site ignores underscore-prefixed files, and `.gitignore` keeps them off GitHub entirely. They
+stay on this machine only. Note the flip side: they are not backed up by the repo either.
+
+### Check what's published
+
+```
+npm run stamp -- --check
+```
+
+Recomputes every hash from the files and reports anything that has drifted from the ledger. Exits
+non-zero if so. Useful after editing a piece you'd already published — an edit needs another
+`npm run stamp` to record the new version, which keeps the old one in the record rather than
+replacing it.
+
+---
+
+## 7. Start a log folder in another repo
 
 Every repo keeps its daily log in a root-level `log/` folder, written to the shared format in
 [`docs/Log Format.md`](docs/Log%20Format.md). This site aggregates those folders into one timeline
@@ -441,7 +569,7 @@ slower. This is the fast path, not the only path.
 
 ---
 
-## 7. Renew the GitHub token
+## 8. Renew the GitHub token
 
 **Your current token expires 6 September 2027.** There's a reminder set for 30 August 2027.
 
@@ -464,7 +592,7 @@ page. But it stops being current, and nobody will tell you — so the reminder m
 
 ---
 
-## 8. When something looks wrong
+## 9. When something looks wrong
 
 ### `/projects` says "Showing a saved snapshot"
 
@@ -512,7 +640,7 @@ wasted build minutes.
 
 ---
 
-## 9. Things to remember
+## 10. Things to remember
 
 - **Deploy = `git push origin main`.** There is no deploy command, and you should never run one.
 - **The daily refresh exists because Vercel only rebuilds when *this* repo is pushed.** Work in
@@ -549,7 +677,7 @@ it stays on your machine.
 
 ---
 
-## 10. Waiting on you
+## 11. Waiting on you
 
 Things I've built the slot for but don't have the content for. Each is a one-line change once you
 hand it over — send it and I'll wire it in, or follow the steps in

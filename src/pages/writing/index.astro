@@ -1,0 +1,95 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import WritingList from '../../components/WritingList.astro';
+import { getWritingEntries } from '../../lib/writing';
+
+const entries = await getWritingEntries();
+
+// Shown as a quiet count under the heading rather than as a filter bar: with a
+// handful of pieces, three tabs to click would be more furniture than help.
+const counts = entries.reduce<Record<string, number>>((acc, entry) => {
+	acc[entry.data.kind] = (acc[entry.data.kind] ?? 0) + 1;
+	return acc;
+}, {});
+
+const breakdown = (['essay', 'poem', 'fragment'] as const)
+	.filter((kind) => counts[kind])
+	.map((kind) => `${counts[kind]} ${counts[kind] === 1 ? kind : `${kind}s`}`)
+	.join(' · ');
+---
+
+<BaseLayout
+	title="Writing"
+	description="Essays, poems and fragments — the writing that isn't about code."
+>
+	<header class="head">
+		<h1>Writing</h1>
+		<p>
+			Thoughts, feelings and the occasional poem. Separate from the log on purpose: that one is a
+			record of work, this one isn't about work at all.
+		</p>
+		{breakdown && <p class="breakdown">{breakdown}</p>}
+		<p class="links">
+			<a href="/writing/rss.xml">Follow by RSS</a>
+			<a href="/writing/proof">Authorship record</a>
+		</p>
+	</header>
+
+	{
+		entries.length > 0 ? (
+			<WritingList entries={entries} />
+		) : (
+			<p class="empty">Nothing here yet.</p>
+		)
+	}
+</BaseLayout>
+
+<style>
+	.head {
+		padding-block: var(--space-8) var(--space-6);
+	}
+
+	.head h1 {
+		font-size: var(--text-3xl);
+		margin-bottom: var(--space-4);
+	}
+
+	.head p {
+		max-width: var(--measure);
+		color: var(--color-fg-muted);
+	}
+
+	.breakdown {
+		margin-top: var(--space-3);
+		font-family: var(--font-mono);
+		font-size: var(--text-xs);
+		letter-spacing: var(--tracking-mono);
+	}
+
+	.links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-5);
+		margin-top: var(--space-5);
+	}
+
+	.links a {
+		font-family: var(--font-mono);
+		font-size: var(--text-xs);
+		letter-spacing: var(--tracking-mono);
+		color: var(--color-accent);
+		text-decoration: none;
+		border-bottom: var(--border) solid var(--color-accent-quiet);
+		padding-bottom: 2px;
+	}
+
+	.links a:hover {
+		border-bottom-color: var(--color-accent);
+	}
+
+	.empty {
+		padding-block: var(--space-6);
+		color: var(--color-fg-muted);
+		border-top: var(--border) solid var(--color-rule);
+	}
+</style>
