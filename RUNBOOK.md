@@ -623,6 +623,33 @@ Expected. GitHub's statistics lag behind a repo's first pushes, sometimes for a 
 hides a zero rather than showing a misleading "0 commits" next to "last active today". It corrects
 itself.
 
+### `npm install` warns about critical vulnerabilities
+
+Expected, and **not** something to fix. Every one of them is a development-only dependency.
+
+```
+11 vulnerabilities (1 low, 8 moderate, 2 critical)
+```
+
+All of them come from `opentimestamps`, which is a `devDependency` used by exactly one file —
+`scripts/stamp-writing.mjs`, which you run by hand on your own machine. It is never imported by a
+page, never part of the Vercel build, and never sent to a browser. To confirm this yourself at any
+time:
+
+```bash
+npm audit --omit=dev
+```
+
+That is what actually ships, and it reports **0 vulnerabilities**.
+
+**Never run `npm audit fix --force` in this repo.** It resolves the warnings by installing
+`opentimestamps@0.0.0` — an empty placeholder version — which silently breaks `npm run stamp`.
+Plain `npm audit fix` is safe but does nothing: the advisories sit in `bitcore-lib`'s pinned
+dependency ranges, so there is no non-breaking version to move to. The count stays at 11 either way.
+
+If this ever needs a real fix, the route is replacing the `opentimestamps` library with the
+OpenTimestamps command-line client, not upgrading around it.
+
 ### Rotate the deploy hook
 
 If the hook URL leaks, or a refresh fails with an authorisation error:
@@ -661,6 +688,10 @@ wasted build minutes.
   `src/content/now/index.md` *and its `updated:` date* whenever what you're working on changes — see
   [Update the Now page](#4-update-the-now-page). After 60 days the build warns and the page admits
   it's overdue.
+- **`npm install` warning about 2 critical vulnerabilities is expected.** They are all dev-only, from
+  `opentimestamps`. `npm audit --omit=dev` — what actually ships — reports zero. Never run
+  `npm audit fix --force`; it breaks `npm run stamp`. See
+  [When something looks wrong](#npm-install-warns-about-critical-vulnerabilities).
 - **The feed lives at `/rss.xml`.** Its address is
   `https://personal-site-phi-seven-43.vercel.app/rss.xml`. If a custom domain is ever pointed here,
   change `site` in `astro.config.mjs` — every feed URL is built from it.
