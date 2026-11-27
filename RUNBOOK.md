@@ -637,6 +637,22 @@ line starting `[github]`. It names the problem directly.
 Check the date on the bottom line of `/projects`. If it's not today or yesterday, the daily refresh
 may have stopped — check https://github.com/yderrick/personal-site/actions for red runs.
 
+**No runs at all, rather than red ones, means GitHub switched the workflow off.** GitHub disables
+scheduled workflows in a public repo after **60 days with no commits to that repo**. Pushing to your
+other repos doesn't count, and neither do log entries written there. This happened on 17 Nov 2026,
+60 days after the last commit here on 17 Sept.
+
+What you'll see: on the Actions page, clicking **Daily refresh** in the left sidebar shows a yellow
+banner saying the workflow was disabled because of no activity. To turn it back on:
+
+1. Click the **Enable workflow** button in that banner. Or, from a terminal:
+   `gh workflow enable refresh.yml --repo yderrick/personal-site`
+2. Click **Run workflow** to rebuild now rather than waiting for 06:15 UTC.
+
+Afterwards `gh workflow list --repo yderrick/personal-site --all` should show `Daily refresh  active`
+rather than `disabled_inactivity`. It will switch off again after the next 60 quiet days unless this
+repo gets a commit in the meantime.
+
 ### A commit count shows nothing for a brand-new repo
 
 Expected. GitHub's statistics lag behind a repo's first pushes, sometimes for a day or two. The card
@@ -693,6 +709,9 @@ wasted build minutes.
 - **The daily refresh exists because Vercel only rebuilds when *this* repo is pushed.** Work in
   `worldbuilder-engine`, `daylog` or `budget-app` would otherwise never reach the site, and the activity numbers
   would quietly go stale while still looking current.
+- **GitHub turns the daily refresh off after 60 days with no commits to this repo.** Work in other
+  repos doesn't count. If `/projects` shows an old date and the Actions page shows no recent runs,
+  see [Numbers look out of date](#numbers-look-out-of-date).
 - **Private repos publish cadence, never content.** Name, blurb, language, commit counts, release
   counts and last-active date. Never a URL, a file name, or a commit message. Commit messages are
   written assuming nobody outside will read them.
@@ -736,7 +755,8 @@ hand it over — send it and I'll wire it in, or follow the steps in
 
 | Item | Status |
 |---|---|
-| **Token access to `budget-app`** | ⚠️ Check — only needed if the Vercel `GITHUB_TOKEN` is a fine-grained token (`github_pat_…`). Add `budget-app` to it via [Add a new project, Step 2](#step-2--give-the-token-access-to-that-repo). Symptom if missed: `/projects` says "Showing a saved snapshot" and the log falls back too |
+| **Token access to `budget-app`** | ⚠️ Needed. Since v0.8.1 (27 Nov 2026) the live `/projects` page has shown "saved snapshot … Data as of 5 Sept 2026" and has no `budget-app` card. If the Vercel token is fine-grained (`github_pat_…`), add `budget-app` to it via [Add a new project, Step 2](#step-2--give-the-token-access-to-that-repo), then rebuild. If it's classic, the cause is something else: read the `[github]` line in the Vercel build log |
+| **Daily refresh** | ⚠️ Switched off by GitHub on 17 Nov 2026 for inactivity. Turn it back on as described in [Numbers look out of date](#numbers-look-out-of-date) |
 | **LinkedIn** | ✅ Live — `linkedin.com/in/derrick-dzotefe-a871071ab` |
 | **Second email** | ✅ Live — `dzotefederrickyao@gmail.com` is now primary (it matches the CV and LinkedIn), with `crystaladdison17@gmail.com` as "Second inbox" |
 | **CV / résumé** | ✅ Live — a web-safe version at `/derrick-yao-dzotefe-cv.pdf`. See below for what differs from your original |
