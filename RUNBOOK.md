@@ -755,8 +755,8 @@ hand it over — send it and I'll wire it in, or follow the steps in
 
 | Item | Status |
 |---|---|
-| **Token access to `budget-app`** | ⚠️ Needed. Since v0.8.1 (27 Nov 2026) the live `/projects` page has shown "saved snapshot … Data as of 5 Sept 2026" and has no `budget-app` card. If the Vercel token is fine-grained (`github_pat_…`), add `budget-app` to it via [Add a new project, Step 2](#step-2--give-the-token-access-to-that-repo), then rebuild. If it's classic, the cause is something else: read the `[github]` line in the Vercel build log |
-| **Daily refresh** | ⚠️ Switched off by GitHub on 17 Nov 2026 for inactivity. Turn it back on as described in [Numbers look out of date](#numbers-look-out-of-date) |
+| **Token access to `budget-app`** | ✅ Done 27 Nov 2026. The live `/projects` page shows the card from live data |
+| **Daily refresh** | ✅ Turned back on 27 Nov 2026. GitHub switches it off again after 60 days with no commits here |
 | **LinkedIn** | ✅ Live — `linkedin.com/in/derrick-dzotefe-a871071ab` |
 | **Second email** | ✅ Live — `dzotefederrickyao@gmail.com` is now primary (it matches the CV and LinkedIn), with `crystaladdison17@gmail.com` as "Second inbox" |
 | **CV / résumé** | ✅ Live — a web-safe version at `/derrick-yao-dzotefe-cv.pdf`. See below for what differs from your original |
