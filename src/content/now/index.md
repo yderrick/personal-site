@@ -1,7 +1,7 @@
 ---
 title: Now
 headline: What I'm working on at the moment.
-updated: 2026-09-06
+updated: 2026-11-27
 ---
 
 Updated whenever it stops being true. If it looks stale, it is — the date above is honest.
@@ -13,16 +13,21 @@ material balance, vessel discharges, and the NPA reporting that goes with them.
 
 ## Building
 
-**Worldbuilder** is where most of my evenings go. I'm working through the lore model — sixteen
-categories, entries that link themselves to each other — and the map and graph views that sit on
-top of it.
+**A budgeting app** is the newest thing and where my evenings go now. It's free, built for how
+money actually moves in Ghana: mobile money first, cedis by default, and one "safe to spend" number
+that never counts money that hasn't arrived. Two releases are out to an invite-only circle. It
+splits a MoMo payment across categories, keeps the fee that came with it, and reads pasted MoMo and
+bank texts into an inbox to confirm. I'm working on the next set now.
 
-**Daylog** captures my day on-device and makes it searchable. It works; I'm using it daily and
-fixing what annoys me.
+**Worldbuilder** is resting after three months. Before moving on I wrote down what it taught me,
+mostly about the bugs that hurt: the ones that silently drop or inflate something with no error
+anywhere. That's now the starting file for every new project.
 
-**This site** is the newest of the three. The log now reaches back to June, the projects page pulls
-its own numbers from GitHub every morning, and I'm no longer adding pages to it — from here it just
-gets written in.
+**Daylog** captures my day on-device and makes it searchable. It works, and I'm fixing what annoys
+me as I go.
+
+**This site** just gets written in now. Its log pulls in each project's own log, so new work shows
+up here without me copying it across.
 
 ## Learning
 
