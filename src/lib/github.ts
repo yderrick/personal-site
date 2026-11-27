@@ -17,7 +17,7 @@ const OWNER = 'yderrick';
  *
  * Adding a future project: append its name. Nothing else to change.
  */
-const SHOWCASED_PRIVATE_REPOS: readonly string[] = ['worldbuilder-engine', 'daylog'];
+const SHOWCASED_PRIVATE_REPOS: readonly string[] = ['worldbuilder-engine', 'daylog', 'budget-app'];
 
 /** Repos to exclude entirely, public or not. */
 const HIDDEN_REPOS: readonly string[] = [];

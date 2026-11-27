@@ -237,7 +237,7 @@ This fetches those folders over the GitHub REST API at build time and feeds them
 `remoteLog` content collection, which shares one schema object with the local `log` collection so the
 two cannot drift apart.
 
-**Currently allowlisted:** `worldbuilder-engine` (private). Its `log/` folder is published in full.
+**Currently allowlisted:** `worldbuilder-engine` and `budget-app` (both private). Their `log/` folders are published in full.
 
 **What appears.** Nothing, unless a repository is named in `LOG_SOURCE_REPOS`. Unlike the projects
 showcase, public repos are *not* included automatically — a log folder is prose, and "the repo is

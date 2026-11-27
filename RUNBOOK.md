@@ -80,13 +80,13 @@ There are **two** places to update, and missing either one means the project won
 Open [`src/lib/github.ts`](src/lib/github.ts) and find this line near the top (around line 20):
 
 ```ts
-const SHOWCASED_PRIVATE_REPOS: readonly string[] = ['worldbuilder-engine', 'daylog'];
+const SHOWCASED_PRIVATE_REPOS: readonly string[] = ['worldbuilder-engine', 'daylog', 'budget-app'];
 ```
 
 Add the repo name exactly as it appears on GitHub:
 
 ```ts
-const SHOWCASED_PRIVATE_REPOS: readonly string[] = ['worldbuilder-engine', 'daylog', 'new-project'];
+const SHOWCASED_PRIVATE_REPOS: readonly string[] = ['worldbuilder-engine', 'daylog', 'budget-app', 'new-project'];
 ```
 
 #### Step 2 — Give the token access to that repo
@@ -156,6 +156,10 @@ pages exist.
 | `span` | `normal`, `wide` (full width) or `tall`. Varies the bento layout |
 
 Only **two** pinned projects appear on the home page, most recently pushed first.
+
+Three are pinned now (`worldbuilder-engine`, `daylog`, `budget-app`), so the home page shows whichever
+two were pushed most recently, and `daylog` (last pushed August 2026) is the one left off. All three
+still lead `/projects`. To put `daylog` back on the home page, set `pinned: false` on one of the others.
 
 ### To hide a project
 
@@ -555,6 +559,22 @@ from which repo. If any allowlisted repo is private you need `GITHUB_TOKEN` in y
 `.env` file first, or the fetch 404s and the snapshot is left alone rather than overwritten with a
 worse one.
 
+**Shortcut if you're logged in to the GitHub CLI** (`gh auth status` says so): borrow its token for
+the one command, without writing it to a file:
+
+```bash
+GITHUB_TOKEN="$(gh auth token)" npm run snapshot:log
+```
+
+The output should end with a per-repo count, e.g. `budget-app: 4` and `worldbuilder-engine: 33`. If
+it says `Live fetch failed, using the committed snapshot instead`, the token wasn't picked up and
+nothing was written.
+
+**The snapshot takes every allowlisted repo, not just the new one.** Entries written in other repos
+since the last refresh go into the commit too — and into this public repo's history for good. Glance
+at the `Change: +N entries` line and make sure you're happy with all of them, not only the ones you
+were thinking of.
+
 **Why it matters.** When GitHub is unreachable during a build — outage, rate limit, expired token —
 the site falls back to this file and marks the data stale rather than failing the deploy. If the file
 is empty, that fallback means every remote entry silently disappears from the site instead. The
@@ -671,7 +691,7 @@ wasted build minutes.
 
 - **Deploy = `git push origin main`.** There is no deploy command, and you should never run one.
 - **The daily refresh exists because Vercel only rebuilds when *this* repo is pushed.** Work in
-  `worldbuilder-engine` or `daylog` would otherwise never reach the site, and the activity numbers
+  `worldbuilder-engine`, `daylog` or `budget-app` would otherwise never reach the site, and the activity numbers
   would quietly go stale while still looking current.
 - **Private repos publish cadence, never content.** Name, blurb, language, commit counts, release
   counts and last-active date. Never a URL, a file name, or a commit message. Commit messages are
@@ -716,6 +736,7 @@ hand it over — send it and I'll wire it in, or follow the steps in
 
 | Item | Status |
 |---|---|
+| **Token access to `budget-app`** | ⚠️ Check — only needed if the Vercel `GITHUB_TOKEN` is a fine-grained token (`github_pat_…`). Add `budget-app` to it via [Add a new project, Step 2](#step-2--give-the-token-access-to-that-repo). Symptom if missed: `/projects` says "Showing a saved snapshot" and the log falls back too |
 | **LinkedIn** | ✅ Live — `linkedin.com/in/derrick-dzotefe-a871071ab` |
 | **Second email** | ✅ Live — `dzotefederrickyao@gmail.com` is now primary (it matches the CV and LinkedIn), with `crystaladdison17@gmail.com` as "Second inbox" |
 | **CV / résumé** | ✅ Live — a web-safe version at `/derrick-yao-dzotefe-cv.pdf`. See below for what differs from your original |

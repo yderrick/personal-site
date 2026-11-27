@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-09-10T19:01:41.855Z",
+  "fetchedAt": "2026-11-27T07:08:44.069Z",
   "files": [
     {
       "repo": "worldbuilder-engine",
@@ -342,6 +342,350 @@
       },
       "body": "\nSeven sittings and two releases, and the thing I set out to build a couple of days ago is done: my\nresearch in Google Drive turns up in the app as notes and keeps itself current, a note that's\nchanged on both sides hands me the decision instead of picking for me, and any file on this machine\ncan become a note without Google being involved at all.\n\nThe only test I actually cared about all day was one I ran by hand. Edit a note here, edit the same\ndocument in Drive, sync. If the app had quietly taken Drive's version, the whole feature would have\nbeen a liability dressed up as a convenience. It stopped, said the note had been edited in both\nplaces, and left my words alone.\n\nWhich is the theme of the day, really. Almost everything hard was a way this could have destroyed\nsomething without ever telling me, and three of them nearly shipped. The sync works out that I've\ndeleted a note by not finding it in the list it was handed — perfectly correct until the list hasn't\nloaded yet, at which point every mirrored document looks deleted and stops syncing for good,\nsilently. The background permission check was set to an option I was sure meant \"don't show\nanything\", and it actually means \"skip the consent screen if they've already agreed\" — so the app\nwould have thrown a Google popup at me roughly hourly, unprompted. And the worst one arrived through\nthe button built to prevent exactly this: pressing \"keep mine\" has to convince the next sync there's\nnothing left to do, but there are *two* separate reasons it can decide a note needs rewriting, and\nclearing one and not the other makes the button look like it worked and then overwrites the words I\njust chose to keep, five minutes later, with nothing on screen. There's a test now that starts in\nthat state and insists the next sync does nothing at all.\n\nNone of those would have failed loudly. That's what makes them worth the paranoia — a crash you find\nin a minute; a note quietly replaced overnight you find in a month, if ever. The same instinct runs\nthrough the rest of it: the access token is never written down anywhere, none of the Drive\nbookkeeping goes into a backup, and keeping my own version asks Google when the document actually\nchanged rather than guessing, refusing to resolve at all if it can't reach it.\n\nThe smaller feature took an hour because the hard part already existed. Point at a Markdown file, a\nWord document or a saved web page and it becomes a note, formatting intact, no account and no\nnetwork needed. One rule in there is invisible and would produce garbage backwards: Markdown has to\nbecome markup *before* the sanitiser sees it, or every heading and bullet collapses into one grey\nslab that looks almost right until you read it. I'd learned that on the Drive side already, so this\ntime there's a test that fails the moment anyone removes the step. An imported note is deliberately\njust a note — no pretend link back to a file nothing is watching.\n\nTwo things about writing it all down. Documenting a feature forces you to notice what it doesn't do,\nand three honest limitations went into the docs that I'd been comfortably not saying out loud — then\na day later two of them stopped being true and I had to go back and fix a limitations list that was\nnow *underselling* the thing, which is exactly as untrustworthy as one that oversells it. And I'd\nbeen filing each sitting as its own dated file, so one day had four. That's not a daily log, that's\nfour fragments of a Tuesday. Merged them and changed the rules so it doesn't happen again; the\nformat always allowed either shape, so this was my own habit drifting rather than a spec problem.\n\nLeft undone on purpose: it only syncs while I'm actually looking at my notes, and nothing syncs with\nthe app closed. There's no server to receive Google's nudge, and there isn't going to be one.\n",
       "sha": "27fdd662dd2145dabf1a44a697190a585bfb3bbf"
+    },
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-09-17.md",
+      "frontmatter": {
+        "title": "Tidying the Plot Timeline, then chasing one wrong diagnosis into three",
+        "date": "2026-09-17",
+        "tags": [
+          "worldbuilder",
+          "planner",
+          "timeline",
+          "ui",
+          "mobile"
+        ],
+        "draft": false,
+        "backfilled": false
+      },
+      "body": "\nOpening the Plot Timeline, the first thing you saw was three stacked boxes of settings and, somewhere underneath if you scrolled, the chart. Most of the page spent on controls I touch once a month, guarding the one view I came to look at. So they're three buttons on one row now, each opening *over* the chart rather than above it, with a badge so a shut panel still tells you what it's doing. On a phone they're the usual back-dismissible drawers — and checking that at phone width turned up the day's small bug, a thread-name box that refused to shrink and scrolled its drawer sideways.\n\nThen the long part. I'd been sure the timeline didn't draw branches, because my threads showed as flat parallel lines. First answer: the feature's broken. Wrong. Second answer: the feature's fine and my data's empty, every thread top-level. Also wrong — two of my threads *are* branches of the main one, properly saved; I'd just never named the scene where each splits off, and the chart treated half-configured as not configured. So an unset branch now peels off at the thread's own first scene.\n\nWhich drew the branches, and then floated half my scenes off their own lines. The curve climbs over about a chapter, so starting it at the first scene meant every dot in that chapter sat at the thread's height above a line still rising out of its parent. Now the climb gets its run-up *before* the first dot, and a branch I've set myself doesn't move at all.\n\nI wrote that fix up as a spec and got it wrong a third time — demanded a fixed run-up that a one-chapter book can't give, which would have yanked every deliberate branch to the left edge. Caught before it shipped, and there's a test pinning it now. Three wrong answers, each one comfortable, each one looking identical on the board. That's the thing worth remembering.\n",
+      "sha": "df3dd17b68988f5f617994ea481f42dac866ce9c"
+    },
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-09-22.md",
+      "frontmatter": {
+        "title": "Drive out, prose follows the card, and exports finally show their blanks",
+        "date": "2026-09-22",
+        "tags": [
+          "worldbuilder",
+          "drive",
+          "jots",
+          "removal",
+          "storyplanner",
+          "manuscript",
+          "export",
+          "release"
+        ],
+        "draft": false,
+        "backfilled": false
+      },
+      "body": "\nFive releases today, each one building on the last, and all of them about making the plan and the manuscript agree with each other.\n\nGoogle Drive came back out of Jots. I did it as a removal on top of everything since, not a rewind, because three rounds of Plot Timeline work had landed after it.\n\nThen the scene download, which had fallen behind the card. I rewrote it to walk the card top to bottom and pull in the scene's actual manuscript text. Review caught two slips: the word count counted markdown symbols as words, and End Scene marked a scene Drafted even when its break failed to land.\n\nThe part I cared most about was the planner. Dragging a scene to another chapter used to move the plan and leave its prose behind. Now every move carries the prose too, reorders included. A scene that was never ended moves its card only, because guessing prose boundaries from `* * *` breaks is how you mangle a novel. There's no confirmation dialog. Each chapter it touches gets a Version History snapshot first, and that's the undo.\n\nLast, the exports. A field with no value used to be silently missing, so I couldn't tell \"blank\" from \"not included\". Every field now prints, and the empty ones are marked as empty. Chasing that turned up something worse: the chapter download had never been rewritten at all and was still printing the old thin summary. My mistake. I'd treated the card's download and the chapter's as one thing. It now embeds every scene in full, in card order. Review then caught one more slip before it went out: the whole-project export had lost every scene's name. Fixed, and live.\n",
+      "sha": "d3a880494c74f599f29b9b12f7cd29bc9c022c98"
+    },
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-09-23.md",
+      "frontmatter": {
+        "title": "One scene, many setups: plants and payoffs become a list",
+        "date": "2026-09-23",
+        "tags": [
+          "worldbuilder",
+          "storyplanner",
+          "chekhov-ledger",
+          "export",
+          "release"
+        ],
+        "draft": false,
+        "backfilled": false
+      },
+      "body": "\nA scene can now plant and pay off as many things as it actually does, not one. Real scenes don't work one setup at a time. The gun goes on the wall in the same scene the letter goes in the drawer, and a good climax settles both. The planner only ever let me record one of them, so the other lived in my head, which is exactly where a Chekhov ledger is supposed to stop things living.\n\nThe scene modal now has a Plants & Payoffs list that works like System Invocations: add a plant, add a payoff, and each row gets its own thread and note. When a payoff picks what it settles, it picks a specific plant, not a scene. A scene that planted three things shows up three times in the picker, by name. The ledger counts each one on its own, so one scene can have a setup that's paid and another that's still owed.\n\nI didn't migrate anything. Old scenes are read as a one-item list, and saving one quietly switches it over. The one tricky part was old payoff links. They pointed at a scene, back when a scene held one plant at most. They now mean that scene's first plant, which is what they always meant. They get pinned to that exact plant the next time you open the payoff, so adding a second plant later can't shift the pairing.\n\nDoing this turned up a real bug in the AI plant suggestions. Accepting one on a scene that already paid something off threw the payoff away and put the plant in its place. That was my mistake, and it's been there since the feature shipped. Now the plant is added next to the payoff. The suggestions still skip any scene that already has a plant marked. Opening that up means changing what the model is asked, so I'll decide it on its own.\n\nShipped as v2.57.0 and it's live. Types, tests and build are clean, but I haven't clicked through it in a browser yet, on desktop or phone. That comes next, against real scenes.\n",
+      "sha": "3799c32053a7f712e586edb479adedac2daa8690"
+    },
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-09-25.md",
+      "frontmatter": {
+        "title": "The Markdown downloads stop falling behind",
+        "date": "2026-09-25",
+        "tags": [
+          "worldbuilder",
+          "export",
+          "lore",
+          "manuscript",
+          "testing"
+        ],
+        "draft": false,
+        "backfilled": false
+      },
+      "body": "\nDownloading a book, a chapter or a character as Markdown had quietly fallen behind the app. Today I caught it up, and made sure it can't drift again.\n\nCharacter and lore downloads were the worst. Links to other entries printed as long internal ids, custom fields and field history never reached the file, and blank fields were dropped, so a field that had stopped exporting looked exactly like one you'd never filled in. That's on me: the exporter was written months ago, and every field since depended on someone remembering to add it. Nobody did. Now it reads the same field definitions the forms use, resolves links to names and prints every field, blanks marked. Checking that work caught one more: an unfilled number is stored as zero, so a character with no Enneagram type exported as \"type 0\".\n\nThe whole-book download's \"include\" toggles never did anything. They work now, and timeline events and project settings joined as sections.\n\nThen a last sweep of loose ends. Switch a scene card from Scene to Sequel and the first set of answers hides but stays on the record, so it never reached the download. It now prints under a note. Old timeline events typed before the calendar existed lost their original wording, era name included; the file keeps it next to the computed date. The whole-book file's outline was upside down, every chapter and profile outranking the section it sat in. A heading you typed into a chapter or a character's backstory did the same, landing at the very top of the outline; now it sits under its section. And the character form had the Maslow picker labelled \"Tension Level\".\n\nThe part I care about most is a new test: every field of every record has to reach its download or carry a written reason why not, and a new field fails the build until it does. Remembering didn't work, so now the build remembers.\n\nBefore shipping I clicked through every download in a browser, at desktop and phone width, on a throwaway copy rather than my real book. That pass is what found the typed-heading problem. It shipped as v2.58.0.\n",
+      "sha": "f79b0d2476d89dd6ae2d91d12425ddff12a621af"
+    },
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-10-10.md",
+      "frontmatter": {
+        "title": "The scene graph was lying about flashbacks, so I replaced it with a Story Map I can scroll along and read",
+        "date": "2026-10-10",
+        "tags": [
+          "worldbuilder",
+          "timeline",
+          "planning",
+          "visualization",
+          "touch"
+        ],
+        "draft": false,
+        "backfilled": false
+      },
+      "body": "\nI opened the Scene Chronology graph on my actual book today and it told me nothing. By the end of the day it was gone from the tab and a Story Map I can scroll along was sitting there instead, unreleased and not yet looked at in a browser.\n\nThe old graph was a column of unlabelled dots, and its one headline claim was false: the diagonal meant to mark a story told in order only held for a story paced perfectly evenly. That was a mistake in the design, so it gets replaced, not patched.\n\nThe Story Map runs the story across in lanes, under a ribbon of dates. Order is plotted against order, and it says the telling \"steps back in time\", never \"flashback\"; two storylines told in alternation step back constantly without either being one.\n\nThe first cut fitted the whole book to the screen, and with 64 scenes every one was a dot. So now it opens zoomed in just far enough to read and moves sideways only, under wheel, drag, pinch and arrow keys, over a strip showing the whole book.\n\nThen it had to be readable, which it wasn't. The ribbon had one way to write a date, the full one, which needs about 95 pixels in a column 22 wide, so where the tab opens it said nothing at all. Each day now says as much as fits: the full date, the day and month, or the bare number, with a heavier edge where the month turns and the month named at the left. Pills carry their titles where their lane is clear beside them, and pointing at a scene shows a card at once and lights up every scene of its colour.\n\nThe worst bug was the first click. Selecting a scene opens a detail column, which narrows the chart, and the view kept the same scenes in less room, so every pill turned into a dot. A resize now keeps the scale and shows fewer scenes.\n\nCalls worth recording.\n\nA scene with a date and no time is not a midnight scene. Read that way, \"13 July\" looks like a jump backwards after a ten-at-night scene the same day.\n\nA press on a scene stays a tap until it has travelled sideways. Taking hold of the pointer sooner would have sent every tap's click to the chart instead.\n\nTwo mistakes were mine. I asked for colours that read \"on the dark background\" without saying which dark, and four failed on the real one. And I said the readability work would rewrite one existing test; it rewrote four, one of which had only ever passed because of the tooltip being removed.\n\nNone of it has been felt on a phone or seen at real font sizes yet. Still to come: filters, and a corrected version of the old graph beside it.\n",
+      "sha": "eb2523a5913c4b9efdafffadd144c4d1f609d8e3"
+    },
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-10-11.md",
+      "frontmatter": {
+        "title": "The Story Map shipped: titles, filters, an honest Curve, and room to fill the screen",
+        "date": "2026-10-11",
+        "tags": [
+          "worldbuilder",
+          "timeline",
+          "visualization",
+          "filters",
+          "mobile",
+          "testing",
+          "release"
+        ],
+        "draft": false,
+        "backfilled": false
+      },
+      "body": "\nFour things happened to the Story Map today: most scenes turned out to have no title on a book shaped like mine, the map got its filters, the old scatter graph came back as a second view that tells the truth, and the whole thing can now be maximised.\n\n**Titles.** The report said thirty-three of thirty-five scenes carried a title. That was measured on a made-up book whose scenes hop lanes every time. Real plot threads run for several scenes in a row, and on a book like mine ten of thirty-five had one. Titles now take turns above and below their scene, and thirty-four show.\n\n**Filters.** Chapters, points of view, threads, locations and statuses can be chosen from a column, a drawer on a phone, or the legend.\n\n**The Curve.** The graph this rebuild replaced plotted in-world time against reading order, with a diagonal for a story told in order. The new view plots order against order: told straight through is the diagonal, a flashback is visibly off it. Then I deleted the old graph.\n\n**Maximise.** A button fills the window with the map; on a phone it becomes a full-screen pane, and Back puts it away. Escape restores. My first rule for it was wrong: it ignored Escape in every input, checkboxes included, so after ticking a filter it did nothing. It now yields only to controls you type into. The scene detail finally says where the scene is, \"12 of 61 shown, story order 9 of 40\", with Previous and Next to walk from there. It also used to sit open, saying nothing, for a scene the filters had taken off the map. Now it says so.\n\nOpening a scene in the Manuscript from the phone's sheet never closed the sheet; it lingered in the Back stack. It closes first now.\n\n**Shipped.** Until this evening none of it had been seen in a browser. It has now, on a sixty-scene book at desktop and phone size, and it went out as v2.59.0. The day's lesson is still about tests: a fixture tidier than real data will pass anything.\n",
+      "sha": "3252b0c2104e47fe6843e772269209ce514bc51a"
+    },
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-10-19.md",
+      "frontmatter": {
+        "title": "Gate A held up; planning the Story Map's second axis, story time",
+        "date": "2026-10-19",
+        "tags": [
+          "worldbuilder",
+          "timeline",
+          "visualization",
+          "planning"
+        ],
+        "draft": false,
+        "backfilled": false
+      },
+      "body": "\nAfter a week of writing with the new Story Map I'm happy with it, so the next stage has started: laying scenes out by when they happen in the world, not just the order I tell them in.\n\nThat turned out to be a bigger change than the plan made it look. Everything under the map, from zooming and panning to the minimap and the arrow keys, assumes the axis is counted in scenes, one equal column each. Story time is counted in minutes. So the work is three pieces rather than one: the arithmetic first, tested on its own, then the drawing, then the controls.\n\nI made four calls before any code. A scene with no recorded length gets a short fixed mark, not a made-up one-hour bar, because a chart that invents data is worse than one with gaps. A scene dated to a day but with no time is spread across its part of the day in reading order and marked as a guess, rather than all of them piling up at midnight. By default every run of empty days collapses into one labelled break, with a toggle for true scale. And most of my scenes already have dates, times and lengths, so overlapping bars are the normal case and the stacking has to be right, not an afterthought.\n\nOne bug got folded in too: a scene with an hour outside 0-23, which can only come from imported or hand-edited data, was landing on the next day.\n\nNo code today, only the plan and the first brief.\n",
+      "sha": "87d9e50458b884e5582c8e639f588da39fe70310"
+    },
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-11-13.md",
+      "frontmatter": {
+        "title": "Story time, before any of it is drawn: the maths under the second axis",
+        "date": "2026-11-13",
+        "tags": [
+          "worldbuilder",
+          "timeline",
+          "visualization",
+          "testing"
+        ],
+        "draft": false,
+        "backfilled": false
+      },
+      "body": "\nToday I built the arithmetic for laying the Story Map out by when things happen in the world. None of it draws anything yet. That was on purpose: every claim the chart will make has a test behind it first.\n\nThe idea is simple: every scene sits where it happens, as a bar as long as it lasts. The details are where it gets hard. Most of my book has dates, times and lengths, so overlapping bars are the normal case, and each storyline stacks its overlaps into rows. Those rows are worked out over the whole book, never over what's on screen, so panning can't reshuffle them. Empty stretches between busy days fold into one narrow break, however long they are, and the month labels honour that: a break that skips March, April and May gets a single \"May\" where the story picks up again, not three labels on one spot.\n\nA scene dated to a day but given no time now gets spread across whatever part of the day is left. That's between the scene it follows and the next fixed time, in reading order. It's marked as a guess, not piled up at midnight.\n\nThe bug from the plan is fixed. A scene with an impossible hour, like 25 from imported data, was landing on the next day. I clamped it where the minute is first worked out, not just on the new axis, because otherwise the Curve and the time axis would disagree about when the same scene happens.\n\nI also tried to break it on purpose. A typo'd scene a hundred million minutes long must not hang the tab, and three centuries drawn day by day must not build a hundred thousand labels just to throw them away. Both now count before they build. An absurdly long book gets squeezed to fit rather than cut off.\n\nThree of my own test expectations were wrong today, all about calendars. Every time, the code was right and my head-maths wasn't. Day 65 really is the first of a month in a made-up calendar, whatever I thought.\n\nThen I checked it independently, the way every piece of this gets checked: twelve hundred random books, two calendars, one of them deliberately lopsided, and every day label and month label compared against a slow walk through the calendar. They all agreed, and no stacked scenes overlapped. Next comes drawing it.\n",
+      "sha": "d64d1ef71c929cf244d3670a87a952e9b3b91d03"
+    },
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-11-15.md",
+      "frontmatter": {
+        "title": "Story time gets drawn and switched on, trend strips go under the lanes, and the test failures that were never load",
+        "date": "2026-11-15",
+        "tags": [
+          "worldbuilder",
+          "timeline",
+          "visualization",
+          "testing"
+        ],
+        "draft": false,
+        "backfilled": false
+      },
+      "body": "\nThe Story Map can now be laid out by when things happen in the world, with a switch for it in the toolbar and two thin trend strips under the lanes. Reading order is still the default. Story time is one click away, compressed or true scale.\n\nDrawing it came first. Each dated scene is a bar as long as it lasts. A scene with no recorded length gets a small capsule, because a very short bar would lie about how long it took. Overlaps are normal in my book, so scenes stack into rows worked out over the whole book: panning can never shuffle a scene into a different row, and nothing is dropped.\n\nThen the switch, and what I cared about was place: each way of looking remembers where you were. The arrow keys walk in time order, which means jumping from the end of a flashback straight into the present. Scenes with no date sit in a tray under the chart. Previous and Next in the detail card stay in reading order on purpose. They say \"Scene 12 of 40\", and changing that would be a lie.\n\nThe strips came last. One is a single tension line for the whole book, with a gap wherever I never set tension rather than a made-up middle value, and a dot for a lone value so it doesn't vanish. Across a break the line goes dashed, because the days between aren't drawn. Under story time a second strip shows the order I tell things in, tinted wherever the telling steps back. I left that one out of reading order, since the Curve already shows it. Each strip costs the lanes 28 pixels (24 on a phone), which can tip them into scrolling and narrow the plot, so the chart and the panel now share one sum for it and a test fails if they disagree.\n\nThen I looked at it in a browser, on a test book and at phone size. Everything worked, but the telling strip was nearly useless. It was squeezed into about 20 pixels for the whole book, so each scene moved it less than a pixel and the flashback came out as one long flat pink line. Meanwhile the lanes left a big empty band beneath them. So before releasing, one small fix: the strips will grow into that empty space, and the telling line will scale to whatever is on screen.\n\nOne thing had been wrong for weeks. Every so often the whole test suite \"failed\" with no tests run, and I blamed a busy machine. It wasn't. Starting the tests from the terminal that spells the drive letter in lower case makes the runner load itself twice. From the other terminal the same code passes every time.\n",
+      "sha": "fc5d5bbb0b7d9af1d9b9c128b3b1b3ca0f82c1a9"
+    },
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-11-16.md",
+      "frontmatter": {
+        "title": "Two Story Map releases in a day: story time as v2.60.0, then arcs, deaths, trails, world events and saved views as v2.61.0",
+        "date": "2026-11-16",
+        "tags": [
+          "worldbuilder",
+          "visualization",
+          "release",
+          "planning"
+        ],
+        "draft": false,
+        "backfilled": false
+      },
+      "body": "\nThe second stage of the Story Map shipped today as v2.60.0, and by the end of the day the third and final stage had shipped too, as v2.61.0: arcs and deaths, following one character, the world's events along story time, and saved views.\n\nThe release needed one fix first: the trend strips were squashed while a short book left hundreds of pixels empty below them, and a flashback barely moved the telling line in a long book. Now the strips use the spare room.\n\nArcs and deaths came in three steps: the arithmetic, the drawing, the wiring. The map doesn't pair plants and payoffs itself; it reads them off the Chekhov ledger, with tests that fail if the two ever disagree. The detail card finally says what a scene plants and who dies in it, which I promised at the first stage and never delivered. That was my planning mistake, not the build's.\n\nA Follow picker draws a line through every scene one character is in and fades the rest. It stops at their death, but a scene where I deliberately tagged them back in stays bright. A flashback told after they die and set before it is still cut. I could be argued out of that.\n\nThe Event Lanes events now show as diamonds on the story-time band. Under reading order I draw nothing rather than put an event somewhere false.\n\nLast, saved views. The map has so many settings now that a view worth finding is a view worth keeping. I can name the current setup and get it back in one click, viewport included. They stay on the device, per project: a handful of ids doesn't earn a sync. A saved view naming a chapter I've since deleted just drops it. One small fix rode along: a world event timed at hour 30 slid into the next day, and is now held to its own day the way scenes are.\n\nBefore releasing I ran it in a browser on a seeded book, desktop and phone, with nothing touching my real data. Everything worked. The trail reads clearly; the skull is crisp on a phone but only a small rose ring on a plain monitor, which I can live with because the cards name the death. A diamond still can't be tapped for its name on a phone. I checked it on my own book and signed it off, which closes the Story Map work that started in October.\n",
+      "sha": "40fee61f69ef70557a1d53295d4702addd568261"
+    },
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-11-17.md",
+      "frontmatter": {
+        "title": "The Scene Guide looked wrong on my phone: a few hundred classes that never existed, then a tidier layout",
+        "date": "2026-11-17",
+        "tags": [
+          "worldbuilder",
+          "bugfix",
+          "mobile",
+          "testing",
+          "design"
+        ],
+        "draft": false,
+        "backfilled": false
+      },
+      "body": "\nI went to tidy the Writing Scene Guide on my phone because it looked cramped, and found something much bigger: a few hundred styling instructions across the whole app that have never done anything.\n\nThe guide was meant to have padding and gaps between its sections. It had neither, on any screen. The classes asking for them named a step the styling system doesn't have, and when it doesn't recognise one it quietly emits nothing. No error, no warning, no failed build. The finished stylesheet confirmed it: the rules simply weren't there.\n\nOnce I knew what to look for, it was everywhere, and had been since the initial import. Dozens of icons rendered at the default 24 pixels instead of the size I meant. Worse, the app is dark-only and the dark border colour on cards was one of the missing shades, so cards all over the app have had near-white outlines I'd stopped seeing.\n\nI fixed it app-wide rather than patch one panel. Most of the missing steps were obviously meant to sit midway between two real ones, so I defined them as exactly that, and every existing class started working without being edited. A handful of plain typos I fixed by hand.\n\nThe part I care about most is the guard. A test now checks every colour shade and spacing step in the source against the real theme, and fails with a file-and-line list if one doesn't exist. It has to prove it can fail, and prove it looked at thousands of classes, because a check that matches nothing passes forever. Silent failures have bitten this repo again and again.\n\nWith the spacing real, the guide was still cluttered, so I reorganised it. POV, location, threads and beat share one row, and the tagged entities and the death list each fold into a collapsible section, closed by default. The death section keeps a red \"recorded\" badge on its header, because a closed section must never hide that someone died in the scene.\n",
+      "sha": "629c430fba0ecfd9504019648bfe6ec4984b2e19"
+    },
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-11-18.md",
+      "frontmatter": {
+        "title": "The Scene Guide fits on one line on my phone, and the styling fix ships as v2.62.0",
+        "date": "2026-11-18",
+        "tags": [
+          "worldbuilder",
+          "mobile",
+          "design",
+          "release",
+          "testing"
+        ],
+        "draft": false,
+        "backfilled": false
+      },
+      "body": "\nThe tidied Scene Guide still wasn't right on my phone: with my real character names, the plot-thread chip fell onto its own line again, which was exactly what I'd set out to stop.\n\nThe row was only a little too wide, a dozen pixels or so, but that's enough to push the last chip down. The long POV name and the location name were doing most of the damage, and the \"POV:\" and \"Loc:\" labels in front of them were pure overhead. So on phones only, those two labels are now a small eye and a map pin. They keep their yellow and green colours, and a screen reader still hears the words. Desktop is untouched, and I left the Beat chip alone since it wasn't the problem.\n\nThen I shipped yesterday's work and today's together as v2.62.0. Because the styling fix changes colours across the whole app, I went through every workspace first, in a throwaway copy with none of my real data. Panels that had been sitting flush against their edges have their padding back, and the borders are finally the quiet grey they were always meant to be. The dimmer grey text I'd worried would be hard to read never actually shows: everywhere it's used, something brighter already wins.\n\nOne thing I'm not pretending away: two of the Story Map's tests time out when the whole suite runs at once. They pass on their own and nothing today touched them, so it's a flaky time limit rather than a broken map. But a test that fails sometimes is a test people learn to ignore, so it's next on the list.\n",
+      "sha": "6dc4d974f8a3b912fb4d1845abed1aa1fe3bde3f"
+    },
+    {
+      "repo": "worldbuilder-engine",
+      "name": "2026-11-19.md",
+      "frontmatter": {
+        "title": "Writing down what this project taught me, before I start the next one",
+        "date": "2026-11-19",
+        "tags": [
+          "worldbuilder",
+          "process",
+          "claude",
+          "docs"
+        ],
+        "draft": false,
+        "backfilled": false
+      },
+      "body": "\nNo code today. I'm about to start a new project, so I sat down to turn three months of rules, written here one breakage at a time, into a single starting file I can carry into anything.\n\nMost of what's in it isn't about this app at all. The biggest lesson is the shape of the bugs that actually hurt. Almost every serious one silently dropped something, inflated something, or served something stale, with no error anywhere: a field that stopped exporting and looked exactly like an empty one, a test guard that matched nothing and so always passed, a deploy that went to the wrong project and reported success. A crash gets found in a minute. Those get found in a month, so the new file tells whoever works on it to hunt for that shape on purpose.\n\nThe rest is how I work now, rather than how I started. Every model change reaches every export in the same commit, and the build enforces it, because remembering didn't work. A worker session's report is a claim to check, not a result to believe. Nobody quotes a line number from memory, because a made-up one feels exactly like a real one. Browser automation gets one try before I take over by hand.\n\nThen I did the same for the brief I paste into every planning session. The new one gives every plan the same skeleton, including what I deliberately chose not to do and what the next step has to fold in. Every brief now ends by asking the worker where it didn't match the code, because workers have caught my mistakes that way more than once.\n\nWriting it also showed me which of my old rules had gone stale. The model guidance and the editor notes no longer matched how I actually work, so they're gone from the new version.\n",
+      "sha": "8cacbd0168b3e30a6a36ccf187151723f3c38120"
+    },
+    {
+      "repo": "budget-app",
+      "name": "2026-11-19.md",
+      "frontmatter": {
+        "title": "Budget app: from research doc to a build plan, an empty project that builds, colours I can trust, money that adds up, one definition for every record, a first place to keep it, transfers that can't lose money, a test run that is fast again, a database that turns away anyone not invited, a data layer ready for the cloud, and a cloud branch that keeps working offline",
+        "date": "2026-11-19",
+        "tags": [
+          "budget-app",
+          "planning",
+          "research",
+          "scaffold",
+          "design",
+          "money",
+          "data",
+          "testing",
+          "security",
+          "offline"
+        ],
+        "draft": false,
+        "backfilled": false
+      },
+      "body": "\nI started a new project today: a free budgeting app for me, my family and people I invite, built for how money actually moves in Ghana, with mobile money first and cedis by default, and nothing behind a paywall.\n\nThe day began with research. I went through how the big apps (YNAB, Monarch, Copilot, PocketGuard, Actual and others) do things, what people love about them and why they quit. The research also turned up hard limits. Bank linking in Ghana isn't live yet. Google Play won't let an app read SMS. Every per-user service, such as bank data, AI or email, costs money I'm not spending yet. I answered all seventeen open decisions in one go: everything free, nothing paid built yet, paste-in SMS instead of reading it, Flex budgeting as the default, one installable web app first, and invite-only until I've registered with the Data Protection Commission.\n\nThen I picked the stack. It's the same React-and-Firebase setup I already know, on the free plan only. That means no server functions, so things like the invite list have to be enforced by the database rules themselves. I'm designing for phones first, because that's where people here handle their money.\n\nThe first release is deliberately narrow: sign in, add your accounts, record spending in three taps, and see one honest \"safe to spend\" number that never counts money I haven't received yet. It also has to work offline. Everything else, from SMS paste to forecasting, waits for later releases. Every other app I looked at was weakest exactly where it tried to do everything at once.\n\nBy the end of the day the empty project builds, lints and tests, with one placeholder screen. I kept TypeScript on 6.0 on purpose, because the linter doesn't support 7 yet and I'd rather not fight my tools on day one.\n\nI also set up the colours for light and dark, and added a test that asks the styling tool whether every class in the code is real. On my last project, made-up style classes shipped for weeks and quietly did nothing; now a typo can no longer silently do nothing. Then I found the new guard had a bug of its own: it could call a correct class wrong depending on which test ran first, and it couldn't see classes chosen by an if. The flaw was in my plan, not in the code that followed it, so I fixed the plan's design and made the guard refuse any class value it can't read. A second test checks that the colours stay readable in both themes, and overspending shows as amber, not red, because it isn't an emergency.\n\nLast came the rules for money and dates, before any screen needs them. Every amount is stored as whole pesewas, never as a fraction, because computers can't hold 0.1 exactly: add 0.1 and 0.2 and you get 0.30000000000000004, and those slivers pile up in a running balance. The amount box will work as a small calculator, so \"45+12.5\" just works. Commas only count as thousands separators. If someone types \"12,5\" meaning twelve and a half, I'd rather refuse it than quietly record 125. A late-night entry stays on the day it happened in your own time zone.\n\nThen the money step's own worker caught a hole I'd written into the plan. I'd said to strip all spaces before reading an amount, so \"12 5\" became 125 and \"1 250\" became 1,250: exactly the silent misreading the comma rule exists to stop. The fault was my rule, not the code. Now a space inside a number is refused, and a typed amount is capped at 100 characters, because a few thousand nested brackets used to crash the reader instead of just saying no.\n\nThe last step today gave every record the app will store, from accounts and categories to transactions and budget months, one definition, with a plain name for each field and a check that runs before anything is saved. \"Not planned\" and \"planned zero\" are now different things that can never be confused, and a category nobody has sorted isn't quietly counted as Flex. The worker also caught a contradiction in my plan: I'd asked for a test record of a transaction with every field filled in to pass, but no real transaction can be a transfer and have a category at the same time. The plan was wrong, not the code, so the test now says plainly which fields depend on each other and why.\n\nThen the app got somewhere to keep things. For now that's the browser itself, so accounts, categories and my profile can be saved and read back before the cloud database exists. I cared more about how it fails than how it works. A save that breaks a rule, or hits a full browser, leaves everything exactly as it was. If the saved data can't be read, the app stops and says so instead of quietly starting fresh, because starting fresh means deleting everything I'd typed. An account's currency also locks once it has transactions, so changing cedis to dollars can't silently reinterpret every amount in it. Along the way I tightened three checks the last step had let through: ids the cloud database would reject later, blank notes passing as real ones, and an icon limit too short for a single family emoji.\n\nBy evening money could actually be recorded: spending, income, transfers, balance corrections and budget months. A transfer is saved, changed and deleted as one, so it can never leave one half behind and make money appear or vanish. I checked that with ten thousand entries, and every balance and every currency total came out to the pesewa. A balance correction records only the difference between what the app thinks and what my wallet says, and nothing at all when they agree. Two things I'm not proud of turned up. The id maker I'd carried over had been producing ids that weren't quite the standard shape on phones without a secure connection. And because every save rewrites everything in browser-only mode, saving slows as the history grows. That's fine for testing, but it's no way to keep a real year of spending.\n\nLate in the day I noticed the full test run had crept up to about three minutes, and that was my fault: I had specified one test as ten thousand separate saves, and every save in browser-only mode rewrites everything, so it got slower with every record. Nobody runs a three-minute suite, so it would have been skipped or ignored. The checks that matter are the same: ten thousand records, every transfer whole, every balance and currency total exact. But the bulk is now stored in one go, and a couple of hundred real saves then have to keep it reconciled. The whole suite runs in well under a minute. The same pass closed two ways to strand your own entries: moving an account's starting date past entries already in it, and switching a category between spending and income while entries or a budget month still use it. Neither gave an error at the time, and both would have shown up weeks later as an edit that refused for no visible reason. One of my older tests had been doing exactly the first thing on purpose, so I rewrote it to expect the refusal.\n\nThe last step before the cloud database goes live was its rules, because on the free plan there's no server to stand guard, so the database has to do it alone. It now refuses anyone whose email isn't on my invite list, and nobody can add themselves to that list. A test proves one invited person can't read, list or touch another person's money: the request is refused outright, not quietly answered with nothing. I broke the rules on purpose to check the tests would notice, and they did. My first attempt at that check \"failed\" only because the test tool wasn't found, which would have passed for proof if I hadn't read the output.\n\nThe cloud branch can't wait for the server to answer before saying \"saved\", because offline it never answers. So before writing it I gave the app a way to hear about a refusal later, and a way to tell \"you have nothing here\" from \"nothing has loaded on this device yet\". The rules both versions of the data layer have to follow also moved into one place, so they can't quietly drift apart.\n\nThen the cloud branch itself went in for my profile, accounts and categories. It says \"saved\" once the phone has the change, not once the server does, because on a bad mobile connection the server may not answer for hours, and a button that spins until then is a button nobody trusts. I tested it against the real access rules on a local copy of the database, including the awkward case where the phone accepts a change offline and the server refuses it later. That refusal now arrives as a message instead of the record quietly vanishing. Two edits made in quick succession to the same account both stick, because only the changed fields are sent. Breaking each of those on purpose made its test fail, so the tests aren't just passing. The tests also caught a trap I hadn't thought of: a starting balance of \"minus zero\" passed every check in the app, but the database stores it as a fraction, so the rules threw the new account away after the phone had already said it was saved. It's now written as a plain zero.\n\nBefore writing the cloud half for transactions, transfers and budget months, I moved the money rules (what a transfer's two halves must match, what a balance correction records, what can be planned) into the one place the cloud version will call, so it can't quietly apply different ones; nothing changed on screen and every existing test passed untouched.\n",
+      "sha": "9cff2313cc1540558dadc30a1e090160658ca67c"
+    },
+    {
+      "repo": "budget-app",
+      "name": "2026-11-20.md",
+      "frontmatter": {
+        "title": "Budget app: from first sign-in to a safe-to-spend number, a setup that gets you there, and an app that installs and works offline",
+        "date": "2026-11-20",
+        "tags": [
+          "budget-app",
+          "data",
+          "offline",
+          "auth",
+          "ui",
+          "accounts",
+          "categories",
+          "entries",
+          "budget",
+          "onboarding",
+          "pwa",
+          "testing"
+        ],
+        "draft": false,
+        "backfilled": false
+      },
+      "body": "\nThe app now does what it's for, from the first sign-in: a short setup gets a new person to a working Home, \"+\" records what you spent, and Home says what's safe to spend this month, with the sum behind it a tap away. It also installs to a phone's home screen and opens offline.\n\nSign-in fixed two things that would have looked like a broken app: someone not invited got saves that seemed to work and then quietly failed, and a Ghanaian phone set to \"en-US\" got Sunday weeks. The worst Accounts bug was quiet: another device renames an account while you have it open, you press Save without touching anything, and the old name goes back. Forms now send only what you changed.\n\nSafe to spend is the smaller of the Flex budget left and the cash you actually have minus the bills still to pay, so it never says yes to money you don't have. Unsorted spending counts against Flex, and expected salary is planned with but never counted as cash.\n\nThe worst find came late. In cloud mode a save lands on the phone first, and if the cloud refuses it afterwards, the change is rolled back. Nothing in the app was listening, so the change just vanished without a word. Now a red banner says what was undone and why, and stays until you dismiss it.\n\nSetup only appears for someone with no accounts and no categories, and the device remembers how far you got, so no profile field and no database rule changed. Updates never reload by themselves; a box asks first, because a reload mid-typing loses your work.\n\nThe test suite had crept to 57 seconds. The cause was the test tool's own ordering: the slowest file started last, and it kept rebuilding its fake browser whenever it switched between kinds of file. Fixing the order and giving five files one shared stand-in for the data layer brought it to about 39 seconds, with more tests. I also caught a flaky test I'd just written. None of this has been on a real phone yet.\n",
+      "sha": "206bcd8411b7230512b621a798f089e94e4a1396"
+    },
+    {
+      "repo": "budget-app",
+      "name": "2026-11-21.md",
+      "frontmatter": {
+        "title": "Budget app: the first release went live, export jumped the queue, a new look, and entries learned to split and carry their fees",
+        "date": "2026-11-21",
+        "tags": [
+          "budget-app",
+          "release",
+          "export",
+          "design",
+          "home",
+          "splits",
+          "fees",
+          "testing"
+        ],
+        "draft": false,
+        "backfilled": false
+      },
+      "body": "\nThe budget app's first release, v0.1.0, went live today: Google sign-in (invite only), a short setup, accounts, entries, categories, a Flex budget and a safe-to-spend number, installable and working offline. By night it could export my data, had a new look, and its entries could be split and carry their fees.\n\nThe browser pass before shipping caught a quiet one: Accounts said \"Overdrawn, −30\" while Home said 20, because Accounts counted an entry dated two days ahead. Both now use the balance as of today. My phone passed install, Back and airplane mode, so gate 1 is done.\n\nGate 2 opened with what I should have had from the start: a way out. My data sits on a free plan with no backups, so \"Export my data\" saves one zip. Then the look, which I'd called sooooo basic: white and navy, money in green and money out orange. Home now leads with a pace ring, tiles for what's over plan or unsorted, and money out each day.\n\nThen the model underneath Ghana's money. One MoMo payment is often groceries plus airtime, so an entry can be split over categories, with parts that must add up to the pesewa. Entries also take tags and the SMS's transaction ID. And most MoMo transfers carry a fee on its own line, so a fee is now its own entry tied to the payment or transfer it was charged on: saved with it, moved when its date or account changes, deleted with it. The tie lives in the fee's own id, so deleting a payment takes its fee along even offline, without having to look the fee up first. Nothing can type any of this in yet; the form comes next.\n\nTwo fixes rode along. \"Over by\" stayed amber while my cash was below zero too, which hid real trouble; it's red now. And a test that failed once in ten turned out to answer a Back before the app had asked for one. Waiting for the ask fixed it.\n",
+      "sha": "7ce68af3d6dc9077146d57ffa3f857643f35656f"
+    },
+    {
+      "repo": "budget-app",
+      "name": "2026-11-22.md",
+      "frontmatter": {
+        "title": "Budget app v0.2.0: split payments, fees and tags, saved views, and pasted MoMo and bank messages read into an inbox",
+        "date": "2026-11-22",
+        "tags": [
+          "budget-app",
+          "release",
+          "entries",
+          "splits",
+          "fees",
+          "tags",
+          "search",
+          "saved-views",
+          "drafts",
+          "sms",
+          "testing"
+        ],
+        "draft": false,
+        "backfilled": false
+      },
+      "body": "\nVersion 0.2.0 of the budget app went live tonight. The entry form now handles how money actually moves in Ghana: one MoMo payment split over groceries and airtime, the fee that came with it, and tags like \"Trip to Kumasi\". The list can be searched and saved as a named view, and pasting a day's MoMo and bank texts turns most of them into ready-to-confirm entries.\n\nTwo things I'd have shipped broken got caught early. A tag typed but not entered was silently thrown away on Save, and a saved view holding a tag nobody uses any more showed \"Any\" while still narrowing the list.\n\nThe SMS work came in two halves. First a To review inbox: a pasted message waits there and nothing touches a balance until I confirm it. A bank's one-time sign-in code is dropped before anything is saved, and a possible repeat is checked against both sides of a transfer, three days either way, because the bank posts late. Then the readers: MTN MoMo and GCB, built from my own redacted texts, pull out the amount, fee, date and transaction ID and match the message to an account by the last four digits of its number. MoMo texts carry no date, so those items are dated the day I paste them and say so.\n\nThen random pastes caught a nasty one: a bank message pasted right before a sign-in code or a notice could vanish, counted as the code. My own tests only joined samples in the file's order, where it never happens. Now every pair is tested. One flaky cloud-database test stays open, and I didn't add a retry to hide it.\n\nAt release the test suite crept to 60 seconds on the same code that ran in 43 a few hours earlier. I didn't blame the laptop until I'd proved it: on a quiet machine it was 45 again. No browser pass this time, by my own choice. I went through the whole checklist on my phone instead, gate 1's leftovers included, and it all held, so gate 2 is done.\n",
+      "sha": "43b56521c130119e04fe6297c9b2562de172e193"
     }
   ]
 }

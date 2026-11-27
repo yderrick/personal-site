@@ -8,6 +8,22 @@ Each released version has a matching annotated git tag (`vX.Y.Z`), so any prior 
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-11-27
+
+### Added
+- `budget-app` (private) is in `SHOWCASED_PRIVATE_REPOS`, with a pinned blurb in
+  `src/content/projects/budget-app.md`. It publishes the same as the other private repos: name,
+  blurb, language, cadence, releases, last-active date, and no URL.
+- `budget-app` is allowlisted in `LOG_SOURCE_REPOS`. Its `log/` folder publishes in full to `/log`,
+  the tag pages, the feed and the home page, at `/log/budget-app/<date>`.
+- `src/data/log-fallback.json` refreshed: 37 entries from 2 repos, up from 20. That adds the four
+  `budget-app` entries and the 13 `worldbuilder-engine` entries written since September, which were
+  already live but not yet in the snapshot.
+
+### Notes
+- Three projects are now pinned and the home page shows two, so `daylog`, the least recently pushed,
+  drops off the home page. It still leads `/projects` with the others.
+
 ## [0.8.0] - 2026-09-14
 
 A place for writing that isn't about work, and a way to show a piece was here first.
