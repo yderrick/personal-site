@@ -650,8 +650,12 @@ banner saying the workflow was disabled because of no activity. To turn it back 
 2. Click **Run workflow** to rebuild now rather than waiting for 06:15 UTC.
 
 Afterwards `gh workflow list --repo yderrick/personal-site --all` should show `Daily refresh  active`
-rather than `disabled_inactivity`. It will switch off again after the next 60 quiet days unless this
-repo gets a commit in the meantime.
+rather than `disabled_inactivity`.
+
+**Since v0.8.2 this shouldn't happen again.** The workflow's `keepalive` job adds an empty commit,
+*Keep the daily refresh switched on*, whenever this repo has gone 45 days without one. If you see
+those commits in the history, that's why; they're harmless. If the workflow is disabled anyway, the
+keepalive itself has broken: open the latest **Daily refresh** run and read the *keepalive* job's log.
 
 ### A commit count shows nothing for a brand-new repo
 
@@ -710,7 +714,8 @@ wasted build minutes.
   `worldbuilder-engine`, `daylog` or `budget-app` would otherwise never reach the site, and the activity numbers
   would quietly go stale while still looking current.
 - **GitHub turns the daily refresh off after 60 days with no commits to this repo.** Work in other
-  repos doesn't count. If `/projects` shows an old date and the Actions page shows no recent runs,
+  repos doesn't count. The `keepalive` job now prevents it by adding an empty commit after 45 quiet
+  days. If `/projects` shows an old date and the Actions page shows no recent runs,
   see [Numbers look out of date](#numbers-look-out-of-date).
 - **Private repos publish cadence, never content.** Name, blurb, language, commit counts, release
   counts and last-active date. Never a URL, a file name, or a commit message. Commit messages are
@@ -756,7 +761,8 @@ hand it over — send it and I'll wire it in, or follow the steps in
 | Item | Status |
 |---|---|
 | **Token access to `budget-app`** | ✅ Done 27 Nov 2026. The live `/projects` page shows the card from live data |
-| **Daily refresh** | ✅ Turned back on 27 Nov 2026. GitHub switches it off again after 60 days with no commits here |
+| **Daily refresh** | ✅ Turned back on 27 Nov 2026. A keepalive job now stops GitHub switching it off again |
+| **Deploy hook secret in `budget-app`** | ⚠️ Needed. `publish-log.yml` is installed there but has no `VERCEL_DEPLOY_HOOK` secret yet, so it fails (red run) on every log push until you set it. See [Make its entries appear within the minute](#make-its-entries-appear-within-the-minute) |
 | **LinkedIn** | ✅ Live — `linkedin.com/in/derrick-dzotefe-a871071ab` |
 | **Second email** | ✅ Live — `dzotefederrickyao@gmail.com` is now primary (it matches the CV and LinkedIn), with `crystaladdison17@gmail.com` as "Second inbox" |
 | **CV / résumé** | ✅ Live — a web-safe version at `/derrick-yao-dzotefe-cv.pdf`. See below for what differs from your original |

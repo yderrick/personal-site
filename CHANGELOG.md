@@ -8,6 +8,19 @@ Each released version has a matching annotated git tag (`vX.Y.Z`), so any prior 
 
 ## [Unreleased]
 
+## [0.8.2] - 2026-11-27
+
+### Fixed
+- The daily refresh can no longer be switched off by GitHub for inactivity. GitHub disables
+  scheduled workflows in a public repo after 60 days without a commit; that happened on 17 Nov 2026,
+  and `/projects` quietly stopped updating. A new `keepalive` job in `refresh.yml` adds one empty
+  commit to `main` when the repo has been quiet for 45 days, and does nothing otherwise. It holds
+  `contents: write` and nothing else; the rebuild job still holds no permissions.
+
+### Notes
+- `templates/publish-log.yml` is now installed in `budget-app`, so its log entries reach the site
+  about a minute after they're pushed rather than at the next daily refresh.
+
 ## [0.8.1] - 2026-11-27
 
 ### Added

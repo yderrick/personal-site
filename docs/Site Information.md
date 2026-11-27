@@ -18,7 +18,7 @@ Live at **https://personal-site-phi-seven-43.vercel.app**, built from `main` at 
 |---|---|---|
 | A push to `main` here | immediate | Vercel's Git integration |
 | The daily refresh | up to 24h | `.github/workflows/refresh.yml`, 06:15 UTC |
-| A push touching `log/**` in another repo | ~1 min | `templates/publish-log.yml`, copied into that repo |
+| A push touching `log/**` in another repo | ~1 min | `templates/publish-log.yml`, copied into that repo (installed in `budget-app`) |
 
 The third is optional per repo. Without it a log entry written elsewhere still reaches the site, just
 at the next daily refresh — the fast path, not the only path. All three call the same Vercel deploy
@@ -331,6 +331,12 @@ never reach the site, and the activity numbers would go stale while still lookin
 tracks reality. It reads a `VERCEL_DEPLOY_HOOK` secret on this repository and fails loudly if the hook
 is missing or rejected, because a refresh that quietly stops working is the exact failure it exists to
 prevent. It can also be run on demand from the Actions tab.
+
+A second job in the same workflow, `keepalive`, guards against GitHub's own off switch: scheduled
+workflows in a public repo are disabled after 60 days with no commits, and work in other repos
+doesn't count. When this repo has gone 45 days without a commit, the job adds one empty commit to
+`main` through the API (with `contents: write`, the only permission it holds). Otherwise it does
+nothing. The rebuild job keeps no permissions at all.
 
 **Watch the token expiry.** `GITHUB_TOKEN` in Vercel is what lets the build see private repositories.
 When it expires the site does not break — it falls back to the snapshot and says so on the page — but

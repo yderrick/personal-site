@@ -24,7 +24,8 @@ on:
   # Lets me trigger a refresh by hand without waiting for the schedule.
   workflow_dispatch:
 
-# No repository contents are read or written; this only calls an external hook.
+# Nothing by default. The rebuild job only calls an external hook; the keepalive
+# job below grants itself `contents: write` and nothing else.
 permissions: {}
 
 jobs:
@@ -51,3 +52,55 @@ jobs:
             "$DEPLOY_HOOK")
 
           echo "Deploy hook responded $status"
+
+  # GitHub switches off scheduled workflows in a public repo after 60 days with
+  # no commits to it, and work in my other repos doesn't count. It happened on
+  # 17 Nov 2026: the refresh silently stopped, which is the exact failure this
+  # file exists to prevent.
+  #
+  # So when this repo has gone 45 days without a commit, this job adds one empty
+  # commit to main. That is ordinary repository activity, which resets the clock.
+  # (Re-enabling the workflow through the API is the other trick in circulation,
+  # but whether it resets the timer is undocumented; a commit certainly does.)
+  # While I'm committing here normally it does nothing at all.
+  #
+  # The commit is made through the API, so there is no checkout and no
+  # third-party action. Commits made with GITHUB_TOKEN don't start other
+  # workflows; Vercel will still rebuild for it, which is harmless.
+  keepalive:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Add an empty commit if this repo has been quiet for 45 days
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.event.repository.default_branch }}
+          QUIET_DAYS: 45
+        run: |
+          # One read, so the commit and its date can't come from different moments.
+          read -r head last < <(gh api "repos/$REPO/commits/$BRANCH" \
+            --jq '"\(.sha) \(.commit.committer.date)"')
+          age=$(( ( $(date -u +%s) - $(date -u -d "$last" +%s) ) / 86400 ))
+          echo "Last commit on $BRANCH: $last ($age days ago)."
+
+          if [ "$age" -lt "$QUIET_DAYS" ]; then
+            echo "Under $QUIET_DAYS days: nothing to do."
+            exit 0
+          fi
+
+          tree=$(gh api "repos/$REPO/git/commits/$head" --jq '.tree.sha')
+          commit=$(gh api "repos/$REPO/git/commits" \
+            -f message="Keep the daily refresh switched on
+
+          GitHub disables scheduled workflows after 60 days without a commit.
+          This empty commit is automatic; see the keepalive job in refresh.yml." \
+            -f tree="$tree" \
+            -f "parents[]=$head" \
+            --jq '.sha')
+
+          # No force: if main moved since we read it, this fails loudly rather
+          # than throwing away whatever landed in between.
+          gh api --method PATCH "repos/$REPO/git/refs/heads/$BRANCH" -f sha="$commit" --silent
+          echo "Added empty commit $commit after $age quiet days."
